@@ -192,6 +192,7 @@
 		0417FECD1E5EC92A00D5B5D9 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0417FCB31E5EC70600D5B5D9 /* libGPUImage.a */; };
 		0417FED01E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0417FECF1E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m */; };
 		0417FEF61E5ED78A00D5B5D9 /* GJImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0417FEF51E5ED78900D5B5D9 /* GJImageView.m */; };
+		046EDBCD1E6D1D5500D9D8FC /* GJImageYUVDataInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -595,6 +596,8 @@
 		0417FECF1E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageBeautifyFilter.m; sourceTree = "<group>"; };
 		0417FEF41E5ED78900D5B5D9 /* GJImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageView.h; sourceTree = "<group>"; };
 		0417FEF51E5ED78900D5B5D9 /* GJImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageView.m; sourceTree = "<group>"; };
+		046EDBCB1E6D1D5500D9D8FC /* GJImageYUVDataInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageYUVDataInput.h; sourceTree = "<group>"; };
+		046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageYUVDataInput.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -676,9 +679,11 @@
 			children = (
 				0417FCBF1E5EC74E00D5B5D9 /* GJImageFilters.h */,
 				0417FECE1E5ECAD000D5B5D9 /* GJImageBeautifyFilter.h */,
+				0417FECF1E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m */,
 				0417FEF41E5ED78900D5B5D9 /* GJImageView.h */,
 				0417FEF51E5ED78900D5B5D9 /* GJImageView.m */,
-				0417FECF1E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m */,
+				046EDBCB1E6D1D5500D9D8FC /* GJImageYUVDataInput.h */,
+				046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */,
 			);
 			path = GJImageFilters;
 			sourceTree = "<group>";
@@ -1007,6 +1012,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0417FED01E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m in Sources */,
+				046EDBCD1E6D1D5500D9D8FC /* GJImageYUVDataInput.m in Sources */,
 				0417FEF61E5ED78A00D5B5D9 /* GJImageView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
