@@ -12,5 +12,6 @@
 #import "GPUImage.h"
 #import "GJImageBeautifyFilter.h"
 #import "GJImageView.h"
+#import "GJImageYUVDataInput.h"
 
 #endif

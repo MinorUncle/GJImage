@@ -13,7 +13,10 @@
 // The default type for input bytes is GPUPixelTypeUByte, unless specified with pixelType:
 
 typedef enum {
-    GJYUVixelFormat420P = GL_BGRA,
+    GJPixelFormatI420,
+    GJPixelFormatYV12,
+    GJPixelFormatNV12,
+    GJPixelFormatNV21,
 } GJYUVPixelFormat;
 
 typedef enum {
@@ -29,18 +32,19 @@ typedef enum {
 }
 
 // Initialization and teardown
-- (id)initWithBytes:(GLubyte *)bytesToUpload size:(CGSize)imageSize;
-- (id)initWithBytes:(GLubyte *)bytesToUpload size:(CGSize)imageSize pixelFormat:(GJYUVPixelFormat)pixelFormat;
-- (id)initWithBytes:(GLubyte *)bytesToUpload size:(CGSize)imageSize pixelFormat:(GJYUVPixelFormat)pixelFormat type:(GJPixelType)pixelType;
+
+- (id)initPixelFormat:(GJYUVPixelFormat)pixelFormat;
 
 /** Input data pixel format
  */
 @property (readwrite, nonatomic) GJYUVPixelFormat pixelFormat;
 @property (readwrite, nonatomic) GJPixelType   pixelType;
 
-// Image rendering
-- (void)updateDataFromBytes:(GLubyte *)bytesToUpload size:(CGSize)imageSize;
-- (void)processData;
-- (void)processDataForTimestamp:(CMTime)frameTime;
-- (CGSize)outputImageSize;
+// 420p
+- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes U:(GLubyte*)Ubytes V:(GLubyte*)Vbytes type:(GJPixelType)pixelType Timestamp:(CMTime)frameTime;
+// 420sp
+- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes CrBr:(GLubyte*)CrBrbytes type:(GJPixelType)pixelType Timestamp:(CMTime)frameTime;
+
+
+-(void)updateDataWithImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)frameTime;
 @end

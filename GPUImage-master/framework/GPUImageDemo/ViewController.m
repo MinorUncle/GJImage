@@ -157,6 +157,16 @@
     
 }
 
+-(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+    static bool touch;
+    touch = !touch;
+    if (touch) {
+        [_videoCamera setCaptureSessionPreset:AVCaptureSessionPreset1280x720];
+    }else{
+        [_videoCamera setCaptureSessionPreset:AVCaptureSessionPreset640x480];
+    }
+}
+
 @end
 /*
  
