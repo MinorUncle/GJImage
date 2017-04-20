@@ -111,22 +111,23 @@ static NSString *const kGJImageYV12FragmentShaderString = GJSHADER_STRING
 );
 static NSString *const kGJImageNV12FragmentShaderString = GJSHADER_STRING
 (
-    varying highp vec2 textureCoordinate;
-
-    uniform sampler2D SamplerY;
-    uniform sampler2D SamplerU;
-    uniform mediump mat3 colorConversionMatrix;
-    void main(void)
-    {
+ varying highp vec2 textureCoordinate;
+ 
+ uniform sampler2D SamplerY;
+ uniform sampler2D SamplerU;
+ uniform mediump mat3 colorConversionMatrix;
+ uniform mediump float fullVar;
+ void main(void)
+ {
      mediump vec3 yuv;
      lowp vec3 rgb;
-     yuv.x = texture2D(SamplerY, textureCoordinate).r - (16.0/255.0);
+     yuv.x = texture2D(SamplerY, textureCoordinate).r - fullVar;
      yuv.yz = texture2D(SamplerU, textureCoordinate).ra - vec2(0.5, 0.5);
      
      rgb = colorConversionMatrix * yuv;
      gl_FragColor = vec4(rgb, 1);
-    }
- );
+ }
+);
 
 static NSString *const kGJImageNV21FragmentShaderString = GJSHADER_STRING
 (
@@ -188,7 +189,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     GLint YTextureUniform,UTextureUniform,VTextureUniform,yuvConversionMatrixUniform;
     CGSize outputSize;
     
-    const GLfloat *_preferredConversion;
+    GLfloat *_preferredConversion;
     
     BOOL isFullYUVRange;
     GLint fullVar;
@@ -521,7 +522,6 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
 {
     OSType type = CVPixelBufferGetPixelFormatType(imageBuffer);
 #ifdef DEBUG
-    
     switch (_pixelFormat) {
         case GJPixelFormatI420:
             if (type != kCVPixelFormatType_420YpCbCr8Planar && type != kCVPixelFormatType_420YpCbCr8PlanarFullRange){

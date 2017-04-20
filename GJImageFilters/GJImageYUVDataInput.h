@@ -13,10 +13,10 @@
 // The default type for input bytes is GPUPixelTypeUByte, unless specified with pixelType:
 
 typedef enum {
-    GJPixelFormatI420,
-    GJPixelFormatYV12,
-    GJPixelFormatNV12,
-    GJPixelFormatNV21,
+    GJPixelFormatI420,//yyyyyyyyuuvv
+    GJPixelFormatYV12,//yyyyyyyyvvuu
+    GJPixelFormatNV12,//yyyyyyyyuvuv
+    GJPixelFormatNV21,//yyyyyyyyvuvu
 } GJYUVPixelFormat;
 
 typedef enum {

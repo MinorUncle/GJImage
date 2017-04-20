@@ -89,6 +89,7 @@
         imageData = (GLubyte *) calloc(1, (int)layerPixelSize.width * (int)layerPixelSize.height * 4);
         
         CGColorSpaceRef genericRGBColorspace = CGColorSpaceCreateDeviceRGB();
+        
         imageContext = CGBitmapContextCreate(imageData, (int)layerPixelSize.width, (int)layerPixelSize.height, 8, (int)layerPixelSize.width * 4, genericRGBColorspace,  kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
         
         //    CGContextRotateCTM(imageContext, M_PI_2);

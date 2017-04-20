@@ -6,8 +6,12 @@
 //  Copyright © 2017年 MinorUncle. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "GPUImageFramebuffer.h"
 
-@interface GJImageFramebuffer : NSObject
+@interface GJImageFramebuffer : GPUImageFramebuffer
+{
+    CVOpenGLESTextureRef overriddenGLTexture;
+}
+- (id)initWithSize:(CGSize)framebufferSize overriddenGLTexture:(CVOpenGLESTextureRef)inputTexture;
 
 @end
