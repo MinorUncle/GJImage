@@ -21,7 +21,7 @@ static NSString *const kGJImagePixelImageInputVertexShaderString = SHADER_STRING
      gl_Position = position;
      textureCoordinate = inputTextureCoordinate.xy;
  }
- );
+);
 
 static NSString *const kGJImageYpCbCr8BiPlanarFragmentShaderString = SHADER_STRING
 (
@@ -53,7 +53,7 @@ static NSString *const kGJImageYpCbCr8PlanarFragmentShaderString = SHADER_STRING
  uniform sampler2D SamplerV;
  uniform mediump mat3 colorConversionMatrix;
  uniform mediump float fullVar;
- 
+
  void main(void)
  {
      mediump vec3 yuv;
@@ -114,61 +114,61 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     imageCaptureSemaphore = dispatch_semaphore_create(0);
     dispatch_semaphore_signal(imageCaptureSemaphore);
     
-    NSString* vs;
-    __weak GJImagePixelImageInput* wkself = self;
-    switch (_imageFormat) {
-        case GJPixelImageFormat_YpCbCr8Planar_Full:{
-            isFullYUVRange = YES;
-            vs = kGJImageYpCbCr8PlanarFragmentShaderString;
-            _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
-                [wkself updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
-            };
-            break;
+        NSString* vs;
+        __weak GJImagePixelImageInput* wkself = self;
+        switch (_imageFormat) {
+            case GJPixelImageFormat_YpCbCr8Planar_Full:{
+                isFullYUVRange = YES;
+                vs = kGJImageYpCbCr8PlanarFragmentShaderString;
+                _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
+                    [wkself updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
+                };
+                break;
+            }
+            case GJPixelImageFormat_YpCbCr8Planar:{
+                isFullYUVRange = NO;
+                vs = kGJImageYpCbCr8PlanarFragmentShaderString;
+                _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
+                    [wkself updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
+                };
+                break;
+            }
+            case GJPixelImageFormat_YpCbCr8BiPlanar_Full:{
+                isFullYUVRange = YES;
+                vs = kGJImageYpCbCr8BiPlanarFragmentShaderString;
+                _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
+                    [wkself updateDataWith420YpCbCr8BiPlanarImageBuffer:imageBuffer timestamp:time];
+                };
+                break;
+            }
+            case GJPixelImageFormat_YpCbCr8BiPlanar:{
+                isFullYUVRange = NO;
+                vs = kGJImageYpCbCr8BiPlanarFragmentShaderString;
+                _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
+                    [wkself updateDataWith420YpCbCr8BiPlanarImageBuffer:imageBuffer timestamp:time];
+                };
+                break;
+            }
+            case GJPixelImageFormat_32BGRA:{
+                _sourceRgbFormat = GL_BGRA;
+                _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
+                    [wkself updateDataWith32BGRAImageBuffer:imageBuffer timestamp:time];
+                };
+                return YES;
+            }
+            case GJPixelImageFormat_32RGBA:{
+                _sourceRgbFormat = GL_RGBA;
+                _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
+                    [wkself updateDataWith32BGRAImageBuffer:imageBuffer timestamp:time];
+                };
+                return YES;
+            }
+            default:
+                NSLog(@"格式不支持");
+                assert(0);
+                return NO;
+                break;
         }
-        case GJPixelImageFormat_YpCbCr8Planar:{
-            isFullYUVRange = NO;
-            vs = kGJImageYpCbCr8PlanarFragmentShaderString;
-            _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
-                [wkself updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
-            };
-            break;
-        }
-        case GJPixelImageFormat_YpCbCr8BiPlanar_Full:{
-            isFullYUVRange = YES;
-            vs = kGJImageYpCbCr8BiPlanarFragmentShaderString;
-            _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
-                [wkself updateDataWith420YpCbCr8BiPlanarImageBuffer:imageBuffer timestamp:time];
-            };
-            break;
-        }
-        case GJPixelImageFormat_YpCbCr8BiPlanar:{
-            isFullYUVRange = NO;
-            vs = kGJImageYpCbCr8BiPlanarFragmentShaderString;
-            _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
-                [wkself updateDataWith420YpCbCr8BiPlanarImageBuffer:imageBuffer timestamp:time];
-            };
-            break;
-        }
-        case GJPixelImageFormat_32BGRA:{
-            _sourceRgbFormat = GL_BGRA;
-            _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
-                [wkself updateDataWith32BGRAImageBuffer:imageBuffer timestamp:time];
-            };
-            return YES;
-        }
-        case GJPixelImageFormat_32RGBA:{
-            _sourceRgbFormat = GL_RGBA;
-            _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
-                [wkself updateDataWith32BGRAImageBuffer:imageBuffer timestamp:time];
-            };
-            return YES;
-        }
-        default:
-            NSLog(@"格式不支持");
-            assert(0);
-            return NO;
-            break;
-    }
     
     runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
@@ -230,31 +230,31 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         assert(0);
     }
 #endif
+    
+    CGSize size = CVImageBufferGetEncodedSize(imageBuffer);
+    CVOpenGLESTextureRef bgraTextureRef = NULL;
+    GLuint bgraTexture;
+
+    glActiveTexture(GL_TEXTURE4);
+    
+    CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RGBA, size.width, size.height, _sourceRgbFormat, GL_UNSIGNED_BYTE, 0, &bgraTextureRef);
+    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+
+    if (err)
+    {
+        NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
+        assert(0);
+        return;
+    }
+    
+    bgraTexture = CVOpenGLESTextureGetName(bgraTextureRef);
+    glBindTexture(GL_TEXTURE_2D, bgraTexture);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    outputFramebuffer = [[GJImageFramebuffer alloc]initWithSize:size overriddenGLTexture:bgraTextureRef];
     CVPixelBufferRetain(imageBuffer);
     runAsynchronouslyOnVideoProcessingQueue(^{
-        CGSize size = CVImageBufferGetEncodedSize(imageBuffer);
-        CVOpenGLESTextureRef bgraTextureRef = NULL;
-        GLuint bgraTexture;
-        
-        glActiveTexture(GL_TEXTURE4);
-        
-        CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RGBA, size.width, size.height, _sourceRgbFormat, GL_UNSIGNED_BYTE, 0, &bgraTextureRef);
-        CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-        
-        if (err)
-        {
-            NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
-            assert(0);
-            return;
-        }
-        
-        bgraTexture = CVOpenGLESTextureGetName(bgraTextureRef);
-        glBindTexture(GL_TEXTURE_2D, bgraTexture);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        
-        outputFramebuffer = [[GJImageFramebuffer alloc]initWithSize:size overriddenGLTexture:bgraTextureRef];
-
         for (id<GPUImageInput> currentTarget in targets)
         {
             NSInteger indexOfObject = [targets indexOfObject:currentTarget];
@@ -263,7 +263,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
             [self setInputFramebufferForTarget:currentTarget atIndex:textureIndexOfTarget];
             [currentTarget setInputSize:outputFramebuffer.size atIndex:textureIndexOfTarget];
             [currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndexOfTarget];
-        }
+        }        
         CVPixelBufferRelease(imageBuffer);
     });
 }
@@ -277,10 +277,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         assert(0);
     }
 #endif
-    CVPixelBufferRetain(imageBuffer);
-
-    runAsynchronouslyOnVideoProcessingQueue(^{
-
+    
     
     CGSize size = CVImageBufferGetEncodedSize(imageBuffer);
     
@@ -366,7 +363,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     {
         CFRelease(YPTextureRef);
         CFRelease(CBTextureRef);
-        
+
         NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
         assert(0);
         return;
@@ -376,7 +373,9 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     glBindTexture(GL_TEXTURE_2D, CRTexture);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    CVPixelBufferRetain(imageBuffer);
     
+    runAsynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
         [GPUImageContext setActiveShaderProgram:filterProgram];
         
@@ -443,10 +442,10 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         assert(0);
     }
 #endif
-    
+
     
     CGSize size = CVImageBufferGetEncodedSize(imageBuffer);
-    
+
     
     
     CFTypeRef colorAttachments = CVBufferGetAttachment(imageBuffer, kCVImageBufferYCbCrMatrixKey, NULL);
@@ -480,50 +479,52 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         }
     }
     
-    
-    CVOpenGLESTextureRef luminanceTextureRef = NULL;
-    CVOpenGLESTextureRef chrominanceTextureRef = NULL;
-    GLuint luminanceTexture, chrominanceTexture;
-    
-    CVPixelBufferLockBaseAddress(imageBuffer, 0);
-    CVReturn err;
-    // Y-plane
-    glActiveTexture(GL_TEXTURE4);
-    //        if ([GPUImageContext deviceSupportsRedTextures])
-    //        {
-    //            err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RED_EXT, size.width, size.height, GL_RED_EXT, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
-    //        }
-    //        else
-    //        {
-    err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE, size.width, size.height, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
-    //        }
-    if (err)
-    {
+        
+        CVOpenGLESTextureRef luminanceTextureRef = NULL;
+        CVOpenGLESTextureRef chrominanceTextureRef = NULL;
+        GLuint luminanceTexture, chrominanceTexture;
+
+        CVPixelBufferLockBaseAddress(imageBuffer, 0);
+        CVReturn err;
+        // Y-plane
+        glActiveTexture(GL_TEXTURE4);
+        //        if ([GPUImageContext deviceSupportsRedTextures])
+        //        {
+        //            err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RED_EXT, size.width, size.height, GL_RED_EXT, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
+        //        }
+        //        else
+        //        {
+        err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE, size.width, size.height, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
+        //        }
+        if (err)
+        {
+            CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+            CFRelease(luminanceTextureRef);
+            NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
+            assert(0);
+            return;
+        }
+        
+        luminanceTexture = CVOpenGLESTextureGetName(luminanceTextureRef);
+        glBindTexture(GL_TEXTURE_2D, luminanceTexture);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        
+        err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE_ALPHA, size.width/2, size.height/2, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, 1, &chrominanceTextureRef);
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-        CFRelease(luminanceTextureRef);
-        NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
-        assert(0);
-        return;
-    }
-    
-    luminanceTexture = CVOpenGLESTextureGetName(luminanceTextureRef);
 
-    
-    
-    glActiveTexture(GL_TEXTURE5);
-    err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE_ALPHA, size.width/2, size.height/2, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, 1, &chrominanceTextureRef);
-    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-    
-    if (err)
-    {
-        NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
-        assert(0);
-        return;
-    }
-    chrominanceTexture = CVOpenGLESTextureGetName(chrominanceTextureRef);
-
+        if (err)
+        {
+            NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
+            assert(0);
+            return;
+        }
+        chrominanceTexture = CVOpenGLESTextureGetName(chrominanceTextureRef);
+        glBindTexture(GL_TEXTURE_2D, chrominanceTexture);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     CVPixelBufferRetain(imageBuffer);
-    
+
     runAsynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
         [GPUImageContext setActiveShaderProgram:filterProgram];
@@ -531,24 +532,20 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
         [outputFramebuffer activateFramebuffer];
         
-//        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  
         
         glActiveTexture(GL_TEXTURE4);
         glBindTexture(GL_TEXTURE_2D, luminanceTexture);
         glUniform1i(YTextureUniform, 4);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         
         glActiveTexture(GL_TEXTURE5);
         glBindTexture(GL_TEXTURE_2D, chrominanceTexture);
         glUniform1i(UTextureUniform, 5);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         
         glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion);
-        
+       
         
         static const GLfloat squareVertices[] = {
             -1.0f, -1.0f,
@@ -561,6 +558,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         
+
         
         for (id<GPUImageInput> currentTarget in targets)
         {

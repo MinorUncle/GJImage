@@ -410,9 +410,74 @@ void setColorConversion709( GLfloat conversionMatrix[9] )
     }
     
     _inputCamera = backFacingCamera;
+    [self setNewCameraFrame];
     [self setOutputImageOrientation:_outputImageOrientation];
 }
-
+- (void)setNewCameraFrame
+{
+    if (_frameRate > 0)
+    {
+        if ([_inputCamera respondsToSelector:@selector(setActiveVideoMinFrameDuration:)] &&
+            [_inputCamera respondsToSelector:@selector(setActiveVideoMaxFrameDuration:)]) {
+            
+            NSError *error;
+            [_inputCamera lockForConfiguration:&error];
+            if (error == nil) {
+#if defined(__IPHONE_7_0)
+                [_inputCamera setActiveVideoMinFrameDuration:CMTimeMake(1, _frameRate)];
+                [_inputCamera setActiveVideoMaxFrameDuration:CMTimeMake(1, _frameRate)];
+#endif
+            }
+            [_inputCamera unlockForConfiguration];
+            
+        } else {
+            
+            for (AVCaptureConnection *connection in videoOutput.connections)
+            {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                if ([connection respondsToSelector:@selector(setVideoMinFrameDuration:)])
+                    connection.videoMinFrameDuration = CMTimeMake(1, _frameRate);
+                
+                if ([connection respondsToSelector:@selector(setVideoMaxFrameDuration:)])
+                    connection.videoMaxFrameDuration = CMTimeMake(1, _frameRate);
+#pragma clang diagnostic pop
+            }
+        }
+        
+    }
+    else
+    {
+        if ([_inputCamera respondsToSelector:@selector(setActiveVideoMinFrameDuration:)] &&
+            [_inputCamera respondsToSelector:@selector(setActiveVideoMaxFrameDuration:)]) {
+            
+            NSError *error;
+            [_inputCamera lockForConfiguration:&error];
+            if (error == nil) {
+#if defined(__IPHONE_7_0)
+                [_inputCamera setActiveVideoMinFrameDuration:kCMTimeInvalid];
+                [_inputCamera setActiveVideoMaxFrameDuration:kCMTimeInvalid];
+#endif
+            }
+            [_inputCamera unlockForConfiguration];
+            
+        } else {
+            
+            for (AVCaptureConnection *connection in videoOutput.connections)
+            {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                if ([connection respondsToSelector:@selector(setVideoMinFrameDuration:)])
+                    connection.videoMinFrameDuration = kCMTimeInvalid; // This sets videoMinFrameDuration back to default
+                
+                if ([connection respondsToSelector:@selector(setVideoMaxFrameDuration:)])
+                    connection.videoMaxFrameDuration = kCMTimeInvalid; // This sets videoMaxFrameDuration back to default
+#pragma clang diagnostic pop
+            }
+        }
+        
+    }
+}
 - (AVCaptureDevicePosition)cameraPosition 
 {
     return [[videoInput device] position];
