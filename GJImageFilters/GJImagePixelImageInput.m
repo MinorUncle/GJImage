@@ -86,7 +86,6 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     BOOL isFullYUVRange;
     GLint fullVar;
     
-    UpdateData _updateBlock;
     GLint _sourceRgbFormat;
     
 }
@@ -115,52 +114,35 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     dispatch_semaphore_signal(imageCaptureSemaphore);
     
     NSString* vs;
-    __weak GJImagePixelImageInput* wkself = self;
     switch (_imageFormat) {
         case GJPixelImageFormat_YpCbCr8Planar_Full:{
             isFullYUVRange = YES;
             vs = kGJImageYpCbCr8PlanarFragmentShaderString;
-            _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
-                [wkself updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
-            };
             break;
         }
         case GJPixelImageFormat_YpCbCr8Planar:{
             isFullYUVRange = NO;
             vs = kGJImageYpCbCr8PlanarFragmentShaderString;
-            _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
-                [wkself updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
-            };
+            
             break;
         }
         case GJPixelImageFormat_YpCbCr8BiPlanar_Full:{
             isFullYUVRange = YES;
             vs = kGJImageYpCbCr8BiPlanarFragmentShaderString;
-            _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
-                [wkself updateDataWith420YpCbCr8BiPlanarImageBuffer:imageBuffer timestamp:time];
-            };
+            
             break;
         }
         case GJPixelImageFormat_YpCbCr8BiPlanar:{
             isFullYUVRange = NO;
             vs = kGJImageYpCbCr8BiPlanarFragmentShaderString;
-            _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
-                [wkself updateDataWith420YpCbCr8BiPlanarImageBuffer:imageBuffer timestamp:time];
-            };
             break;
         }
         case GJPixelImageFormat_32BGRA:{
             _sourceRgbFormat = GL_BGRA;
-            _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
-                [wkself updateDataWith32BGRAImageBuffer:imageBuffer timestamp:time];
-            };
             return YES;
         }
         case GJPixelImageFormat_32RGBA:{
             _sourceRgbFormat = GL_RGBA;
-            _updateBlock = ^(CVImageBufferRef imageBuffer,CMTime time){
-                [wkself updateDataWith32BGRAImageBuffer:imageBuffer timestamp:time];
-            };
             return YES;
         }
         default:
@@ -170,7 +152,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
             break;
     }
     
-    runSynchronouslyOnVideoProcessingQueue(^{
+    runAsynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
         filterProgram = [[GPUImageContext sharedImageProcessingContext] programForVertexShaderString:kGJImagePixelImageInputVertexShaderString fragmentShaderString:vs];
         
@@ -218,8 +200,30 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     
     // Override this, calling back to this super method, in order to add new attributes to your vertex shader
 }
--(void)updateDataWithImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)frameTime{
-    _updateBlock(imageBuffer,frameTime);
+-(void)updateDataWithImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)time{
+    switch (_imageFormat) {
+        case GJPixelImageFormat_YpCbCr8Planar_Full:
+            [self updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
+            break;
+        case GJPixelImageFormat_YpCbCr8Planar:
+            [self updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
+            break;
+        case GJPixelImageFormat_YpCbCr8BiPlanar_Full:
+            [self updateDataWith420YpCbCr8BiPlanarImageBuffer:imageBuffer timestamp:time];
+            break;
+        case GJPixelImageFormat_YpCbCr8BiPlanar:
+            [self updateDataWith420YpCbCr8BiPlanarImageBuffer:imageBuffer timestamp:time];
+            break;
+        case GJPixelImageFormat_32BGRA:
+            [self updateDataWith32BGRAImageBuffer:imageBuffer timestamp:time];
+            break;
+        case GJPixelImageFormat_32RGBA:
+            [self updateDataWith32BGRAImageBuffer:imageBuffer timestamp:time];
+            break;
+        default:
+            NSLog(@"格式不支持");
+            break;
+    }
 }
 -(void)updateDataWith32BGRAImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)frameTime{
     OSType type = CVPixelBufferGetPixelFormatType(imageBuffer);
@@ -232,19 +236,18 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
 #endif
     CVPixelBufferRetain(imageBuffer);
     runAsynchronouslyOnVideoProcessingQueue(^{
+        [GPUImageContext useImageProcessingContext];
         CGSize size = CVImageBufferGetEncodedSize(imageBuffer);
         CVOpenGLESTextureRef bgraTextureRef = NULL;
         GLuint bgraTexture;
-        
         glActiveTexture(GL_TEXTURE4);
-        
         CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RGBA, size.width, size.height, _sourceRgbFormat, GL_UNSIGNED_BYTE, 0, &bgraTextureRef);
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-        
         if (err)
         {
             NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
             assert(0);
+            CVPixelBufferRelease(imageBuffer);
             return;
         }
         
@@ -254,7 +257,6 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         
         outputFramebuffer = [[GJImageFramebuffer alloc]initWithSize:size overriddenGLTexture:bgraTextureRef];
-
         for (id<GPUImageInput> currentTarget in targets)
         {
             NSInteger indexOfObject = [targets indexOfObject:currentTarget];
@@ -282,12 +284,28 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     runAsynchronouslyOnVideoProcessingQueue(^{
 
     
-    CGSize size = CVImageBufferGetEncodedSize(imageBuffer);
-    
-    CFTypeRef colorAttachments = CVBufferGetAttachment(imageBuffer, kCVImageBufferYCbCrMatrixKey, NULL);
-    if (colorAttachments != NULL)
-    {
-        if(CFStringCompare(colorAttachments, kCVImageBufferYCbCrMatrix_ITU_R_601_4, 0) == kCFCompareEqualTo)
+        CGSize size = CVImageBufferGetEncodedSize(imageBuffer);
+        
+        CFTypeRef colorAttachments = CVBufferGetAttachment(imageBuffer, kCVImageBufferYCbCrMatrixKey, NULL);
+        if (colorAttachments != NULL)
+        {
+            if(CFStringCompare(colorAttachments, kCVImageBufferYCbCrMatrix_ITU_R_601_4, 0) == kCFCompareEqualTo)
+            {
+                if (isFullYUVRange)
+                {
+                    _preferredConversion = kColorConversion601FullRange;
+                }
+                else
+                {
+                    _preferredConversion = kColorConversion601;
+                }
+            }
+            else
+            {
+                _preferredConversion = kColorConversion709;
+            }
+        }
+        else
         {
             if (isFullYUVRange)
             {
@@ -298,84 +316,70 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
                 _preferredConversion = kColorConversion601;
             }
         }
-        else
-        {
-            _preferredConversion = kColorConversion709;
-        }
-    }
-    else
-    {
-        if (isFullYUVRange)
-        {
-            _preferredConversion = kColorConversion601FullRange;
-        }
-        else
-        {
-            _preferredConversion = kColorConversion601;
-        }
-    }
-    
-    
-    CVOpenGLESTextureRef YPTextureRef = NULL,CRTextureRef = NULL,CBTextureRef = NULL;
-    GLuint YPTexture, CRTexture,CBTexture;
-    
-    CVPixelBufferLockBaseAddress(imageBuffer, 0);
-    CVReturn err;
-    // Y-plane
-    glActiveTexture(GL_TEXTURE4);
-    //        if ([GPUImageContext deviceSupportsRedTextures])
-    //        {
-    //            err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RED_EXT, size.width, size.height, GL_RED_EXT, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
-    //        }
-    //        else
-    //        {
-    err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE, size.width, size.height, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0, &YPTextureRef);
-    //        }
-    if (err)
-    {
-        CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-        NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
-        assert(0);
-        return;
-    }
-    YPTexture = CVOpenGLESTextureGetName(YPTextureRef);
-    glBindTexture(GL_TEXTURE_2D, YPTexture);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    
-    err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE, size.width/4, size.height/4, GL_LUMINANCE, GL_UNSIGNED_BYTE, 1, &CBTextureRef);
-    //        }
-    if (err)
-    {
-        CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-        CFRelease(YPTextureRef);
-        NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
-        assert(0);
-        return;
-    }
-    
-    CBTexture = CVOpenGLESTextureGetName(CBTextureRef);
-    glBindTexture(GL_TEXTURE_2D, CBTexture);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    
-    err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE, size.width/4, size.height/4, GL_LUMINANCE, GL_UNSIGNED_BYTE, 2, &CRTextureRef);
-    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-    
-    if (err)
-    {
-        CFRelease(YPTextureRef);
-        CFRelease(CBTextureRef);
         
-        NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
-        assert(0);
-        return;
-    }
-    
-    CRTexture = CVOpenGLESTextureGetName(CRTextureRef);
-    glBindTexture(GL_TEXTURE_2D, CRTexture);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        
+        CVOpenGLESTextureRef YPTextureRef = NULL,CRTextureRef = NULL,CBTextureRef = NULL;
+        GLuint YPTexture, CRTexture,CBTexture;
+        
+        CVPixelBufferLockBaseAddress(imageBuffer, 0);
+        CVReturn err;
+        // Y-plane
+        glActiveTexture(GL_TEXTURE4);
+        //        if ([GPUImageContext deviceSupportsRedTextures])
+        //        {
+        //            err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RED_EXT, size.width, size.height, GL_RED_EXT, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
+        //        }
+        //        else
+        //        {
+        err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE, size.width, size.height, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0, &YPTextureRef);
+        //        }
+        if (err)
+        {
+            CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+            CVPixelBufferRelease(imageBuffer);
+            NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
+            assert(0);
+            return;
+        }
+        YPTexture = CVOpenGLESTextureGetName(YPTextureRef);
+        glBindTexture(GL_TEXTURE_2D, YPTexture);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        
+        err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE, size.width/4, size.height/4, GL_LUMINANCE, GL_UNSIGNED_BYTE, 1, &CBTextureRef);
+        //        }
+        if (err)
+        {
+            CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+            CFRelease(YPTextureRef);
+            CVPixelBufferRelease(imageBuffer);
+            NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
+            assert(0);
+            return;
+        }
+        
+        CBTexture = CVOpenGLESTextureGetName(CBTextureRef);
+        glBindTexture(GL_TEXTURE_2D, CBTexture);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        
+        err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE, size.width/4, size.height/4, GL_LUMINANCE, GL_UNSIGNED_BYTE, 2, &CRTextureRef);
+        CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+        
+        if (err)
+        {
+            CFRelease(YPTextureRef);
+            CFRelease(CBTextureRef);
+            CVPixelBufferRelease(imageBuffer);
+            NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
+            assert(0);
+            return;
+        }
+        
+        CRTexture = CVOpenGLESTextureGetName(CRTextureRef);
+        glBindTexture(GL_TEXTURE_2D, CRTexture);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
         [GPUImageContext useImageProcessingContext];
         [GPUImageContext setActiveShaderProgram:filterProgram];

@@ -25,6 +25,7 @@ void setColorConversion709( GLfloat conversionMatrix[9] );
 @interface GPUImageVideoCamera : GPUImageOutput <AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate>
 {
     NSUInteger numberOfFramesCaptured;
+    
     CGFloat totalFrameTimeDuringCapture;
     
     AVCaptureSession *_captureSession;
@@ -51,6 +52,9 @@ void setColorConversion709( GLfloat conversionMatrix[9] );
 
 /// This enables the capture session preset to be changed on the fly
 @property (readwrite, nonatomic, copy) NSString *captureSessionPreset;
+
+@property (readwrite, nonatomic, assign) CGFloat zoomFactor;
+@property (readwrite, nonatomic, assign) BOOL torchSupport;
 
 /// This sets the frame rate of the camera (iOS 5 and above only)
 /**
