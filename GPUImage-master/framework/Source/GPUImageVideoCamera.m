@@ -422,33 +422,41 @@ void setColorConversion709( GLfloat conversionMatrix[9] )
 	}
     newVideoInput = [[AVCaptureDeviceInput alloc] initWithDevice:backFacingCamera error:&error];
     
-    if (newVideoInput != nil)
+    if (newVideoInput == nil)
     {
-        [_captureSession beginConfiguration];
-        
-        [_captureSession removeInput:videoInput];
-        if ([_captureSession canAddInput:newVideoInput])
-        {
-            [_captureSession addInput:newVideoInput];
-            videoInput = newVideoInput;
-        }
-        else
-        {
-            [_captureSession addInput:videoInput];
-        }
-        //captureSession.sessionPreset = oriPreset;
-        _torchSupport = [backFacingCamera isTorchModeSupported:AVCaptureTorchModeOn];
-        [_captureSession commitConfiguration];
+        NSAssert(0, @"[AVCaptureDeviceInput alloc] error");
+        return;
     }
-    [backFacingCamera removeObserver:self forKeyPath:@"activeVideoMaxFrameDuration"];
-    [backFacingCamera removeObserver:self forKeyPath:@"activeVideoMinFrameDuration"];
+    [_captureSession beginConfiguration];
+    
+    [_captureSession removeInput:videoInput];
+    if ([_captureSession canAddInput:newVideoInput])
+    {
+        [_captureSession addInput:newVideoInput];
+        videoInput = newVideoInput;
+    }
+    else
+    {
+        [_captureSession addInput:videoInput];
+    }
+    //captureSession.sessionPreset = oriPreset;
+    _torchSupport = [backFacingCamera isTorchModeSupported:AVCaptureTorchModeOn];
+    [_inputCamera removeObserver:self forKeyPath:@"activeVideoMaxFrameDuration"];
+    [_inputCamera removeObserver:self forKeyPath:@"activeVideoMinFrameDuration"];
 
     _inputCamera = backFacingCamera;
+    [_inputCamera addObserver:self forKeyPath:@"activeVideoMinFrameDuration" options:NSKeyValueObservingOptionNew context:nil];
+    [_inputCamera addObserver:self forKeyPath:@"activeVideoMaxFrameDuration" options:NSKeyValueObservingOptionNew context:nil];
+    
     [self setNewCameraFrame];
     [self setOutputImageOrientation:_outputImageOrientation];
+    [self setHorizontallyMirrorRearFacingCamera:_horizontallyMirrorRearFacingCamera];
+    [self setHorizontallyMirrorFrontFacingCamera:_horizontallyMirrorFrontFacingCamera];
+    [_captureSession commitConfiguration];
+
 }
 
-- (AVCaptureDevicePosition)cameraPosition 
+- (AVCaptureDevicePosition)cameraPosition
 {
     return [[videoInput device] position];
 }
@@ -1255,14 +1263,14 @@ void setColorConversion709( GLfloat conversionMatrix[9] )
 
 - (void)setOutputImageOrientation:(UIInterfaceOrientation)newValue;
 {
-//    _outputImageOrientation = newValue;
+    _outputImageOrientation = newValue;
 //    [self updateOrientationSendToTargets];
     [self videoCaptureConnection].videoOrientation = (AVCaptureVideoOrientation)newValue;
 }
 
 - (void)setHorizontallyMirrorFrontFacingCamera:(BOOL)newValue
 {
-//    _horizontallyMirrorFrontFacingCamera = newValue;
+    _horizontallyMirrorFrontFacingCamera = newValue;
 //    [self updateOrientationSendToTargets];
     if (_inputCamera.position == AVCaptureDevicePositionFront) {
         [self videoCaptureConnection].videoMirrored = newValue;
@@ -1271,7 +1279,7 @@ void setColorConversion709( GLfloat conversionMatrix[9] )
 
 - (void)setHorizontallyMirrorRearFacingCamera:(BOOL)newValue
 {
-//    _horizontallyMirrorRearFacingCamera = newValue;
+    _horizontallyMirrorRearFacingCamera = newValue;
 //    [self updateOrientationSendToTargets];
     if (_inputCamera.position == AVCaptureDevicePositionBack) {
         [self videoCaptureConnection].videoMirrored = newValue;
