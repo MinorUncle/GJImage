@@ -24,7 +24,7 @@
 		04A081491E6E9A11000E2B64 /* GJImageYUVDataInput.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 046EDBCB1E6D1D5500D9D8FC /* GJImageYUVDataInput.h */; };
 		04A0815A1E6EAD22000E2B64 /* GJImageFramebuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */; };
 		6A0E87001E84EA7F002A2A2D /* GJImagePixelImageInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E86FF1E84EA7F002A2A2D /* GJImagePixelImageInput.m */; };
-		6A9699C71EA073490078E8BF /* GJImageStickerInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A9699C61EA073490078E8BF /* GJImageStickerInput.m */; };
+		6A3488761F4545C1008223AA /* GJImagePictureOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -263,6 +263,8 @@
 		6A1E2A671E821D18006D2DF8 /* GPUImageWhiteBalanceFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPUImageWhiteBalanceFilter.h; sourceTree = "<group>"; };
 		6A1E2A681E821D18006D2DF8 /* GPUImageXYDerivativeFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPUImageXYDerivativeFilter.h; sourceTree = "<group>"; };
 		6A1E2A691E821D18006D2DF8 /* GPUImageZoomBlurFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPUImageZoomBlurFilter.h; sourceTree = "<group>"; };
+		6A3488741F4545C1008223AA /* GJImagePictureOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImagePictureOverlay.h; sourceTree = "<group>"; };
+		6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImagePictureOverlay.m; sourceTree = "<group>"; };
 		6A9699C51EA073490078E8BF /* GJImageStickerInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageStickerInput.h; sourceTree = "<group>"; };
 		6A9699C61EA073490078E8BF /* GJImageStickerInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageStickerInput.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -353,6 +355,8 @@
 				6A0E86FF1E84EA7F002A2A2D /* GJImagePixelImageInput.m */,
 				046EDBCB1E6D1D5500D9D8FC /* GJImageYUVDataInput.h */,
 				046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */,
+				6A3488741F4545C1008223AA /* GJImagePictureOverlay.h */,
+				6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */,
 				6A9699C51EA073490078E8BF /* GJImageStickerInput.h */,
 				6A9699C61EA073490078E8BF /* GJImageStickerInput.m */,
 				04A081581E6EAD22000E2B64 /* GJImageFramebuffer.h */,
@@ -677,10 +681,10 @@
 			files = (
 				04A0815A1E6EAD22000E2B64 /* GJImageFramebuffer.m in Sources */,
 				0417FED01E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m in Sources */,
+				6A3488761F4545C1008223AA /* GJImagePictureOverlay.m in Sources */,
 				6A0E87001E84EA7F002A2A2D /* GJImagePixelImageInput.m in Sources */,
 				046EDBCD1E6D1D5500D9D8FC /* GJImageYUVDataInput.m in Sources */,
 				0417FEF61E5ED78A00D5B5D9 /* GJImageView.m in Sources */,
-				6A9699C71EA073490078E8BF /* GJImageStickerInput.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
