@@ -200,7 +200,7 @@
     //第一象限
     secondTexturePosition[6] = cosf(angle1)*length/inputTextureSize.width;
     secondTexturePosition[7] = sinf(angle1)*length/inputTextureSize.height;
-    printf("angle:%f x:%f length:%f ,x:%f,y:%f\n",angle1/M_PI * 180,secondTexturePosition[6],length,x,y);
+//    printf("angle:%f x:%f length:%f ,x:%f,y:%f\n",angle1/M_PI * 180,secondTexturePosition[6],length,x,y);
 
     //第三象限
     secondTexturePosition[0] = -secondTexturePosition[6];
