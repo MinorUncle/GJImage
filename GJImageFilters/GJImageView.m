@@ -17,7 +17,11 @@
     // Drawing code
 }
 */
-
+- (void)newFrameReadyAtTime:(CMTime)frameTime atIndex:(NSInteger)textureIndex{
+    if (!_disable) {
+        [super newFrameReadyAtTime:frameTime atIndex:textureIndex];
+    }
+}
 -(void)setContentMode:(UIViewContentMode)contentMode{
     [super setContentMode:contentMode];
     switch (contentMode) {

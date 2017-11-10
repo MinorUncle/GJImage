@@ -10,8 +10,11 @@
 @interface GJOverlayAttribute : NSObject
 @property(assign,nonatomic)CGRect frame;
 @property(assign,nonatomic)CGFloat rotate;
+//注意image更新后，每次循环都是更新后的图片
+@property(retain,nonatomic)UIImage* image;
 
-+(instancetype)overlayAttributeWithFrame:(CGRect)frame rotate:(CGFloat)rotate;
+
++(instancetype)overlayAttributeWithImage:(UIImage*)image frame:(CGRect)frame rotate:(CGFloat)rotate;
 @end
 
 

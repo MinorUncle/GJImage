@@ -19,10 +19,68 @@ void setColorConversion709( GLfloat conversionMatrix[9] );
 @end
 
 
+@protocol GJCameraProtocal <NSObject>
+@required
+/// Whether or not the underlying AVCaptureSession is running
+@property(readonly, nonatomic) BOOL isRunning;
+@property (nonatomic,assign) CGFloat zoomFactor;
+
+/// The AVCaptureSession used to capture from the camera
+@property(readonly, retain, nonatomic) AVCaptureSession *captureSession;
+
+/// This enables the capture session preset to be changed on the fly
+@property (readwrite, nonatomic, copy) NSString *captureSessionPreset;
+
+/// This sets the frame rate of the camera (iOS 5 and above only)
+/**
+ Setting this to 0 or below will set the frame rate back to the default setting for a particular preset.
+ */
+@property (readwrite) int32_t frameRate;
+
+@property (nonatomic,assign) CGPoint focusPoint;
+
+@property(readwrite, nonatomic) UIInterfaceOrientation outputImageOrientation;
+
+/// Easy way to tell which cameras are present on device
+@property (readonly, getter = isFrontFacingCameraPresent) BOOL frontFacingCameraPresent;
+@property (readonly, getter = isBackFacingCameraPresent) BOOL backFacingCameraPresent;
+
+
+/// These properties determine whether or not the two camera orientations should be mirrored. By default, both are NO.
+@property(readwrite, nonatomic) BOOL horizontallyMirrorFrontFacingCamera, horizontallyMirrorRearFacingCamera;
+
+@property(nonatomic, weak) id<GPUImageVideoCameraDelegate> delegate;
+
+@property (nonatomic,getter = getTorchOn,setter= setTorchOn:) BOOL torchOn;
+
+@property (nonatomic,readonly) BOOL torchSupport;
+/// @name Manage the camera video stream
+
+/** Start camera capturing
+ */
+- (void)startCameraCapture;
+
+/** Stop camera capturing
+ */
+- (void)stopCameraCapture;
+
+/** Pause camera capturing
+ */
+- (void)pauseCameraCapture;
+
+/** Resume camera capturing
+ */
+- (void)resumeCameraCapture;
+
+- (AVCaptureDevicePosition)cameraPosition;
+
+- (void)rotateCamera;
+
+@end
 /**
  A GPUImageOutput that provides frames from either camera
 */
-@interface GPUImageVideoCamera : GPUImageOutput <AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate>
+@interface GPUImageVideoCamera : GPUImageOutput <GJCameraProtocal,AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate>
 {
     NSUInteger numberOfFramesCaptured;
     

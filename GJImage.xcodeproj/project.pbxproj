@@ -25,6 +25,9 @@
 		04A0815A1E6EAD22000E2B64 /* GJImageFramebuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */; };
 		6A0E87001E84EA7F002A2A2D /* GJImagePixelImageInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E86FF1E84EA7F002A2A2D /* GJImagePixelImageInput.m */; };
 		6A3488761F4545C1008223AA /* GJImagePictureOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */; };
+		6AF9DD841FA96A6C00F6B4F7 /* GJImageARCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */; };
+		6AF9DD8B1FA96DDE00F6B4F7 /* SCNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9DD8A1FA96DDE00F6B4F7 /* SCNViewController.m */; };
+		6AF9DD8C1FA96FF000F6B4F7 /* GJImageARCapture.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +61,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				6AF9DD8C1FA96FF000F6B4F7 /* GJImageARCapture.h in CopyFiles */,
 				04A081491E6E9A11000E2B64 /* GJImageYUVDataInput.h in CopyFiles */,
 				041701CE1E5EE2CC00D5B5D9 /* GJImageBeautifyFilter.h in CopyFiles */,
 				041701CF1E5EE2CC00D5B5D9 /* GJImageView.h in CopyFiles */,
@@ -95,6 +99,12 @@
 		6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImagePictureOverlay.m; sourceTree = "<group>"; };
 		6A9699C51EA073490078E8BF /* GJImageStickerInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageStickerInput.h; sourceTree = "<group>"; };
 		6A9699C61EA073490078E8BF /* GJImageStickerInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageStickerInput.m; sourceTree = "<group>"; };
+		6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageARCapture.h; sourceTree = "<group>"; };
+		6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageARCapture.m; sourceTree = "<group>"; };
+		6AF9DD851FA96B3D00F6B4F7 /* GJLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJLog.h; sourceTree = "<group>"; };
+		6AF9DD871FA96C6600F6B4F7 /* GJPlatformHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GJPlatformHeader.h; sourceTree = "<group>"; };
+		6AF9DD891FA96DDE00F6B4F7 /* SCNViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCNViewController.h; sourceTree = "<group>"; };
+		6AF9DD8A1FA96DDE00F6B4F7 /* SCNViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCNViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +183,11 @@
 		0417FCBE1E5EC74E00D5B5D9 /* GJImageFilters */ = {
 			isa = PBXGroup;
 			children = (
+				6AF9DD881FA96DDE00F6B4F7 /* ARScene */,
+				6AF9DD851FA96B3D00F6B4F7 /* GJLog.h */,
+				6AF9DD871FA96C6600F6B4F7 /* GJPlatformHeader.h */,
+				6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */,
+				6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */,
 				0417FCBF1E5EC74E00D5B5D9 /* GJImageFilters.h */,
 				0417FECE1E5ECAD000D5B5D9 /* GJImageBeautifyFilter.h */,
 				0417FECF1E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m */,
@@ -190,6 +205,15 @@
 				04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */,
 			);
 			path = GJImageFilters;
+			sourceTree = "<group>";
+		};
+		6AF9DD881FA96DDE00F6B4F7 /* ARScene */ = {
+			isa = PBXGroup;
+			children = (
+				6AF9DD891FA96DDE00F6B4F7 /* SCNViewController.h */,
+				6AF9DD8A1FA96DDE00F6B4F7 /* SCNViewController.m */,
+			);
+			path = ARScene;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -328,7 +352,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				04A0815A1E6EAD22000E2B64 /* GJImageFramebuffer.m in Sources */,
+				6AF9DD8B1FA96DDE00F6B4F7 /* SCNViewController.m in Sources */,
 				0417FED01E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m in Sources */,
+				6AF9DD841FA96A6C00F6B4F7 /* GJImageARCapture.m in Sources */,
 				6A3488761F4545C1008223AA /* GJImagePictureOverlay.m in Sources */,
 				6A0E87001E84EA7F002A2A2D /* GJImagePixelImageInput.m in Sources */,
 				046EDBCD1E6D1D5500D9D8FC /* GJImageYUVDataInput.m in Sources */,
@@ -452,6 +478,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = K7MDP8Y272;
 				INFOPLIST_FILE = GJImage/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;

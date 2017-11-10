@@ -1286,4 +1286,6 @@ void setColorConversion709( GLfloat conversionMatrix[9] )
     }
 }
 
+@synthesize focusPoint;
+
 @end

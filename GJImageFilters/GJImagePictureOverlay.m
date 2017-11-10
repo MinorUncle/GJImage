@@ -9,10 +9,11 @@
 #import "GJImagePictureOverlay.h"
 @implementation GJOverlayAttribute
 
-+(instancetype)overlayAttributeWithFrame:(CGRect)frame rotate:(CGFloat)rotate{
++(instancetype)overlayAttributeWithImage:(UIImage*)image frame:(CGRect)frame rotate:(CGFloat)rotate{
     GJOverlayAttribute* attribute = [[GJOverlayAttribute alloc]init];
     attribute.frame = frame;
     attribute.rotate = rotate;
+    attribute.image = image;
     return attribute;
 }
 @end
@@ -20,7 +21,7 @@
     CGRect _frame;
     CGRect _currentFrame;
     CGFloat _currentRotate;
-    NSArray<UIImage*>* _images;
+    NSMutableArray<UIImage*>* _images;
     NSInteger _frameCount;//已经更新贴图的个数
     NSInteger _fps;
     NSDate* _startDate;
@@ -43,8 +44,8 @@
     _nextDate = [NSDate dateWithTimeInterval:0.01 sinceDate:_startDate];
 
     _frameCache = [NSMutableDictionary dictionaryWithCapacity:images.count];
-    _frameCount = -1;
-    _images = images;
+    _frameCount = 0;
+    _images = [NSMutableArray arrayWithArray:images];
     _fps = fps;
     _updateBlock = update;
     [self adaptWithFrame:_currentFrame rotate:_currentRotate];
@@ -56,7 +57,7 @@
         _nextDate = nil;
         _updateBlock = nil;
         [_frameCache removeAllObjects];
-        _frameCount = -1;
+        _frameCount = 0;
     });
 }
 
@@ -74,22 +75,27 @@
     GJOverlayAttribute* attribute = nil;
     NSDate * current = [NSDate date];
     BOOL finsh;
+    NSInteger currentIndex = _frameCount%_images.count;
     if ([current timeIntervalSinceDate:_nextDate] > 0) {
         if (_frameCount%_images.count == _images.count -1) {
             finsh = YES;
         }else{
             finsh = NO;
         }
-        
-        _frameCount ++;
         if (_updateBlock) {
-            attribute = _updateBlock(_frameCount%_images.count,&finsh);
+            
+            attribute = _updateBlock(currentIndex,&finsh);
+            if (attribute.image) {
+                _images[currentIndex] = attribute.image;
+                _frameCache[@(currentIndex)] = nil;
+            }
         }
         
         if (finsh) {
             outputFramebuffer = firstInputFramebuffer;
             _updateBlock = nil;
             _nextDate = nil;
+            _frameCount = 0;
             return;
         }
         if (_fps <= 0) {
@@ -113,7 +119,6 @@
             [self adaptWithFrame:_currentFrame rotate:_currentRotate];
         }
     }
-    NSInteger currentIndex = _frameCount%_images.count;
     GPUImageFramebuffer* frame = _frameCache[@(currentIndex)];
     if (frame == nil) {
         frame = [self updateImage:_images[currentIndex]];
@@ -174,9 +179,7 @@
 //    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     
     [firstInputFramebuffer unlock];
-    
-    
-    
+    _frameCount ++;
     
     if (usingNextFrameForImageCapture)
     {
@@ -250,6 +253,7 @@
 
 -(GPUImageFramebuffer*)updateImage:(UIImage*)image{
     CGImageRef newImageSource = [image CGImage];
+    NSAssert(newImageSource != nil, @"newImageSource 不能为空");
     // TODO: Dispatch this whole thing asynchronously to move image loading off main thread
     CGFloat widthOfImage = CGImageGetWidth(newImageSource);
     CGFloat heightOfImage = CGImageGetHeight(newImageSource);

@@ -22,6 +22,9 @@
     GLfloat backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha;
 
     CGSize boundsSizeAtFrameBufferEpoch;
+    CAEAGLLayer* renderLayer;
+    
+    CGRect renderBounds;
 }
 
 @property (assign, nonatomic) NSUInteger aspectRatio;
@@ -59,7 +62,7 @@
     {
 		return nil;
     }
-    
+    renderLayer = (CAEAGLLayer*)self.layer;
     [self commonInit];
     
     return self;
@@ -71,12 +74,19 @@
     {
         return nil;
 	}
-
+    renderBounds = self.bounds;
     [self commonInit];
 
 	return self;
 }
-
+-(void)setBounds:(CGRect)bounds{
+    [super setBounds:bounds];
+    renderBounds = self.bounds;
+}
+-(void)setFrame:(CGRect)frame{
+    [super setFrame:frame];
+    renderBounds = self.bounds;
+}
 - (void)commonInit;
 {
     // Set scaling to account for Retina display	
@@ -165,7 +175,7 @@
     glGenRenderbuffers(1, &displayRenderbuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, displayRenderbuffer);
 	
-    [[[GPUImageContext sharedImageProcessingContext] context] renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer*)self.layer];
+    [[[GPUImageContext sharedImageProcessingContext] context] renderbufferStorage:GL_RENDERBUFFER fromDrawable:renderLayer];
 	
     GLint backingWidth, backingHeight;
 
@@ -187,7 +197,7 @@
 	
     __unused GLuint framebufferCreationStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     NSAssert(framebufferCreationStatus == GL_FRAMEBUFFER_COMPLETE, @"Failure with display framebuffer generation for display of size: %f, %f", self.bounds.size.width, self.bounds.size.height);
-    boundsSizeAtFrameBufferEpoch = self.bounds.size;
+    boundsSizeAtFrameBufferEpoch = renderBounds.size;
 
     [self recalculateViewGeometry];
 }
@@ -235,12 +245,12 @@
     runSynchronouslyOnVideoProcessingQueue(^{
         CGFloat heightScaling, widthScaling;
         
-        CGSize currentViewSize = self.bounds.size;
+        CGSize currentViewSize = renderBounds.size;
         
         //    CGFloat imageAspectRatio = inputImageSize.width / inputImageSize.height;
         //    CGFloat viewAspectRatio = currentViewSize.width / currentViewSize.height;
         
-        CGRect insetRect = AVMakeRectWithAspectRatioInsideRect(inputImageSize, self.bounds);
+        CGRect insetRect = AVMakeRectWithAspectRatioInsideRect(inputImageSize,renderBounds);
         
         switch(_fillMode)
         {
