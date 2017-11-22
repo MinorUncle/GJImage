@@ -15,4 +15,5 @@
 #import "GJImageYUVDataInput.h"
 #import "GJImagePixelImageInput.h"
 #import "GJImageARCapture.h"
+#import "GJImageTrackImage.h"
 #endif

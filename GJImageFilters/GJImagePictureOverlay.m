@@ -22,18 +22,19 @@
     CGRect _currentFrame;
     CGFloat _currentRotate;
     NSMutableArray<UIImage*>* _images;
+    NSMutableArray<GJOverlayAttribute*>* _attr;
     NSInteger _frameCount;//已经更新贴图的个数
     NSInteger _fps;
     NSDate* _startDate;
     NSDate* _nextDate;
     OverlaysUpdate _updateBlock;
     NSMutableDictionary<NSNumber*,GPUImageFramebuffer*>* _frameCache;
-    
     float secondTexturePosition[8];
 }
 
 @end
 @implementation GJImagePictureOverlay
+//frame的origin是中点
 -(BOOL)startOverlaysWithImages:(NSArray<UIImage*>*)images frame:(CGRect)frame fps:(NSInteger)fps updateBlock:(OverlaysUpdate)update{
     if (images.count <= 0) {
         return NO;
@@ -44,6 +45,10 @@
     _nextDate = [NSDate dateWithTimeInterval:0.01 sinceDate:_startDate];
 
     _frameCache = [NSMutableDictionary dictionaryWithCapacity:images.count];
+    _attr = [NSMutableArray arrayWithCapacity:images.count];
+    for (int i = 0; i<images.count; i++) {
+       _attr[i] = [GJOverlayAttribute overlayAttributeWithImage:images[i] frame:frame rotate:0];
+    }
     _frameCount = 0;
     _images = [NSMutableArray arrayWithArray:images];
     _fps = fps;
@@ -53,11 +58,13 @@
 }
 -(void)stop{
     
-    runSynchronouslyOnVideoProcessingQueue(^{
+    runAsynchronouslyOnVideoProcessingQueue(^{
         _nextDate = nil;
         _updateBlock = nil;
         [_frameCache removeAllObjects];
+        [_attr removeAllObjects];
         _frameCount = 0;
+        [_images removeAllObjects];
     });
 }
 
@@ -72,20 +79,19 @@
         outputFramebuffer = firstInputFramebuffer;
         return;
     }
-    GJOverlayAttribute* attribute = nil;
     NSDate * current = [NSDate date];
     BOOL finsh;
     NSInteger currentIndex = _frameCount%_images.count;
-    if ([current timeIntervalSinceDate:_nextDate] > 0) {
+    GJOverlayAttribute* attribute = _attr[currentIndex];
+    if (_fps <= 0 || [current timeIntervalSinceDate:_nextDate] > 0) {
         if (_frameCount%_images.count == _images.count -1) {
             finsh = YES;
         }else{
             finsh = NO;
         }
         if (_updateBlock) {
-            
-            attribute = _updateBlock(currentIndex,&finsh);
-            if (attribute.image) {
+            _updateBlock(currentIndex,attribute,&finsh);
+            if (attribute.image != _images[currentIndex]) {//如果图片更改了，则更新图片
                 _images[currentIndex] = attribute.image;
                 _frameCache[@(currentIndex)] = nil;
             }
@@ -96,6 +102,7 @@
             _updateBlock = nil;
             _nextDate = nil;
             _frameCount = 0;
+            [self stop];
             return;
         }
         if (_fps <= 0) {
@@ -104,15 +111,9 @@
             _nextDate = [NSDate dateWithTimeInterval:(_frameCount+1)*1.0/_fps sinceDate:_startDate];
         }
         
-        CGRect destFrame;
-        CGFloat rotate;
-        if(attribute){
-            destFrame = attribute.frame;
-            rotate = attribute.rotate;
-        }else{
-            destFrame = _frame;
-            rotate = _currentRotate;
-        }
+        CGRect destFrame = attribute.frame;
+        CGFloat rotate =  attribute.rotate;
+
         if (!CGRectEqualToRect(destFrame, _currentFrame) || rotate - _currentRotate > 0.001 || _currentRotate - rotate > 0.001) {
             _currentFrame = destFrame;
             _currentRotate = rotate;
@@ -412,4 +413,9 @@
 
 }
 
+-(void)dealloc{
+    if (_nextDate ) {
+        [self stop];
+    }
+}
 @end

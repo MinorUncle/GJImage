@@ -17,7 +17,7 @@
 		0417FC711E5EB0E200D5B5D9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0417FC6F1E5EB0E200D5B5D9 /* LaunchScreen.storyboard */; };
 		0417FCB81E5EC72400D5B5D9 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0417FCB51E5EC70600D5B5D9 /* GPUImage.framework */; };
 		0417FCC21E5EC74E00D5B5D9 /* GJImageFilters.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0417FCBF1E5EC74E00D5B5D9 /* GJImageFilters.h */; };
-		0417FECD1E5EC92A00D5B5D9 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0417FCB31E5EC70600D5B5D9 /* libGPUImage.a */; };
+		0417FECD1E5EC92A00D5B5D9 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0417FCB31E5EC70600D5B5D9 /* libGPUImage.a */; settings = {ATTRIBUTES = (Required, ); }; };
 		0417FED01E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0417FECF1E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m */; };
 		0417FEF61E5ED78A00D5B5D9 /* GJImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0417FEF51E5ED78900D5B5D9 /* GJImageView.m */; };
 		046EDBCD1E6D1D5500D9D8FC /* GJImageYUVDataInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */; };
@@ -25,6 +25,8 @@
 		04A0815A1E6EAD22000E2B64 /* GJImageFramebuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */; };
 		6A0E87001E84EA7F002A2A2D /* GJImagePixelImageInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E86FF1E84EA7F002A2A2D /* GJImagePixelImageInput.m */; };
 		6A3488761F4545C1008223AA /* GJImagePictureOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */; };
+		6AA649041FC2CAB500AA3CAC /* GJImageTrackImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AA649031FC2CAB500AA3CAC /* GJImageTrackImage.m */; };
+		6AA6490B1FC2CDE000AA3CAC /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AA6490A1FC2CDDA00AA3CAC /* CoreMotion.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		6AF9DD841FA96A6C00F6B4F7 /* GJImageARCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */; };
 		6AF9DD8B1FA96DDE00F6B4F7 /* SCNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9DD8A1FA96DDE00F6B4F7 /* SCNViewController.m */; };
 		6AF9DD8C1FA96FF000F6B4F7 /* GJImageARCapture.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */; };
@@ -99,6 +101,9 @@
 		6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImagePictureOverlay.m; sourceTree = "<group>"; };
 		6A9699C51EA073490078E8BF /* GJImageStickerInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageStickerInput.h; sourceTree = "<group>"; };
 		6A9699C61EA073490078E8BF /* GJImageStickerInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageStickerInput.m; sourceTree = "<group>"; };
+		6AA649021FC2CAB500AA3CAC /* GJImageTrackImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GJImageTrackImage.h; sourceTree = "<group>"; };
+		6AA649031FC2CAB500AA3CAC /* GJImageTrackImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GJImageTrackImage.m; sourceTree = "<group>"; };
+		6AA6490A1FC2CDDA00AA3CAC /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageARCapture.h; sourceTree = "<group>"; };
 		6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageARCapture.m; sourceTree = "<group>"; };
 		6AF9DD851FA96B3D00F6B4F7 /* GJLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJLog.h; sourceTree = "<group>"; };
@@ -120,6 +125,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6AA6490B1FC2CDE000AA3CAC /* CoreMotion.framework in Frameworks */,
 				0417FECD1E5EC92A00D5B5D9 /* libGPUImage.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -134,6 +140,7 @@
 				0417FC601E5EB0E100D5B5D9 /* GJImage */,
 				0417FCBE1E5EC74E00D5B5D9 /* GJImageFilters */,
 				0417FC5F1E5EB0E100D5B5D9 /* Products */,
+				6AA649091FC2CDDA00AA3CAC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -197,6 +204,8 @@
 				6A0E86FF1E84EA7F002A2A2D /* GJImagePixelImageInput.m */,
 				046EDBCB1E6D1D5500D9D8FC /* GJImageYUVDataInput.h */,
 				046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */,
+				6AA649021FC2CAB500AA3CAC /* GJImageTrackImage.h */,
+				6AA649031FC2CAB500AA3CAC /* GJImageTrackImage.m */,
 				6A3488741F4545C1008223AA /* GJImagePictureOverlay.h */,
 				6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */,
 				6A9699C51EA073490078E8BF /* GJImageStickerInput.h */,
@@ -205,6 +214,14 @@
 				04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */,
 			);
 			path = GJImageFilters;
+			sourceTree = "<group>";
+		};
+		6AA649091FC2CDDA00AA3CAC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6AA6490A1FC2CDDA00AA3CAC /* CoreMotion.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		6AF9DD881FA96DDE00F6B4F7 /* ARScene */ = {
@@ -358,6 +375,7 @@
 				6A3488761F4545C1008223AA /* GJImagePictureOverlay.m in Sources */,
 				6A0E87001E84EA7F002A2A2D /* GJImagePixelImageInput.m in Sources */,
 				046EDBCD1E6D1D5500D9D8FC /* GJImageYUVDataInput.m in Sources */,
+				6AA649041FC2CAB500AA3CAC /* GJImageTrackImage.m in Sources */,
 				0417FEF61E5ED78A00D5B5D9 /* GJImageView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
