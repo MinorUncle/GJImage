@@ -21,8 +21,7 @@
     CGRect _frame;
     CGRect _currentFrame;
     CGFloat _currentRotate;
-    NSMutableArray<UIImage*>* _images;
-    NSMutableArray<GJOverlayAttribute*>* _attr;
+    NSArray<GJOverlayAttribute*>* _overlays;
     NSInteger _frameCount;//已经更新贴图的个数
     NSInteger _fps;
     NSDate* _startDate;
@@ -35,22 +34,18 @@
 @end
 @implementation GJImagePictureOverlay
 //frame的origin是中点
--(BOOL)startOverlaysWithImages:(NSArray<UIImage*>*)images frame:(CGRect)frame fps:(NSInteger)fps updateBlock:(OverlaysUpdate)update{
-    if (images.count <= 0) {
+-(BOOL)startOverlaysWithImages:(NSArray<GJOverlayAttribute*>*)overlays fps:(NSInteger)fps updateBlock:(OverlaysUpdate)update{
+    if (overlays.count <= 0) {
         return NO;
     }
-    _currentFrame = _frame = frame;
-    _currentRotate = 0;
+    _overlays = overlays;
+    _currentFrame = _frame = overlays.firstObject.frame;
+    _currentRotate = overlays.firstObject.rotate;
     _startDate = [NSDate date];
     _nextDate = [NSDate dateWithTimeInterval:0.01 sinceDate:_startDate];
 
-    _frameCache = [NSMutableDictionary dictionaryWithCapacity:images.count];
-    _attr = [NSMutableArray arrayWithCapacity:images.count];
-    for (int i = 0; i<images.count; i++) {
-       _attr[i] = [GJOverlayAttribute overlayAttributeWithImage:images[i] frame:frame rotate:0];
-    }
+    _frameCache = [NSMutableDictionary dictionaryWithCapacity:overlays.count];
     _frameCount = 0;
-    _images = [NSMutableArray arrayWithArray:images];
     _fps = fps;
     _updateBlock = update;
     [self adaptWithFrame:_currentFrame rotate:_currentRotate];
@@ -62,9 +57,7 @@
         _nextDate = nil;
         _updateBlock = nil;
         [_frameCache removeAllObjects];
-        [_attr removeAllObjects];
         _frameCount = 0;
-        [_images removeAllObjects];
     });
 }
 
@@ -81,18 +74,18 @@
     }
     NSDate * current = [NSDate date];
     BOOL finsh;
-    NSInteger currentIndex = _frameCount%_images.count;
-    GJOverlayAttribute* attribute = _attr[currentIndex];
+    NSInteger currentIndex = _frameCount%_overlays.count;
+    GJOverlayAttribute* attribute = _overlays[currentIndex];
     if (_fps <= 0 || [current timeIntervalSinceDate:_nextDate] > 0) {
-        if (_frameCount%_images.count == _images.count -1) {
+        if (_frameCount%_overlays.count == _overlays.count -1) {
             finsh = YES;
         }else{
             finsh = NO;
         }
         if (_updateBlock) {
+            UIImage* beforeImage = attribute.image;
             _updateBlock(currentIndex,attribute,&finsh);
-            if (attribute.image != _images[currentIndex]) {//如果图片更改了，则更新图片
-                _images[currentIndex] = attribute.image;
+            if (attribute.image != beforeImage) {//如果图片更改了，则更新图片
                 _frameCache[@(currentIndex)] = nil;
             }
         }
@@ -122,7 +115,7 @@
     }
     GPUImageFramebuffer* frame = _frameCache[@(currentIndex)];
     if (frame == nil) {
-        frame = [self updateImage:_images[currentIndex]];
+        frame = [self updateImage:_overlays[currentIndex].image];
         _frameCache[@(currentIndex)] = frame;
     }
 
@@ -161,7 +154,6 @@
     glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, secondTexturePosition);
     glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
     
 //    glEnableVertexAttribArray(filterPositionAttribute);
 //    glEnableVertexAttribArray(filterTextureCoordinateAttribute);
@@ -178,7 +170,7 @@
 //    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
 //    
 //    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    
+    glFlush();
     [firstInputFramebuffer unlock];
     _frameCount ++;
     
