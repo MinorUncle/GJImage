@@ -7,7 +7,11 @@
 //
 
 #import "GJImageView.h"
-
+@interface GJImageView()
+{
+    GPUImageFramebuffer* freshFramebuffer;
+}
+@end
 @implementation GJImageView
 
 /*
@@ -37,6 +41,32 @@
         default:
             [self setFillMode:kGPUImageFillModePreserveAspectRatioAndFill];
             break;
+    }
+}
+
+-(void)setInputFramebuffer:(GPUImageFramebuffer *)newInputFramebuffer atIndex:(NSInteger)textureIndex{
+    [super setInputFramebuffer:freshFramebuffer atIndex:textureIndex];
+    if (freshFramebuffer) {
+        [freshFramebuffer unlock];
+    }
+    freshFramebuffer = newInputFramebuffer;
+    [freshFramebuffer lock];
+}
+-(UIImage*)captureFreshImage{
+    __block UIImage* image;
+    runSynchronouslyOnVideoProcessingQueue(^{
+        CGImageRef gimage = [freshFramebuffer newCGImageFromFramebufferContents];
+        image = [UIImage imageWithCGImage:gimage];
+    });
+    return image;
+}
+
+-(void)dealloc{
+    if (freshFramebuffer) {
+        GPUImageFramebuffer* tempBuffer = freshFramebuffer;
+        runAsynchronouslyOnVideoProcessingQueue(^{
+                [tempBuffer unlock];
+        });
     }
 }
 //- (void)newFrameReadyAtTime:(CMTime)frameTime atIndex:(NSInteger)textureIndex;
