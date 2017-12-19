@@ -9,12 +9,66 @@
 #import "GJImageARCapture.h"
 #import <ARKit/ARKit.h>
 #import "GJLog.h"
+#import <objc/runtime.h>
+#import "GPUImageRawDataInput.h"
+static const void *kMetalLayerBufferKey = &kMetalLayerBufferKey;
+@interface CAMetalLayer(Swizzling)
+@property (nonatomic, retain)NSNumber* freshImageBuffer;
+@end
+@implementation CAMetalLayer(Swizzling)
+
+
+
+-(NSNumber *)freshImageBuffer{
+    NSNumber* obj = objc_getAssociatedObject(self, kMetalLayerBufferKey);
+    return obj;
+}
+-(void)setFreshImageBuffer:(NSNumber *)freshImageBuffer{
+    objc_setAssociatedObject(self, kMetalLayerBufferKey, freshImageBuffer, OBJC_ASSOCIATION_ASSIGN);
+}
+- (nullable id <CAMetalDrawable>)nextDrawable_swizzling{
+    id <CAMetalDrawable> drawable = [self nextDrawable_swizzling];
+
+    NSUInteger w = drawable.texture.width;
+    NSUInteger h = drawable.texture.height;
+    if (self.freshImageBuffer == NULL) {
+        void* buffer = malloc(w*h*4);
+        self.freshImageBuffer = @((long)buffer);
+    }
+//    if (@available(iOS 11.0, *)) {
+//        @synchronized (self) {
+//            IOSurfaceRef surface = drawable.texture.iosurface;
+//            uint8_t* baseAddr = IOSurfaceGetBaseAddress(surface);
+//            size_t row = IOSurfaceGetBytesPerRowOfPlane(surface, 0);
+//
+//            for (int i = 0; i<h; i++) {
+//                memcpy(metalLayerBuffer+i*w, baseAddr+i*row, w);
+//            }
+////            NSLog(@"texteure:%@ plan count:%lu",drawable.texture,(unsigned long)drawable.texture.iosurfacePlane);
+//        }
+//    } else {
+//        // Fallback on earlier versions
+//    }
+    void* buffer = (void*)[self.freshImageBuffer longValue];
+    [drawable.texture getBytes:buffer bytesPerRow:w*4 fromRegion:MTLRegionMake2D(0, 0, w, h) mipmapLevel:0];
+    return drawable;
+}
+
+-(void)dealloc{
+    void* buffer = (void*)[self.freshImageBuffer longValue];
+    if (buffer) {
+        free(buffer);
+    }
+}
+@end
 @interface GJImageARCapture()
 {
+    
 }
 @property (nonatomic, readwrite,assign) CGSize captureSize;
 
 @property(nonatomic,assign)NSInteger captureCount;
+@property(nonatomic,retain)GPUImageRawDataInput* input;
 
 @end
 @implementation GJImageARCapture
@@ -22,30 +76,58 @@
 {
     self = [super init];
     if (self) {
-        _frameRate = 15;
+        
+        _frameRate = 60;
         self.scene = scene;
+        
         _captureSize = size;
         self.scene.scene.frame = CGRectMake(0,0,size.width/[UIScreen mainScreen].scale, size.height/[UIScreen mainScreen].scale);
+        ((CAMetalLayer*)self.scene.scene.layer).framebufferOnly = NO;
+        GLubyte* byte = malloc(size.width*size.height*4);
+        _input = [[GPUImageRawDataInput alloc]initWithBytes:byte size:_captureSize pixelFormat:GPUPixelFormatBGRA type:GPUPixelTypeUByte];
+        free(byte);
     }
     return self;
 }
 -(void)setScene:(id<GJImageARScene>)scene{
+    
+    if ([scene.scene.layer isKindOfClass:[CAMetalLayer class]]) {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            SEL originalSelector = @selector(nextDrawable);
+            SEL swizzlingSelector = @selector(nextDrawable_swizzling);
+            Method originalMethod = class_getInstanceMethod([CAMetalLayer class], originalSelector);
+            Method swizzlingMethod = class_getInstanceMethod([CAMetalLayer class], swizzlingSelector);
+            method_exchangeImplementations(originalMethod, swizzlingMethod);
+            
+        });
+    }
+    
     if (_scene) {
         [_scene stopRun];
         _scene.updateBlock = nil;
     }
     _scene = scene;
     __weak GJImageARCapture* wkSelf = self;
+    __weak CAMetalLayer* layer = (CAMetalLayer*)wkSelf.scene.scene.layer;
     _scene.updateBlock = ^(){
         if (wkSelf.captureCount % (wkSelf.scene.updateFps / wkSelf.frameRate) == 0) {
+//            [wkSelf.scene.scene setNeedsLayout];
+//            [wkSelf.scene.scene setNeedsDisplay];
             [wkSelf.scene.scene layoutIfNeeded];
-            UIImage* image = [wkSelf.scene.scene snapshot];
-            [wkSelf updateImage:image];
-            [wkSelf updateTargetsTime:kCMTimeZero];
+            [wkSelf.input updateDataFromBytes:(GLubyte*)[layer.freshImageBuffer longValue] size:wkSelf.captureSize];
+            [wkSelf.input processDataForTimestamp:kCMTimeZero];
+            
+//            UIImage* image = [wkSelf.scene.scene snapshot];
+//            [wkSelf updateImage:image];
+//            [wkSelf updateTargetsTime:kCMTimeZero];
         }
         wkSelf.captureCount += 1;
-       
     };
+}
+
+-(void)addTarget:(id<GPUImageInput>)newTarget{
+    [_input addTarget:newTarget];
 }
 
 CGSize getSizeWithCapturePreset(NSString* capturePreset) {

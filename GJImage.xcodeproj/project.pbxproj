@@ -27,6 +27,7 @@
 		6A3488761F4545C1008223AA /* GJImagePictureOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */; };
 		6AA649041FC2CAB500AA3CAC /* GJImageTrackImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AA649031FC2CAB500AA3CAC /* GJImageTrackImage.m */; };
 		6AA6490B1FC2CDE000AA3CAC /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AA6490A1FC2CDDA00AA3CAC /* CoreMotion.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		6AF7ECE21FE7ABBB00605E6E /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AF7ECDD1FE7ABB300605E6E /* IOSurface.framework */; };
 		6AF9DD841FA96A6C00F6B4F7 /* GJImageARCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */; };
 		6AF9DD8B1FA96DDE00F6B4F7 /* SCNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9DD8A1FA96DDE00F6B4F7 /* SCNViewController.m */; };
 		6AF9DD8C1FA96FF000F6B4F7 /* GJImageARCapture.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */; };
@@ -104,6 +105,7 @@
 		6AA649021FC2CAB500AA3CAC /* GJImageTrackImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GJImageTrackImage.h; sourceTree = "<group>"; };
 		6AA649031FC2CAB500AA3CAC /* GJImageTrackImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GJImageTrackImage.m; sourceTree = "<group>"; };
 		6AA6490A1FC2CDDA00AA3CAC /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		6AF7ECDD1FE7ABB300605E6E /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageARCapture.h; sourceTree = "<group>"; };
 		6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageARCapture.m; sourceTree = "<group>"; };
 		6AF9DD851FA96B3D00F6B4F7 /* GJLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJLog.h; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6AF7ECE21FE7ABBB00605E6E /* IOSurface.framework in Frameworks */,
 				0417FCB81E5EC72400D5B5D9 /* GPUImage.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -219,6 +222,7 @@
 		6AA649091FC2CDDA00AA3CAC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6AF7ECDD1FE7ABB300605E6E /* IOSurface.framework */,
 				6AA6490A1FC2CDDA00AA3CAC /* CoreMotion.framework */,
 			);
 			name = Frameworks;

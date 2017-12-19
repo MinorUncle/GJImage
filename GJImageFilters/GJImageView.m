@@ -57,6 +57,7 @@
     runSynchronouslyOnVideoProcessingQueue(^{
         CGImageRef gimage = [freshFramebuffer newCGImageFromFramebufferContents];
         image = [UIImage imageWithCGImage:gimage];
+        CGImageRelease(gimage);
     });
     return image;
 }
