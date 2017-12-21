@@ -26,10 +26,10 @@ void setColorConversion709( GLfloat conversionMatrix[9] );
 @property (nonatomic,assign) CGFloat zoomFactor;
 
 /// The AVCaptureSession used to capture from the camera
-@property(readonly, retain, nonatomic) AVCaptureSession *captureSession;
+@property(assign, nonatomic) CGSize captureSize;
 
 /// This enables the capture session preset to be changed on the fly
-@property (readwrite, nonatomic, copy) NSString *captureSessionPreset;
+//@property (readwrite, nonatomic, copy) NSString *captureSessionPreset;
 
 /// This sets the frame rate of the camera (iOS 5 and above only)
 /**
@@ -107,9 +107,10 @@ void setColorConversion709( GLfloat conversionMatrix[9] );
 
 /// The AVCaptureSession used to capture from the camera
 @property(readonly, retain, nonatomic) AVCaptureSession *captureSession;
+@property(assign, nonatomic) CGSize captureSize;
 
 /// This enables the capture session preset to be changed on the fly
-@property (readwrite, nonatomic, copy) NSString *captureSessionPreset;
+@property (readonly, nonatomic, copy) NSString *captureSessionPreset;
 
 @property (readwrite, nonatomic, assign) CGFloat zoomFactor;
 @property (readwrite, nonatomic, assign) BOOL torchSupport;

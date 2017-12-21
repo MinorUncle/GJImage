@@ -17,6 +17,22 @@ void setColorConversion709( GLfloat conversionMatrix[9] )
     kColorConversion709 = conversionMatrix;
 }
 
+static NSString* getCapturePresetWithSize(CGSize size) {
+    NSString *capturePreset;
+    if (size.width <= 353 && size.height <= 289) {
+        capturePreset = AVCaptureSessionPreset352x288;
+    } else if (size.width <= 641 && size.height <= 481) {
+        capturePreset = AVCaptureSessionPreset640x480;
+    } else if (size.width <= 1281 && size.height <= 721) {
+        capturePreset = AVCaptureSessionPreset1280x720;
+    } else if (size.width <= 1921 && size.height <= 1081) {
+        capturePreset = AVCaptureSessionPreset1920x1080;
+    } else {
+        capturePreset = AVCaptureSessionPreset3840x2160;
+    }
+    return capturePreset;
+}
+
 #pragma mark -
 #pragma mark Private methods and instance variables
 
@@ -621,16 +637,50 @@ void setColorConversion709( GLfloat conversionMatrix[9] )
     return [GPUImageVideoCamera isFrontFacingCameraPresent];
 }
 
-- (void)setCaptureSessionPreset:(NSString *)captureSessionPreset;
-{
-	[_captureSession beginConfiguration];
-	
-	_captureSessionPreset = captureSessionPreset;
-	[_captureSession setSessionPreset:_captureSessionPreset];
-	
-	[_captureSession commitConfiguration];
+
+
+-(void)setCaptureSize:(CGSize)captureSize{
+    if (_outputImageOrientation == UIInterfaceOrientationPortrait ||
+        _outputImageOrientation == UIInterfaceOrientationPortraitUpsideDown) {
+        //        preset在此状况下做过转换
+        captureSize.height += captureSize.width;
+        captureSize.width  = captureSize.height - captureSize.width;
+        captureSize.height = captureSize.height - captureSize.width;
+    }
+    NSString *captureSessionPreset = getCapturePresetWithSize(captureSize);
+    if (![captureSessionPreset isEqualToString:_captureSessionPreset]) {
+        [_captureSession beginConfiguration];
+        _captureSessionPreset = captureSessionPreset;
+        [_captureSession setSessionPreset:_captureSessionPreset];
+        [_captureSession commitConfiguration];
+    }
+    [self updateCaptureSize];
 }
 
+
+-(void)updateCaptureSize{
+    CGSize size = CGSizeZero;
+    if ([_captureSessionPreset isEqualToString:AVCaptureSessionPreset352x288]) {
+        size = CGSizeMake(352, 288);
+    }else if ([_captureSessionPreset isEqualToString:AVCaptureSessionPreset640x480]) {
+        size = CGSizeMake(640, 480);
+    }else if ([_captureSessionPreset isEqualToString:AVCaptureSessionPreset1280x720]) {
+        size = CGSizeMake(1280, 720);
+    }else if ([_captureSessionPreset isEqualToString:AVCaptureSessionPreset1920x1080]) {
+        size = CGSizeMake(1920, 1080);
+    }else if ([_captureSessionPreset isEqualToString:AVCaptureSessionPreset3840x2160]) {
+        size = CGSizeMake(3840, 2160);
+    }else{
+        NSAssert(0, @"updateCaptureSize error,_captureSessionPreset invalid");
+    }
+    
+    if (_outputImageOrientation == UIInterfaceOrientationPortrait || _outputImageOrientation == UIInterfaceOrientationPortraitUpsideDown) {
+        size.width += size.height;
+        size.height = size.width - size.height;
+        size.width  = size.width - size.height;
+    }
+    _captureSize = size;
+}
 - (void)setNewCameraFrame
 {
     if (_frameRate > 0)
@@ -1266,6 +1316,7 @@ void setColorConversion709( GLfloat conversionMatrix[9] )
     _outputImageOrientation = newValue;
 //    [self updateOrientationSendToTargets];
     [self videoCaptureConnection].videoOrientation = (AVCaptureVideoOrientation)newValue;
+    [self updateCaptureSize];
 }
 
 - (void)setHorizontallyMirrorFrontFacingCamera:(BOOL)newValue

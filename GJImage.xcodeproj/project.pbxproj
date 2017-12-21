@@ -27,6 +27,7 @@
 		6A3488761F4545C1008223AA /* GJImagePictureOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */; };
 		6AA649041FC2CAB500AA3CAC /* GJImageTrackImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AA649031FC2CAB500AA3CAC /* GJImageTrackImage.m */; };
 		6AA6490B1FC2CDE000AA3CAC /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AA6490A1FC2CDDA00AA3CAC /* CoreMotion.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		6AB685A11FE8DFD1009B7032 /* GJImageUICapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AB685A01FE8DFD1009B7032 /* GJImageUICapture.m */; };
 		6AF7ECE21FE7ABBB00605E6E /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AF7ECDD1FE7ABB300605E6E /* IOSurface.framework */; };
 		6AF9DD841FA96A6C00F6B4F7 /* GJImageARCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */; };
 		6AF9DD8B1FA96DDE00F6B4F7 /* SCNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9DD8A1FA96DDE00F6B4F7 /* SCNViewController.m */; };
@@ -105,6 +106,8 @@
 		6AA649021FC2CAB500AA3CAC /* GJImageTrackImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GJImageTrackImage.h; sourceTree = "<group>"; };
 		6AA649031FC2CAB500AA3CAC /* GJImageTrackImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GJImageTrackImage.m; sourceTree = "<group>"; };
 		6AA6490A1FC2CDDA00AA3CAC /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		6AB6859F1FE8DFD1009B7032 /* GJImageUICapture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GJImageUICapture.h; sourceTree = "<group>"; };
+		6AB685A01FE8DFD1009B7032 /* GJImageUICapture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GJImageUICapture.m; sourceTree = "<group>"; };
 		6AF7ECDD1FE7ABB300605E6E /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageARCapture.h; sourceTree = "<group>"; };
 		6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageARCapture.m; sourceTree = "<group>"; };
@@ -195,10 +198,12 @@
 			children = (
 				6AF9DD881FA96DDE00F6B4F7 /* ARScene */,
 				6AF9DD851FA96B3D00F6B4F7 /* GJLog.h */,
+				0417FCBF1E5EC74E00D5B5D9 /* GJImageFilters.h */,
 				6AF9DD871FA96C6600F6B4F7 /* GJPlatformHeader.h */,
 				6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */,
 				6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */,
-				0417FCBF1E5EC74E00D5B5D9 /* GJImageFilters.h */,
+				6AB6859F1FE8DFD1009B7032 /* GJImageUICapture.h */,
+				6AB685A01FE8DFD1009B7032 /* GJImageUICapture.m */,
 				0417FECE1E5ECAD000D5B5D9 /* GJImageBeautifyFilter.h */,
 				0417FECF1E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m */,
 				0417FEF41E5ED78900D5B5D9 /* GJImageView.h */,
@@ -379,6 +384,7 @@
 				6A3488761F4545C1008223AA /* GJImagePictureOverlay.m in Sources */,
 				6A0E87001E84EA7F002A2A2D /* GJImagePixelImageInput.m in Sources */,
 				046EDBCD1E6D1D5500D9D8FC /* GJImageYUVDataInput.m in Sources */,
+				6AB685A11FE8DFD1009B7032 /* GJImageUICapture.m in Sources */,
 				6AA649041FC2CAB500AA3CAC /* GJImageTrackImage.m in Sources */,
 				0417FEF61E5ED78A00D5B5D9 /* GJImageView.m in Sources */,
 			);

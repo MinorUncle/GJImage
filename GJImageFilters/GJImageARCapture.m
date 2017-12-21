@@ -31,10 +31,7 @@ static const void *kMetalLayerBufferKey = &kMetalLayerBufferKey;
 
     NSUInteger w = drawable.texture.width;
     NSUInteger h = drawable.texture.height;
-    if (self.freshImageBuffer == NULL) {
-        void* buffer = malloc(w*h*4);
-        self.freshImageBuffer = @((long)buffer);
-    }
+
 //    if (@available(iOS 11.0, *)) {
 //        @synchronized (self) {
 //            IOSurfaceRef surface = drawable.texture.iosurface;
@@ -65,7 +62,6 @@ static const void *kMetalLayerBufferKey = &kMetalLayerBufferKey;
 {
     
 }
-@property (nonatomic, readwrite,assign) CGSize captureSize;
 
 @property(nonatomic,assign)NSInteger captureCount;
 @property(nonatomic,retain)GPUImageRawDataInput* input;
@@ -99,9 +95,16 @@ static const void *kMetalLayerBufferKey = &kMetalLayerBufferKey;
             Method originalMethod = class_getInstanceMethod([CAMetalLayer class], originalSelector);
             Method swizzlingMethod = class_getInstanceMethod([CAMetalLayer class], swizzlingSelector);
             method_exchangeImplementations(originalMethod, swizzlingMethod);
-            
+
         });
+    }else{
+        GJAssert(0, "setScene error");
     }
+    
+    CAMetalLayer* metalLayer = (CAMetalLayer*)scene.scene.layer;
+    //临时解决办法，以后优化
+    void* buffer = malloc(1920*1080*4);
+    metalLayer.freshImageBuffer = @((long)buffer);
     
     if (_scene) {
         [_scene stopRun];
@@ -128,6 +131,10 @@ static const void *kMetalLayerBufferKey = &kMetalLayerBufferKey;
 
 -(void)addTarget:(id<GPUImageInput>)newTarget{
     [_input addTarget:newTarget];
+}
+
+-(NSArray *)targets{
+    return _input.targets;
 }
 
 CGSize getSizeWithCapturePreset(NSString* capturePreset) {
@@ -174,13 +181,16 @@ CGSize getSizeWithCapturePreset(NSString* capturePreset) {
 }
 
 -(void)setCaptureSize:(CGSize)captureSize{
+    GJAssert(captureSize.height*captureSize.width < 1920*1080, "captureSize 太大，不支持该大小");
     if (!CGSizeEqualToSize(_captureSize, captureSize)) {
         _captureSize = captureSize;
         if ([NSThread currentThread].isMainThread) {
-            self.scene.scene.bounds = CGRectMake(0,0,captureSize.width/[UIScreen mainScreen].scale, captureSize.height/[UIScreen mainScreen].scale);
+            CGFloat scale = _scene.scene.layer.contentsScale;
+            self.scene.scene.bounds = CGRectMake(0,0,captureSize.width/scale, captureSize.height/scale);
         }else{
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.scene.scene.bounds = CGRectMake(0,0,captureSize.width/[UIScreen mainScreen].scale, captureSize.height/[UIScreen mainScreen].scale);
+                CGFloat scale = _scene.scene.layer.contentsScale;
+                self.scene.scene.bounds = CGRectMake(0,0,captureSize.width/scale, captureSize.height/scale);
             });
         }
     }

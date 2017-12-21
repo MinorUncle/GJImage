@@ -1,44 +1,23 @@
 //
-//  GJImageARCapture.h
-//  GJLiveEngine
+//  GJImageUICapture.h
+//  GJImageFilters
 //
-//  Created by melot on 2017/10/19.
+//  Created by melot on 2017/12/19.
 //  Copyright © 2017年 MinorUncle. All rights reserved.
 //
 
-#import "GPUImagePicture.h"
 #import "GPUImageVideoCamera.h"
-@class ARSCNView;
-typedef void(^ARUpdateBlock)();
 
-
-
-
-@protocol GJImageARScene <NSObject>
-@required
-@property(nonatomic,retain,readonly) ARSCNView* scene;
-@property(nonatomic,assign) NSInteger updateFps;
-@property(readonly, nonatomic) BOOL isRunning;
-@property(nonatomic,assign) ARUpdateBlock updateBlock;
-- (AVCaptureDevicePosition)cameraPosition;
-- (void)rotateCamera;
--(BOOL)startRun;
--(void)stopRun;
--(void)pause;
--(void)resume;
-@end
-@interface GJImageARCapture : GPUImageOutput <GJCameraProtocal>
-@property (retain, nonatomic)id<GJImageARScene> scene;
-/// Whether or not the underlying AVCaptureSession is running
+@interface GJImageUICapture : GPUImageOutput <GJCameraProtocal>
 @property(readonly, nonatomic) BOOL isRunning;
 
-/// The AVCaptureSession used to capture from the camera
-@property (nonatomic, readwrite,assign) CGSize captureSize;
+//设置采集的大小，如果不支持动画，务必自动设置成最佳的大小
+@property(assign, nonatomic) CGSize captureSize;
 @property(readonly, retain, nonatomic) AVCaptureSession *captureSession;
 @property (nonatomic,assign) CGFloat zoomFactor;
 
 /// This enables the capture session preset to be changed on the fly
-@property (readwrite, nonatomic, copy) NSString *captureSessionPreset;
+//@property (readwrite, nonatomic, copy) NSString *captureSessionPreset;
 @property(readwrite, nonatomic) UIInterfaceOrientation outputImageOrientation;
 
 /// This sets the frame rate of the camera (iOS 5 and above only)
@@ -88,5 +67,5 @@ typedef void(^ARUpdateBlock)();
 
 +(BOOL)isSupport;
 
--(instancetype)initWithScene:(id<GJImageARScene>) scene captureSize:(CGSize)size;
+-(instancetype)initWithView:(UIView*)captureView;
 @end
