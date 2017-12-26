@@ -8,9 +8,7 @@
 
 #import "GJImageYUVDataInput.h"
 
-#define GJSTRINGIZE(x) #x
-#define GJSTRINGIZE2(x) GJSTRINGIZE(x)
-#define GJSHADER_STRING(text) @ GJSTRINGIZE2(text)
+
 
 // Color Conversion Constants (YUV to RGB) including adjustment from 16-235/16-240 (video range)
 

@@ -35,7 +35,7 @@ void setColorConversion709( GLfloat conversionMatrix[9] );
 /**
  Setting this to 0 or below will set the frame rate back to the default setting for a particular preset.
  */
-@property (readwrite) int32_t frameRate;
+@property (readwrite,nonatomic,assign) int32_t frameRate;
 
 @property (nonatomic,assign) CGPoint focusPoint;
 
@@ -119,7 +119,7 @@ void setColorConversion709( GLfloat conversionMatrix[9] );
 /**
  Setting this to 0 or below will set the frame rate back to the default setting for a particular preset.
  */
-@property (readwrite) int32_t frameRate;
+@property (readwrite,assign,nonatomic) int32_t frameRate;
 
 /// Easy way to tell which cameras are present on device
 @property (readonly, getter = isFrontFacingCameraPresent) BOOL frontFacingCameraPresent;

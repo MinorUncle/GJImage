@@ -2,6 +2,11 @@
 #import "GPUImageFramebuffer.h"
 #import "GPUImageFramebufferCache.h"
 
+
+#define GJSTRINGIZE(x) #x
+#define GJSTRINGIZE2(x) GJSTRINGIZE(x)
+#define GJSHADER_STRING(text) @ GJSTRINGIZE2(text)
+
 #define GPUImageRotationSwapsWidthAndHeight(rotation) ((rotation) == kGPUImageRotateLeft || (rotation) == kGPUImageRotateRight || (rotation) == kGPUImageRotateRightFlipVertical || (rotation) == kGPUImageRotateRightFlipHorizontal)
 
 typedef NS_ENUM(NSUInteger, GPUImageRotationMode) {

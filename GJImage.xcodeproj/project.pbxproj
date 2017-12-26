@@ -23,6 +23,7 @@
 		046EDBCD1E6D1D5500D9D8FC /* GJImageYUVDataInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */; };
 		04A081491E6E9A11000E2B64 /* GJImageYUVDataInput.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 046EDBCB1E6D1D5500D9D8FC /* GJImageYUVDataInput.h */; };
 		04A0815A1E6EAD22000E2B64 /* GJImageFramebuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */; };
+		6A0388F71FEFE0D3005AC7CE /* GJPaintingCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0388F61FEFE0D3005AC7CE /* GJPaintingCamera.m */; };
 		6A0E87001E84EA7F002A2A2D /* GJImagePixelImageInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E86FF1E84EA7F002A2A2D /* GJImagePixelImageInput.m */; };
 		6A3488761F4545C1008223AA /* GJImagePictureOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */; };
 		6AA649041FC2CAB500AA3CAC /* GJImageTrackImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AA649031FC2CAB500AA3CAC /* GJImageTrackImage.m */; };
@@ -97,6 +98,8 @@
 		046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageYUVDataInput.m; sourceTree = "<group>"; };
 		04A081581E6EAD22000E2B64 /* GJImageFramebuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageFramebuffer.h; sourceTree = "<group>"; };
 		04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageFramebuffer.m; sourceTree = "<group>"; };
+		6A0388F11FEFE0D3005AC7CE /* GJPaintingCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJPaintingCamera.h; sourceTree = "<group>"; };
+		6A0388F61FEFE0D3005AC7CE /* GJPaintingCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJPaintingCamera.m; sourceTree = "<group>"; };
 		6A0E86FE1E84EA7F002A2A2D /* GJImagePixelImageInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImagePixelImageInput.h; sourceTree = "<group>"; };
 		6A0E86FF1E84EA7F002A2A2D /* GJImagePixelImageInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImagePixelImageInput.m; sourceTree = "<group>"; };
 		6A3488741F4545C1008223AA /* GJImagePictureOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImagePictureOverlay.h; sourceTree = "<group>"; };
@@ -200,6 +203,8 @@
 				6AF9DD851FA96B3D00F6B4F7 /* GJLog.h */,
 				0417FCBF1E5EC74E00D5B5D9 /* GJImageFilters.h */,
 				6AF9DD871FA96C6600F6B4F7 /* GJPlatformHeader.h */,
+				6A0388F11FEFE0D3005AC7CE /* GJPaintingCamera.h */,
+				6A0388F61FEFE0D3005AC7CE /* GJPaintingCamera.m */,
 				6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */,
 				6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */,
 				6AB6859F1FE8DFD1009B7032 /* GJImageUICapture.h */,
@@ -378,6 +383,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				04A0815A1E6EAD22000E2B64 /* GJImageFramebuffer.m in Sources */,
+				6A0388F71FEFE0D3005AC7CE /* GJPaintingCamera.m in Sources */,
 				6AF9DD8B1FA96DDE00F6B4F7 /* SCNViewController.m in Sources */,
 				0417FED01E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m in Sources */,
 				6AF9DD841FA96A6C00F6B4F7 /* GJImageARCapture.m in Sources */,

@@ -24,7 +24,7 @@
 /**
  Setting this to 0 or below will set the frame rate back to the default setting for a particular preset.
  */
-@property (readwrite,assign) int32_t frameRate;
+@property (readwrite,assign,nonatomic) int32_t frameRate;
 
 @property (nonatomic,assign) CGPoint focusPoint;
 
