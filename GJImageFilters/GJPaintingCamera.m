@@ -107,102 +107,121 @@ char *readFile(const char *name)
     return source;
 }
 
-
-@implementation GJPaintingView
-+ (Class)layerClass
-{
-    return [CAEAGLLayer class];
-}
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    [self.delegate paintingView:self paintingBegan:touches withEvent:event];
-}
-
-// Handles the continuation of a touch.
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    [self.delegate paintingView:self paintingMoved:touches withEvent:event];
-
-}
-
-// Handles the end of a touch event when the touch is a tap.
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    [self.delegate paintingView:self paintingEnded:touches withEvent:event];
-}
-
--(void)layoutSubviews{
-    [self.delegate paintingViewNeedLayoutSubviews:self];
-}
-@end
-
-
-
 static NSString *const kGJPaintingVertexShaderString = GJSHADER_STRING
 (
-     attribute vec4 inVertex;
- 
+     attribute vec2 inVertex;
      uniform mat4 MVP;
-     uniform float pointSize;
-     uniform lowp vec4 vertexColor;
- 
-     varying lowp vec4 color;
- 
      void main()
     {
-        gl_Position = MVP * inVertex;
-        gl_PointSize = pointSize;
-        color = vertexColor;
+        gl_Position = MVP *   vec4(inVertex, 1.0, 1.0);
     }
  );
 
 static NSString *const kGJPaintingFragmentShaderString = GJSHADER_STRING
 (
-     uniform sampler2D texture;
-     varying lowp vec4 color;
- 
+     uniform lowp vec4 vertexColor;
      void main()
     {
-        gl_FragColor = color * texture2D(texture, gl_PointCoord);
+        gl_FragColor = vertexColor;
     }
  );
+typedef GLKVector2 GVertex;
+typedef GLKVector4 GVertexColor;
+#define GROUP_CAPACITY 500
+typedef struct _GVertexGroup{//一个点集合,例如表示一个线段，一个点
+    GVertex* vertexs;
+    GLint vertexCount;
+    GVertexColor vertexColor;
+}GVertexGroup;
+void vertexGroupCreate(GVertexGroup** aGroup){
+    *aGroup = (GVertexGroup*)malloc(sizeof(GVertexGroup*));
+    GVertexGroup* group = *aGroup;
+    group->vertexCount = 0;
+    group->vertexs = NULL;
+}
+void vertexGroupFree(GVertexGroup* group){
+    if (group->vertexs) {
+        free(group->vertexs);
+    }
+    free(group);
+}
+void vertexGroupAddVertex(GVertexGroup* group,const GVertex* vertex){
+    if (group->vertexCount % GROUP_CAPACITY == 0) {
+        group->vertexs = (GVertex*)realloc(group->vertexs, sizeof(GVertex)*(group->vertexCount+GROUP_CAPACITY));
+        NSLog(@"count:%d",group->vertexCount);
+    }
+    group->vertexs[group->vertexCount++] = *vertex;
+}
 
+#define CLUSTER_CAPACITY 10
+typedef struct _GVertexGroupCluster{
+    GVertexGroup* groups;
+    GLint groupCount;
+}GVertexGroupCluster;
+void vertexGroupClusterCreate(GVertexGroupCluster** cluster){
+    *cluster = (GVertexGroupCluster*)malloc(sizeof(GVertexGroupCluster));
+    GVertexGroupCluster* lineCluster = *cluster;
+    lineCluster->groupCount = 0;
+}
+GVertexGroup* groupClusterGetLastGroup(GVertexGroupCluster* cluster){
+    if (cluster->groupCount > 0) {
+        return cluster->groups+cluster->groupCount-1;
+    }else{
+        return NULL;
+    }
+}
+GVertexGroup* groupClusterGetNewGroup(GVertexGroupCluster* cluster,GVertexColor color){
+    GVertexGroup* group;
+    vertexGroupCreate(&group);
+    if (cluster->groupCount % CLUSTER_CAPACITY == 0) {
+        cluster->groups = realloc(cluster->groups, sizeof(GVertexGroup*)*(cluster->groupCount+CLUSTER_CAPACITY));
+    }
+    memcmp((void*)(cluster->groups+cluster->groupCount), (void*)group, sizeof(GVertexGroup*));
+    group->vertexColor = color;
+    cluster->groupCount++;
+    return cluster->groups+cluster->groupCount-1;
+}
+void groupClusterFree(GVertexGroupCluster* cluster){
+    for (int i = cluster->groupCount-1; i >= 0; i++) {
+        vertexGroupFree(cluster->groups + i);
+    }
+    free(cluster);
+}
+
+CGPoint quadraticPointInCurve(CGPoint start, CGPoint end, CGPoint controlPoint, CGFloat percent) {
+    double a, b, c;
+    a = pow((1.0-percent), 2.0);
+    b = 2.0 * percent * (1.0 - percent);
+    c = pow(percent, 2.0);
+    return CGPointMake(a * start.x + b*controlPoint.x + c*end.x, a*start.y + b* controlPoint.y + c * end.y);
+}
+
+GVertex perpendicular(GVertex p1,  GVertex p2){
+//    let ret = GLKVector3.init(v: (p2.vertex.y - p1.vertex.y, -1 * (p2.vertex.x - p1.vertex.x), 0))
+    return GLKVector2Make(p2.y - p1.y, p1.x - p2.x);
+}
 @interface GJPaintingCamera()
 {
     
-	// The pixel dimensions of the backbuffer
-//    GLint backingWidth;
-//    GLint backingHeight;
-//
-//    EAGLContext *context;
-//
-//    // OpenGL names for the renderbuffer and framebuffers used to render to this view
-//    GLuint viewRenderbuffer, viewFramebuffer;
-//
-//    // OpenGL name for the depth buffer that is attached to viewFramebuffer, if it exists (0 if it does not exist)
-//    GLuint depthRenderbuffer;
-//
-    textureInfo_t brushTexture;     // brush texture
-    GLfloat brushColor[4];          // brush color
+    GVertexColor brushColor;          // brush color
 //
     dispatch_semaphore_t frameRenderingSemaphore;
     Boolean    firstTouch;
-//    Boolean needsErase;
+    GLuint vertexBuffer;
+    GLuint vertexArray;
 //
-//    // Shader objects
-//    GLuint vertexShader;
-//    GLuint fragmentShader;
-//    GLuint shaderProgram;
-//
-//    // Buffer Objects
-    GLuint vboId;
-//
-//    BOOL initialized;
+    
+    CGPoint previousPoint;
+    CGPoint previousMidPoint;
+    GVertex previousVertex;
+    CGFloat penThickness;
+    CGFloat previousThickness;
+    GVertexGroupCluster* lineCluster;
 }
 @property(retain,nonatomic)CADisplayLink* fpsTimer;
 
 @end
+#define MAXIMUM_VERTECES 100000
 
 @implementation GJPaintingCamera
 
@@ -213,30 +232,52 @@ static NSString *const kGJPaintingFragmentShaderString = GJSHADER_STRING
 // We do this so that our view will be backed by a layer that is capable of OpenGL ES rendering.
 
 //
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
+    if (object == _paintingView && [keyPath isEqualToString:@"frame"]) {
+        runSynchronouslyOnVideoProcessingQueue(^{
+            [GPUImageContext useImageProcessingContext];
+            CGSize size = _paintingView.bounds.size;
+            size.height *= _paintingView.contentScaleFactor;
+            size.width *= _paintingView.contentScaleFactor;
+            [self updateSizeWithSize:size];
+        });
+    }
+}
 //// The GL view is stored in the nib file. When it's unarchived it's sent -initWithCoder:
 - (id)init {
 
     if ((self = [super init])) {
         _paintingViewSize = CGSizeZero;
-        _paintingView = [[GJPaintingView alloc]init];
-        _paintingView.delegate = self;
+        _paintingView = [[GJImageView alloc]init];
+        UITapGestureRecognizer* tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapEvent:)];
+        [_paintingView addGestureRecognizer:tapGesture];
+        
+        UIPanGestureRecognizer* panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panEvent:)];
+        [_paintingView addGestureRecognizer:panGesture];
+        
+        UILongPressGestureRecognizer* longPressGesture = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(longTapEvent:)];
+        [_paintingView addGestureRecognizer:longPressGesture];
+        
         _paintingView.contentScaleFactor = [[UIScreen mainScreen] scale];
         CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.paintingView.layer;
 
+        [_paintingView addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
         eaglLayer.opaque = YES;
         // In this application, we want to retain the EAGLDrawable contents after a call to presentRenderbuffer.
         eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
                                         [NSNumber numberWithBool:YES], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
-        [self setupProgram];
         backgroundColorRed = 0.1;
         backgroundColorBlue = 0.8;
         backgroundColorGreen = 0.1;
         backgroundColorAlpha = 1.0;
         frameRenderingSemaphore = dispatch_semaphore_create(1);
-        brushColor[0] = 8.0 * kBrushOpacity;
-        brushColor[1] = 0.1 * kBrushOpacity;
-        brushColor[2] = 0.1 * kBrushOpacity;
-        brushColor[3] = kBrushOpacity;
+        brushColor.r= 0.8 * kBrushOpacity;
+        brushColor.g = 0.1 * kBrushOpacity;
+        brushColor.b = 0.1 * kBrushOpacity;
+        brushColor.a = kBrushOpacity;
+        vertexGroupClusterCreate(&lineCluster);
+        [self setupProgram];
+
         // Set the view's scale factor as you wish
 
         // Make sure to start with a cleared buffer
@@ -248,8 +289,6 @@ static NSString *const kGJPaintingFragmentShaderString = GJSHADER_STRING
 
 - (void)setupProgram{
     inputRotation = kGPUImageNoRotation;
-    imageCaptureSemaphore = dispatch_semaphore_create(0);
-    dispatch_semaphore_signal(imageCaptureSemaphore);
     
     runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
@@ -269,36 +308,31 @@ static NSString *const kGJPaintingFragmentShaderString = GJSHADER_STRING
                 NSAssert(NO, @"Filter shader link failed");
             }
         }
+
         inVertex = [filterProgram attributeIndex:@"inVertex"];
+
         mvp = [filterProgram uniformIndex:@"MVP"];
-        pointSize = [filterProgram uniformIndex:@"pointSize"];
         vertexColor = [filterProgram uniformIndex:@"vertexColor"];
-        texture = [filterProgram uniformIndex:@"texture"];
         [GPUImageContext setActiveShaderProgram:filterProgram];
-        glError();
+        glUniform4fv(vertexColor, 1, &brushColor);
 
-        glError();
+        glGenVertexArraysOES(1, &vertexArray);
+        glBindVertexArrayOES(vertexArray);
+        glGenBuffers(1, &vertexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexArray);
+        int step = sizeof(GVertex);
+        glBufferData(GL_ARRAY_BUFFER, MAXIMUM_VERTECES*step, NULL, GL_DYNAMIC_DRAW);
 
-        glGenBuffers(1, &vboId);
-        glError();
-
-        // the brush texture will be bound to texture unit 0
-        brushTexture = [self textureFromName:@"Particle.png"];
-        glUniform1i(texture, 0);
-        glError();
-
-        // point size
-        glUniform1f(pointSize, brushTexture.width / kBrushScale);
-        // initialize brush color
-        glUniform4fv(vertexColor, 1, brushColor);
-        glError();
+        glEnableVertexAttribArray(inVertex);
+        glVertexAttribPointer(inVertex, 2, GL_FLOAT, GL_FALSE, step, 0);
+        glBindVertexArrayOES(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     });
 }
 
 -(void)updateSizeWithSize:(CGSize)size{
     // viewing matrices
     if(!CGSizeEqualToSize(size, _paintingViewSize)){
-        glError();
 
         _paintingViewSize = size;
         GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0, _paintingViewSize.width, 0, _paintingViewSize.height, -1, 1);
@@ -335,247 +369,127 @@ static NSString *const kGJPaintingFragmentShaderString = GJSHADER_STRING
     // Override this, calling back to this super method, in order to add new attributes to your vertex shader
 }
 
-
-// Create a texture from an image
-- (textureInfo_t)textureFromName:(NSString *)name
-{
-    CGImageRef		brushImage;
-	CGContextRef	brushContext;
-	GLubyte			*brushData;
-	size_t			width, height;
-    GLuint          texId;
-    textureInfo_t   texture;
-    
-    // First create a UIImage object from the data in a image file, and then extract the Core Graphics image
-    brushImage = [UIImage imageNamed:name].CGImage;
-    
-    // Get the width and height of the image
-    width = CGImageGetWidth(brushImage);
-    height = CGImageGetHeight(brushImage);
-    
-    // Make sure the image exists
-    if(brushImage) {
-        // Allocate  memory needed for the bitmap context
-        brushData = (GLubyte *) calloc(width * height * 4, sizeof(GLubyte));
-        // Use  the bitmatp creation function provided by the Core Graphics framework.
-        brushContext = CGBitmapContextCreate(brushData, width, height, 8, width * 4, CGImageGetColorSpace(brushImage), kCGImageAlphaPremultipliedLast);
-        // After you create the context, you can draw the  image to the context.
-        CGContextDrawImage(brushContext, CGRectMake(0.0, 0.0, (CGFloat)width, (CGFloat)height), brushImage);
-        // You don't need the context at this point, so you need to release it to avoid memory leaks.
-        CGContextRelease(brushContext);
-        glActiveTexture(GL_TEXTURE0);
-        // Use OpenGL ES to generate a name for the texture.
-        glGenTextures(1, &texId);
-        // Bind the texture name.
-        glBindTexture(GL_TEXTURE_2D, texId);
-        // Set the texture parameters to use a minifying filter and a linear filer (weighted average)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        // Specify a 2D texture image, providing the a pointer to the image data in memory
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int)width, (int)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, brushData);
-        // Release  the image data; it's no longer needed
-        free(brushData);
-        
-        texture.id = texId;
-        texture.width = (int)width;
-        texture.height = (int)height;
-    }
-    
-    return texture;
-}
-
-
-// Drawings a line onscreen based on where the user touches
-- (void)renderLineFromPoint:(CGPoint)pointStart toPoint:(CGPoint)pointEnd
-{
-    
-    runSynchronouslyOnVideoProcessingQueue(^{
-        [GPUImageContext useImageProcessingContext];
-        [GPUImageContext setActiveShaderProgram:filterProgram];
-        CGFloat scale = self.paintingView.contentScaleFactor;
-        glError();
-
-        [outputFramebuffer activateFramebuffer];
-        glError();
-
-        static GLfloat*        vertexBuffer = NULL;
-        static NSUInteger    vertexMax = 64;
-        NSUInteger            vertexCount = 0,
-        count,
-        i;
-        
-        CGPoint start = pointStart;
-        CGPoint end = pointEnd;
-        // Convert locations from Points to Pixels
-        start.x *= scale;
-        start.y *= scale;
-        end.x *= scale;
-        end.y *= scale;
-        
-        // Allocate vertex array buffer
-        if(vertexBuffer == NULL)
-            vertexBuffer = malloc(vertexMax * 2 * sizeof(GLfloat));
-        
-        // Add points to the buffer so there are drawing points every X pixels
-        count = MAX(ceilf(sqrtf((end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y)) / kBrushPixelStep), 1);
-        for(i = 0; i < count; ++i) {
-            if(vertexCount == vertexMax) {
-                vertexMax = 2 * vertexMax;
-                vertexBuffer = realloc(vertexBuffer, vertexMax * 2 * sizeof(GLfloat));
-            }
-            
-            vertexBuffer[2 * vertexCount + 0] = start.x + (end.x - start.x) * ((GLfloat)i / (GLfloat)count);
-            vertexBuffer[2 * vertexCount + 1] = start.y + (end.y - start.y) * ((GLfloat)i / (GLfloat)count);
-            vertexCount += 1;
-        }
-        
-        // Load data to the Vertex Buffer Object
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        glBufferData(GL_ARRAY_BUFFER, vertexCount*2*sizeof(GLfloat), vertexBuffer, GL_DYNAMIC_DRAW);
-        glError();
-
-        glEnableVertexAttribArray(inVertex);
-        glVertexAttribPointer(inVertex, 2, GL_FLOAT, GL_FALSE, 0, 0);
-        glError();
-
-        // Draw
-        glDrawArrays(GL_POINTS, 0, (int)vertexCount);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        glError();
-
-    });
-	
-}
-
-// Reads previously recorded points and draws them onscreen. This is the Shake Me message that appears when the application launches.
-- (void)playback:(NSMutableArray*)recordedPaths
-{
-    // NOTE: Recording.data is stored with 32-bit floats
-    // To make it work on both 32-bit and 64-bit devices, we make sure we read back 32 bits each time.
-    
-    Float32 x[1], y[1];
-    CGPoint point1, point2;
-    
-	NSData*				data = [recordedPaths objectAtIndex:0];
-	NSUInteger			count = [data length] / (sizeof(Float32)*2), // each point contains 64 bits (32-bit x and 32-bit y)
-						i;
-	
-	// Render the current path
-	for(i = 0; i < count - 1; i++) {
-        
-        [data getBytes:&x range:NSMakeRange(8*i, sizeof(Float32))]; // read 32 bits each time
-        [data getBytes:&y range:NSMakeRange(8*i+sizeof(Float32), sizeof(Float32))];
-        point1 = CGPointMake(x[0], y[0]);
-        
-        [data getBytes:&x range:NSMakeRange(8*(i+1), sizeof(Float32))];
-        [data getBytes:&y range:NSMakeRange(8*(i+1)+sizeof(Float32), sizeof(Float32))];
-        point2 = CGPointMake(x[0], y[0]);
-        
-        [self renderLineFromPoint:point1 toPoint:point2];
-    }
-	
-	// Render the next path after a short delay 
-	[recordedPaths removeObjectAtIndex:0];
-	if([recordedPaths count])
-		[self performSelector:@selector(playback:) withObject:recordedPaths afterDelay:0.01];
-}
-
-
-// Handles the start of a touch
-- (void)paintingView:(GJPaintingView *)view paintingBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    CGRect                bounds = [view bounds];
-    UITouch*            touch = [[event touchesForView:view] anyObject];
-    firstTouch = YES;
-    // Convert touch point from UIView referential to OpenGL one (upside-down flip)
-    location = [touch locationInView:view];
-    location.y = bounds.size.height - location.y;
-    NSLog(@"began");
-}
-
-// Handles the continuation of a touch.
-- (void)paintingView:(GJPaintingView *)view paintingMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    CGRect                bounds = [view bounds];
-    UITouch*            touch = [[event touchesForView:view] anyObject];
-
-    // Convert touch point from UIView referential to OpenGL one (upside-down flip)
-    if (firstTouch) {
-        firstTouch = NO;
-        previousLocation = [touch previousLocationInView:view];
-        previousLocation.y = bounds.size.height - previousLocation.y;
-    } else {
-        location = [touch locationInView:view];
-        location.y = bounds.size.height - location.y;
-        previousLocation = [touch previousLocationInView:view];
-        previousLocation.y = bounds.size.height - previousLocation.y;
-    }
-    NSLog(@"moved");
-
-    // Render the stroke
-    [self renderLineFromPoint:previousLocation toPoint:location];
-}
-
-// Handles the end of a touch event when the touch is a tap.
-- (void)paintingView:(GJPaintingView *)view paintingEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    CGRect                bounds = [view bounds];
-    UITouch*            touch = [[event touchesForView:view] anyObject];
-    if (firstTouch) {
-        firstTouch = NO;
-        previousLocation = [touch previousLocationInView:view];
-        previousLocation.y = bounds.size.height - previousLocation.y;
-        [self renderLineFromPoint:previousLocation toPoint:location];
-    }
-    NSLog(@"end");
-
-}
-
-
-//
-//// If our view is resized, we'll be asked to layout subviews.
-//// This is the perfect opportunity to also update the framebuffer so that it is
-//// the same size as our display area.
--(void)paintingViewNeedLayoutSubviews:(GJPaintingView*)view;
-{
-    runSynchronouslyOnVideoProcessingQueue(^{
-        [GPUImageContext useImageProcessingContext];
-        CGSize size = view.bounds.size;
-        size.height *= view.contentScaleFactor;
-        size.width *= view.contentScaleFactor;
-        [self updateSizeWithSize:size];
-    });
-    
-    // Clear the framebuffer the first time it is allocated
-//    if (needsErase) {
-//        [self erase];
-//        needsErase = NO;
-//    }
-}
-
-
 - (void)setBrushColorWithRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue
 {
 	// Update the brush color
-    brushColor[0] = red * kBrushOpacity;
-    brushColor[1] = green * kBrushOpacity;
-    brushColor[2] = blue * kBrushOpacity;
-    brushColor[3] = kBrushOpacity;
+    brushColor.r= red * kBrushOpacity;
+    brushColor.g = green * kBrushOpacity;
+    brushColor.b = blue * kBrushOpacity;
+    brushColor.a = kBrushOpacity;
     
     runAsynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext setActiveShaderProgram:filterProgram];
-        glUniform4fv(vertexColor, 1, brushColor);
+        glUniform4fv(vertexColor, 1, &brushColor);
     });
 
 }
 
+-(void) addTriangleStripPointsForPrevious:(GVertex)previous next:(GVertex)next thickness:(CGFloat)penThickness {
+    CGFloat toTravel = penThickness / 2.0;
+    for(int i = 0;i<2 ;i++) {
+        GVertex p = perpendicular( previous, next);
+        GVertex p1 = next;
+        GVertex ref = GLKVector2Add(p1, p);
+        
+        CGFloat distance = GLKVector2Distance(p1, ref);
+        CGFloat difX = p1.x - ref.x;
+        CGFloat difY = p1.y - ref.y;
+        CGFloat ratio = -1.0 * (toTravel / distance);
+        
+        difX = difX * ratio;
+        difY = difY * ratio;
+        
+        GVertex stripPoint = GLKVector2Make(p1.x+difX, p1.y + difY);
+        GVertexGroup* group = groupClusterGetLastGroup(lineCluster);
+        vertexGroupAddVertex(group, &stripPoint);
+        toTravel *= -1;
+    }
+}
+-(void)tapEvent:(UITapGestureRecognizer*)gesture{
+    
+}
+-(void)drawGroup:(GVertexGroup*)group{
+    runAsynchronouslyOnVideoProcessingQueue(^{
+        [GPUImageContext setActiveShaderProgram:filterProgram];
+        
+        outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:_paintingViewSize textureOptions:self.outputTextureOptions onlyTexture:NO];
+        [outputFramebuffer activateFramebuffer];
+        
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        glBindVertexArrayOES(vertexArray);
+        if (group->vertexCount > 0) {
+            uint8_t* data = glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
+            int step = sizeof(GVertex);
+            for (int i = 0 ; i<group->vertexCount; i++) {
+                memcmp(data+i*step, (group->vertexs+i), sizeof(GVertex));
+            }
+            glUnmapBufferOES(GL_ARRAY_BUFFER);
+        }
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, group->vertexCount);
+        glBindVertexArrayOES(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    });
 
-- (BOOL)canBecomeFirstResponder {
-    return YES;
+}
+#define VELOCITY_CLAMP_MIN 20
+#define VELOCITY_CLAMP_MAX 200
+#define STROKE_WIDTH_SMOOTHING 0.5     // Low pass filter alpha
+#define QUADRATIC_DISTANCE_TOLERANCE 3.0
+#define STROKE_WIDTH_MIN 0.004 // Stroke width determined by touch velocity
+#define STROKE_WIDTH_MAX 0.030
+
+-(void)panEvent:(UIPanGestureRecognizer*)gesture{
+    CGSize viewSize = _paintingView.bounds.size;
+    CGPoint veloctiy = [gesture velocityInView:_paintingView];
+    CGPoint location = [gesture locationInView:_paintingView];
+    GVertex cVeloctiy = [self viewPointToGLPoint:veloctiy viewSize:viewSize];
+    CGFloat veloctiyValue =  sqrtf(veloctiy.x * veloctiy.x + veloctiy.y * veloctiy.y);
+    CGFloat clampedVeloctiyValue = MIN(VELOCITY_CLAMP_MAX,MAX(veloctiyValue, VELOCITY_CLAMP_MIN));
+    CGFloat normalizedVeloctiyValue = (clampedVeloctiyValue - VELOCITY_CLAMP_MIN) / (VELOCITY_CLAMP_MAX - VELOCITY_CLAMP_MIN);
+    CGFloat newThickness = (STROKE_WIDTH_MAX - STROKE_WIDTH_MIN) * (1 - normalizedVeloctiyValue) + (STROKE_WIDTH_MIN);
+    if (gesture.state == UIGestureRecognizerStateChanged) {//开始放在第一位，效率更高
+        CGPoint mid = CGPointMake((location.x+previousPoint.x)*0.5, (location.y+previousPoint.y)*0.5);
+        CGFloat distance = (mid.x - previousMidPoint.x) * (mid.x - previousMidPoint.x) ;
+        distance += (mid.y - previousMidPoint.y) * (mid.y - previousMidPoint.y);
+        distance = sqrtf(distance);
+        int segments = distance / QUADRATIC_DISTANCE_TOLERANCE;
+        CGFloat startPenThickness = previousThickness;
+        CGFloat endPenThickness = penThickness;
+
+        for (int i = 0; i<segments; i++) {
+            CGFloat thickness = startPenThickness + (endPenThickness-startPenThickness)*i/segments;
+            CGPoint point = quadraticPointInCurve(previousMidPoint,mid,previousPoint,(CGFloat)i/segments);
+            GVertex wfv = [self viewPointToGLPoint:point viewSize:viewSize];
+            [self addTriangleStripPointsForPrevious:previousVertex next:wfv thickness:thickness];
+            previousVertex = wfv;
+        }
+        
+    }else if (gesture.state == UIGestureRecognizerStateBegan){
+        previousPoint = location;
+        previousMidPoint = location;
+        previousThickness = newThickness;
+        
+        previousVertex = [self viewPointToGLPoint:location viewSize:viewSize];
+        GVertexGroup* group = groupClusterGetNewGroup(lineCluster, brushColor);
+        vertexGroupAddVertex(group, &previousVertex);
+        vertexGroupAddVertex(group, &previousVertex);
+    }else if(gesture.state == UIGestureRecognizerStateEnded || gesture.state == UIGestureRecognizerStateCancelled){
+        GVertex vertex = [self viewPointToGLPoint:location viewSize:viewSize];
+        GVertexGroup* group = groupClusterGetLastGroup(lineCluster);
+        vertexGroupAddVertex(group, &vertex);
+    }
+    [self drawGroup:groupClusterGetLastGroup(lineCluster)];
+}
+-(void)longTapEvent:(UITapGestureRecognizer*)gesture{
+    
 }
 
-
-
+-(GVertex)viewPointToGLPoint:(CGPoint)point viewSize:(CGSize)size{
+    GVertex vertex;
+    vertex.x = point.x / size.width * 2.0 - 1;
+    vertex.y = 1 - point.y / size.height*2.0;
+    return vertex;
+}
 
 - (void)startCameraCapture{
     _isRunning = YES;
@@ -631,6 +545,7 @@ static NSString *const kGJPaintingFragmentShaderString = GJSHADER_STRING
     return YES;
 }
 
+
 - (void)updateWithTimestamp{
     if (dispatch_semaphore_wait(frameRenderingSemaphore, DISPATCH_TIME_NOW) != 0)
     {
@@ -658,5 +573,11 @@ static NSString *const kGJPaintingFragmentShaderString = GJSHADER_STRING
         dispatch_semaphore_signal(frameRenderingSemaphore);
     });
     
+}
+-(void)dealloc{
+    [_paintingView removeObserver:self forKeyPath:@"frame"];
+    runSynchronouslyOnVideoProcessingQueue(^{
+        groupClusterFree(lineCluster);
+    });
 }
 @end

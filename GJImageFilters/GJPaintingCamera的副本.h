@@ -55,18 +55,29 @@
 #import "GJImageView.h"
 
 //CLASS INTERFACES:
+@class GJPaintingView;
+@protocol GJPaintingViewDeletage <NSObject>
+-(void)paintingView:(GJPaintingView*)view paintingBegan:(NSSet *)touches withEvent:(UIEvent *)event;
+-(void)paintingView:(GJPaintingView*)view paintingMoved:(NSSet *)touches withEvent:(UIEvent *)event;
+-(void)paintingView:(GJPaintingView*)view paintingEnded:(NSSet *)touches withEvent:(UIEvent *)event;
+-(void)paintingViewNeedLayoutSubviews:(GJPaintingView*)view;
+@end
 
+@interface GJPaintingView:GJImageView
+@property(nonatomic, readwrite) id<GJPaintingViewDeletage> delegate;
+@end
 
-@interface GJPaintingCamera : GPUImageOutput <GJCameraProtocal>
+@interface GJPaintingCamera : GPUImageOutput <GJCameraProtocal,GJPaintingViewDeletage>
 {
     GPUImageRotationMode inputRotation;
     GLfloat backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha;
+    dispatch_semaphore_t imageCaptureSemaphore;
     GLProgram *filterProgram;
     GLint inVertex;
-    GLint mvp,vertexColor;
+    GLint mvp,pointSize,vertexColor,texture;
     CGSize _paintingViewSize;
 }
-@property(nonatomic, readonly) GJImageView * paintingView;
+@property(nonatomic, readonly) GJPaintingView * paintingView;
 @property(nonatomic, readwrite) CGPoint location;
 @property(nonatomic, readwrite) CGPoint previousLocation;
 
