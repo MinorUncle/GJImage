@@ -148,6 +148,11 @@ void vertexGroupAddVertex(GVertexGroup* group,const GVertex* vertex){
         group->vertexs = (GVertex*)realloc(group->vertexs, sizeof(GVertex)*(group->vertexCount+GROUP_CAPACITY));
         NSLog(@"count:%d",group->vertexCount);
     }
+    printf("x:%f,y:%f\n",vertex->x,vertex->y);
+    if (group->vertexCount > 1) {
+        assert( vertex->x - group->vertexs[group->vertexCount-1].x > -0.2);
+
+    }
     group->vertexs[group->vertexCount++] = *vertex;
 }
 
@@ -385,6 +390,9 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         GVertex ref = GLKVector2Add(p1, p);
         
         CGFloat distance = GLKVector2Distance(p1, ref);
+        if (distance < 0.000001) {
+            return;
+        }
         CGFloat difX = p1.x - ref.x;
         CGFloat difY = p1.y - ref.y;
         CGFloat ratio = -1.0 * (toTravel / distance);
@@ -475,6 +483,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
             int segments = distance / QUADRATIC_DISTANCE_TOLERANCE;
             CGFloat startPenThickness = previousThickness;
             CGFloat endPenThickness = penThickness;
+            previousThickness = penThickness;
 
             for (int i = 0; i<segments; i++) {
                 CGFloat thickness = startPenThickness + (endPenThickness-startPenThickness)*i/segments;
@@ -486,9 +495,10 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         }else if (gesture.state == UIGestureRecognizerStateBegan){
             previousPoint = location;
             previousMidPoint = location;
+            previousMidPoint.x -= 2;
             previousThickness = newThickness;
             
-            previousVertex = [self viewPointToGLPoint:location viewSize:viewSize];
+            previousVertex = [self viewPointToGLPoint:previousMidPoint viewSize:viewSize];
 
             GVertexGroup* group = groupClusterGetNewGroup(lineCluster, brushColor);
             vertexGroupAddVertex(group, &previousVertex);
