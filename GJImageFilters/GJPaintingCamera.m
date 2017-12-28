@@ -113,7 +113,7 @@ static NSString *const kGJPaintingVertexShaderString = GJSHADER_STRING
      uniform mat4 MVP;
      void main()
     {
-        gl_Position = MVP *   vec4(inVertex, 1.0, 1.0);
+        gl_Position = MVP *   vec4(inVertex.x,inVertex.y, 1.0, 1.0);
     }
  );
 
@@ -133,17 +133,15 @@ typedef struct _GVertexGroup{//一个点集合,例如表示一个线段，一个
     GLint vertexCount;
     GVertexColor vertexColor;
 }GVertexGroup;
-void vertexGroupCreate(GVertexGroup** aGroup){
-    *aGroup = (GVertexGroup*)malloc(sizeof(GVertexGroup*));
-    GVertexGroup* group = *aGroup;
+void vertexGroupInit(GVertexGroup* group,GVertexColor color){
     group->vertexCount = 0;
     group->vertexs = NULL;
+    group->vertexColor = color;
 }
-void vertexGroupFree(GVertexGroup* group){
+void vertexGroupUnInit(GVertexGroup* group){
     if (group->vertexs) {
         free(group->vertexs);
     }
-    free(group);
 }
 void vertexGroupAddVertex(GVertexGroup* group,const GVertex* vertex){
     if (group->vertexCount % GROUP_CAPACITY == 0) {
@@ -158,33 +156,31 @@ typedef struct _GVertexGroupCluster{
     GVertexGroup* groups;
     GLint groupCount;
 }GVertexGroupCluster;
-void vertexGroupClusterCreate(GVertexGroupCluster** cluster){
+void groupClusterCreate(GVertexGroupCluster** cluster){
     *cluster = (GVertexGroupCluster*)malloc(sizeof(GVertexGroupCluster));
     GVertexGroupCluster* lineCluster = *cluster;
     lineCluster->groupCount = 0;
 }
 GVertexGroup* groupClusterGetLastGroup(GVertexGroupCluster* cluster){
     if (cluster->groupCount > 0) {
-        return cluster->groups+cluster->groupCount-1;
+        return cluster->groups + cluster->groupCount-1;
     }else{
         return NULL;
     }
 }
 GVertexGroup* groupClusterGetNewGroup(GVertexGroupCluster* cluster,GVertexColor color){
-    GVertexGroup* group;
-    vertexGroupCreate(&group);
     if (cluster->groupCount % CLUSTER_CAPACITY == 0) {
-        cluster->groups = realloc(cluster->groups, sizeof(GVertexGroup*)*(cluster->groupCount+CLUSTER_CAPACITY));
+        cluster->groups = realloc(cluster->groups, sizeof(GVertexGroup)*(cluster->groupCount+CLUSTER_CAPACITY));
     }
-    memcmp((void*)(cluster->groups+cluster->groupCount), (void*)group, sizeof(GVertexGroup*));
-    group->vertexColor = color;
-    cluster->groupCount++;
-    return cluster->groups+cluster->groupCount-1;
+    vertexGroupInit(cluster->groups + cluster->groupCount,color);
+    return cluster->groups + cluster->groupCount++;
 }
 void groupClusterFree(GVertexGroupCluster* cluster){
-    for (int i = cluster->groupCount-1; i >= 0; i++) {
-        vertexGroupFree(cluster->groups + i);
+    
+    for (int i = 0; i < cluster->groupCount; i++) {
+        vertexGroupUnInit(cluster->groups + i);
     }
+    free(cluster->groups);
     free(cluster);
 }
 
@@ -217,6 +213,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     CGFloat penThickness;
     CGFloat previousThickness;
     GVertexGroupCluster* lineCluster;
+    uint8_t* bufferMemory;
 }
 @property(retain,nonatomic)CADisplayLink* fpsTimer;
 
@@ -271,11 +268,11 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         backgroundColorGreen = 0.1;
         backgroundColorAlpha = 1.0;
         frameRenderingSemaphore = dispatch_semaphore_create(1);
-        brushColor.r= 0.8 * kBrushOpacity;
-        brushColor.g = 0.1 * kBrushOpacity;
-        brushColor.b = 0.1 * kBrushOpacity;
+        brushColor.r= 0.2 * kBrushOpacity;
+        brushColor.g = 0.6 * kBrushOpacity;
+        brushColor.b = 0.2 * kBrushOpacity;
         brushColor.a = kBrushOpacity;
-        vertexGroupClusterCreate(&lineCluster);
+        groupClusterCreate(&lineCluster);
         [self setupProgram];
 
         // Set the view's scale factor as you wish
@@ -321,7 +318,8 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         glGenBuffers(1, &vertexBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertexArray);
         int step = sizeof(GVertex);
-        glBufferData(GL_ARRAY_BUFFER, MAXIMUM_VERTECES*step, NULL, GL_DYNAMIC_DRAW);
+        bufferMemory = malloc(MAXIMUM_VERTECES*step);
+        glBufferData(GL_ARRAY_BUFFER, MAXIMUM_VERTECES*step, bufferMemory, GL_DYNAMIC_DRAW);
 
         glEnableVertexAttribArray(inVertex);
         glVertexAttribPointer(inVertex, 2, GL_FLOAT, GL_FALSE, step, 0);
@@ -335,7 +333,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     if(!CGSizeEqualToSize(size, _paintingViewSize)){
 
         _paintingViewSize = size;
-        GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0, _paintingViewSize.width, 0, _paintingViewSize.height, -1, 1);
+        GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(-1, 1, -1, 1, -0.1, 2.0);
         GLKMatrix4 modelViewMatrix = GLKMatrix4Identity; // this sample uses a constant identity modelView matrix
         GLKMatrix4 MVPMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
         glError();
@@ -409,27 +407,47 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     
 }
 -(void)drawGroup:(GVertexGroup*)group{
-    runAsynchronouslyOnVideoProcessingQueue(^{
+    if (group == NULL) {
+        return;
+    }
         [GPUImageContext setActiveShaderProgram:filterProgram];
-        
-        outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:_paintingViewSize textureOptions:self.outputTextureOptions onlyTexture:NO];
+        if (outputFramebuffer == nil) {
+            outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:_paintingViewSize textureOptions:self.outputTextureOptions onlyTexture:NO];
+        }
         [outputFramebuffer activateFramebuffer];
-        
+        glError();
+
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
         glBindVertexArrayOES(vertexArray);
+        glError();
         if (group->vertexCount > 0) {
-            uint8_t* data = glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
-            int step = sizeof(GVertex);
-            for (int i = 0 ; i<group->vertexCount; i++) {
-                memcmp(data+i*step, (group->vertexs+i), sizeof(GVertex));
-            }
+            GVertex* data = glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
+            data[0].x = 1.0;
+            data[0].y = 1.0;
+            data[1].x = -1.0;
+            data[1].y = 1.0;
+            data[2].x = 1.0;
+            data[2].y = -1.0;
+            glError();
+//            int step = sizeof(GVertex);
+//            for (int i = 0 ; i<group->vertexCount; i++) {
+//                memcpy(data+i*step, (group->vertexs+i), sizeof(GVertex));
+//            }
             glUnmapBufferOES(GL_ARRAY_BUFFER);
         }
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, group->vertexCount);
+        glError();
+
+        glDrawArrays(GL_TRIANGLE_STRIP, 0,3);
+        glError();
+
         glBindVertexArrayOES(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-    });
-
+//        static NSDate* predata;
+//        NSDate* cdata = [NSDate date];
+//        if (predata) {
+//            NSLog(@"fps:%f",1.0/[cdata timeIntervalSinceDate:predata]);
+//        }
+//        predata = cdata;
 }
 #define VELOCITY_CLAMP_MIN 20
 #define VELOCITY_CLAMP_MAX 200
@@ -439,47 +457,54 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 #define STROKE_WIDTH_MAX 0.030
 
 -(void)panEvent:(UIPanGestureRecognizer*)gesture{
-    CGSize viewSize = _paintingView.bounds.size;
-    CGPoint veloctiy = [gesture velocityInView:_paintingView];
-    CGPoint location = [gesture locationInView:_paintingView];
-    GVertex cVeloctiy = [self viewPointToGLPoint:veloctiy viewSize:viewSize];
-    CGFloat veloctiyValue =  sqrtf(veloctiy.x * veloctiy.x + veloctiy.y * veloctiy.y);
-    CGFloat clampedVeloctiyValue = MIN(VELOCITY_CLAMP_MAX,MAX(veloctiyValue, VELOCITY_CLAMP_MIN));
-    CGFloat normalizedVeloctiyValue = (clampedVeloctiyValue - VELOCITY_CLAMP_MIN) / (VELOCITY_CLAMP_MAX - VELOCITY_CLAMP_MIN);
-    CGFloat newThickness = (STROKE_WIDTH_MAX - STROKE_WIDTH_MIN) * (1 - normalizedVeloctiyValue) + (STROKE_WIDTH_MIN);
-    if (gesture.state == UIGestureRecognizerStateChanged) {//开始放在第一位，效率更高
-        CGPoint mid = CGPointMake((location.x+previousPoint.x)*0.5, (location.y+previousPoint.y)*0.5);
-        CGFloat distance = (mid.x - previousMidPoint.x) * (mid.x - previousMidPoint.x) ;
-        distance += (mid.y - previousMidPoint.y) * (mid.y - previousMidPoint.y);
-        distance = sqrtf(distance);
-        int segments = distance / QUADRATIC_DISTANCE_TOLERANCE;
-        CGFloat startPenThickness = previousThickness;
-        CGFloat endPenThickness = penThickness;
+    runSynchronouslyOnVideoProcessingQueue(^{
 
-        for (int i = 0; i<segments; i++) {
-            CGFloat thickness = startPenThickness + (endPenThickness-startPenThickness)*i/segments;
-            CGPoint point = quadraticPointInCurve(previousMidPoint,mid,previousPoint,(CGFloat)i/segments);
-            GVertex wfv = [self viewPointToGLPoint:point viewSize:viewSize];
-            [self addTriangleStripPointsForPrevious:previousVertex next:wfv thickness:thickness];
-            previousVertex = wfv;
+        CGSize viewSize = _paintingView.bounds.size;
+        CGPoint veloctiy = [gesture velocityInView:_paintingView];
+        CGPoint location = [gesture locationInView:_paintingView];
+    //    GVertex cVeloctiy = [self viewPointToGLPoint:veloctiy viewSize:viewSize];
+        CGFloat veloctiyValue =  sqrtf(veloctiy.x * veloctiy.x + veloctiy.y * veloctiy.y);
+        CGFloat clampedVeloctiyValue = MIN(VELOCITY_CLAMP_MAX,MAX(veloctiyValue, VELOCITY_CLAMP_MIN));
+        CGFloat normalizedVeloctiyValue = (clampedVeloctiyValue - VELOCITY_CLAMP_MIN) / (VELOCITY_CLAMP_MAX - VELOCITY_CLAMP_MIN);
+        CGFloat newThickness = (STROKE_WIDTH_MAX - STROKE_WIDTH_MIN) * (1 - normalizedVeloctiyValue) + (STROKE_WIDTH_MIN);
+        penThickness = penThickness * STROKE_WIDTH_SMOOTHING + newThickness * (1 - STROKE_WIDTH_SMOOTHING);
+        
+        if (gesture.state == UIGestureRecognizerStateChanged) {//开始放在第一位，效率更高
+            CGPoint mid = CGPointMake((location.x+previousPoint.x)*0.5, (location.y+previousPoint.y)*0.5);
+            CGFloat distance = (mid.x - previousMidPoint.x) * (mid.x - previousMidPoint.x) ;
+            distance += (mid.y - previousMidPoint.y) * (mid.y - previousMidPoint.y);
+            distance = sqrtf(distance);
+            int segments = distance / QUADRATIC_DISTANCE_TOLERANCE;
+            CGFloat startPenThickness = previousThickness;
+            CGFloat endPenThickness = penThickness;
+
+            for (int i = 0; i<segments; i++) {
+                CGFloat thickness = startPenThickness + (endPenThickness-startPenThickness)*i/segments;
+                CGPoint point = quadraticPointInCurve(previousMidPoint,mid,previousPoint,(CGFloat)i/segments);
+                GVertex wfv = [self viewPointToGLPoint:point viewSize:viewSize];
+                [self addTriangleStripPointsForPrevious:previousVertex next:wfv thickness:thickness];
+                previousVertex = wfv;
+            }
+        }else if (gesture.state == UIGestureRecognizerStateBegan){
+            previousPoint = location;
+            previousMidPoint = location;
+            previousThickness = newThickness;
+            
+            previousVertex = [self viewPointToGLPoint:location viewSize:viewSize];
+            GVertex startVertex = [self viewPointToGLPoint:CGPointMake(location.x+1, location.y+1) viewSize:viewSize];
+            previousMidPoint = CGPointMake(location.x+0.5, location.y + 0.5);
+
+            GVertexGroup* group = groupClusterGetNewGroup(lineCluster, brushColor);
+            vertexGroupAddVertex(group, &startVertex);
+            vertexGroupAddVertex(group, &previousVertex);
+        }else if(gesture.state == UIGestureRecognizerStateEnded || gesture.state == UIGestureRecognizerStateCancelled){
+            GVertex vertex = [self viewPointToGLPoint:location viewSize:viewSize];
+            GVertexGroup* group = groupClusterGetLastGroup(lineCluster);
+            vertexGroupAddVertex(group, &vertex);
         }
-        
-    }else if (gesture.state == UIGestureRecognizerStateBegan){
-        previousPoint = location;
-        previousMidPoint = location;
-        previousThickness = newThickness;
-        
-        previousVertex = [self viewPointToGLPoint:location viewSize:viewSize];
-        GVertexGroup* group = groupClusterGetNewGroup(lineCluster, brushColor);
-        vertexGroupAddVertex(group, &previousVertex);
-        vertexGroupAddVertex(group, &previousVertex);
-    }else if(gesture.state == UIGestureRecognizerStateEnded || gesture.state == UIGestureRecognizerStateCancelled){
-        GVertex vertex = [self viewPointToGLPoint:location viewSize:viewSize];
-        GVertexGroup* group = groupClusterGetLastGroup(lineCluster);
-        vertexGroupAddVertex(group, &vertex);
-    }
-    [self drawGroup:groupClusterGetLastGroup(lineCluster)];
+    });
 }
+
 -(void)longTapEvent:(UITapGestureRecognizer*)gesture{
     
 }
@@ -552,6 +577,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         return;
     }
     runAsynchronouslyOnVideoProcessingQueue(^{
+        [self drawGroup:groupClusterGetLastGroup(lineCluster)];
         for (id<GPUImageInput> currentTarget in targets)
         {
             NSInteger indexOfObject = [targets indexOfObject:currentTarget];
