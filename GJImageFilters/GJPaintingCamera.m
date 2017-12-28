@@ -122,7 +122,7 @@ static NSString *const kGJPaintingFragmentShaderString = GJSHADER_STRING
      uniform lowp vec4 vertexColor;
      void main()
     {
-        gl_FragColor = vertexColor;
+        gl_FragColor = vec4(1.0,0.4,0.4,1.0);
     }
  );
 typedef GLKVector2 GVertex;
@@ -333,7 +333,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     if(!CGSizeEqualToSize(size, _paintingViewSize)){
 
         _paintingViewSize = size;
-        GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(-1, 1, -1, 1, -0.1, 2.0);
+        GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(-1, 1, -1, 1, -2.0, 2.0);
         GLKMatrix4 modelViewMatrix = GLKMatrix4Identity; // this sample uses a constant identity modelView matrix
         GLKMatrix4 MVPMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
         glError();
@@ -491,15 +491,14 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
             previousThickness = newThickness;
             
             previousVertex = [self viewPointToGLPoint:location viewSize:viewSize];
-            GVertex startVertex = [self viewPointToGLPoint:CGPointMake(location.x+1, location.y+1) viewSize:viewSize];
-            previousMidPoint = CGPointMake(location.x+0.5, location.y + 0.5);
 
             GVertexGroup* group = groupClusterGetNewGroup(lineCluster, brushColor);
-            vertexGroupAddVertex(group, &startVertex);
+            vertexGroupAddVertex(group, &previousVertex);
             vertexGroupAddVertex(group, &previousVertex);
         }else if(gesture.state == UIGestureRecognizerStateEnded || gesture.state == UIGestureRecognizerStateCancelled){
             GVertex vertex = [self viewPointToGLPoint:location viewSize:viewSize];
             GVertexGroup* group = groupClusterGetLastGroup(lineCluster);
+            vertexGroupAddVertex(group, &vertex);
             vertexGroupAddVertex(group, &vertex);
         }
     });

@@ -951,7 +951,7 @@ static NSString* getCapturePresetWithSize(CGSize size) {
             
             CVReturn err;
             // Y-plane
-            glActiveTexture(GL_TEXTURE4);
+//            glActiveTexture(GL_TEXTURE4);
             if ([GPUImageContext deviceSupportsRedTextures])
             {
 //                err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, coreVideoTextureCache, cameraFrame, NULL, GL_TEXTURE_2D, GL_RED_EXT, bufferWidth, bufferHeight, GL_RED_EXT, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
@@ -972,7 +972,7 @@ static NSString* getCapturePresetWithSize(CGSize size) {
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             
             // UV-plane
-            glActiveTexture(GL_TEXTURE5);
+//            glActiveTexture(GL_TEXTURE5);
             if ([GPUImageContext deviceSupportsRedTextures])
             {
 //                err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, coreVideoTextureCache, cameraFrame, NULL, GL_TEXTURE_2D, GL_RG_EXT, bufferWidth/2, bufferHeight/2, GL_RG_EXT, GL_UNSIGNED_BYTE, 1, &chrominanceTextureRef);
