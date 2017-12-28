@@ -148,11 +148,7 @@ void vertexGroupAddVertex(GVertexGroup* group,const GVertex* vertex){
         group->vertexs = (GVertex*)realloc(group->vertexs, sizeof(GVertex)*(group->vertexCount+GROUP_CAPACITY));
         NSLog(@"count:%d",group->vertexCount);
     }
-    printf("x:%f,y:%f\n",vertex->x,vertex->y);
-    if (group->vertexCount > 1) {
-        assert( vertex->x - group->vertexs[group->vertexCount-1].x > -0.2);
 
-    }
     group->vertexs[group->vertexCount++] = *vertex;
 }
 
@@ -458,7 +454,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 #define VELOCITY_CLAMP_MIN 20
 #define VELOCITY_CLAMP_MAX 200
 #define STROKE_WIDTH_SMOOTHING 0.5     // Low pass filter alpha
-#define QUADRATIC_DISTANCE_TOLERANCE 3.0
+#define QUADRATIC_DISTANCE_TOLERANCE 2.0
 #define STROKE_WIDTH_MIN 0.004 // Stroke width determined by touch velocity
 #define STROKE_WIDTH_MAX 0.030
 
@@ -492,6 +488,8 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
                 [self addTriangleStripPointsForPrevious:previousVertex next:wfv thickness:thickness];
                 previousVertex = wfv;
             }
+            previousMidPoint = mid;
+            previousPoint = location;
         }else if (gesture.state == UIGestureRecognizerStateBegan){
             previousPoint = location;
             previousMidPoint = location;
