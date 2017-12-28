@@ -214,6 +214,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     CGFloat previousThickness;
     GVertexGroupCluster* lineCluster;
     uint8_t* bufferMemory;
+    BOOL needClear;
 }
 @property(retain,nonatomic)CADisplayLink* fpsTimer;
 
@@ -231,13 +232,11 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 //
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
     if (object == _paintingView && [keyPath isEqualToString:@"frame"]) {
-        runSynchronouslyOnVideoProcessingQueue(^{
-            [GPUImageContext useImageProcessingContext];
-            CGSize size = _paintingView.bounds.size;
-            size.height *= _paintingView.contentScaleFactor;
-            size.width *= _paintingView.contentScaleFactor;
-            [self updateSizeWithSize:size];
-        });
+      
+        CGSize size = _paintingView.bounds.size;
+        size.height *= _paintingView.contentScaleFactor;
+        size.width *= _paintingView.contentScaleFactor;
+        [self updateSizeWithSize:size];
     }
 }
 //// The GL view is stored in the nib file. When it's unarchived it's sent -initWithCoder:
@@ -313,6 +312,11 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         [GPUImageContext setActiveShaderProgram:filterProgram];
         glUniform4fv(vertexColor, 1, &brushColor);
 
+        GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(-1, 1, -1, 1, -2.0, 2.0);
+        GLKMatrix4 modelViewMatrix = GLKMatrix4Identity; // this sample uses a constant identity modelView matrix
+        GLKMatrix4 MVPMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
+        glUniformMatrix4fv(mvp, 1, GL_FALSE, MVPMatrix.m);
+        
         glGenVertexArraysOES(1, &vertexArray);
         glBindVertexArrayOES(vertexArray);
         glGenBuffers(1, &vertexBuffer);
@@ -325,38 +329,29 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         glVertexAttribPointer(inVertex, 2, GL_FLOAT, GL_FALSE, step, 0);
         glBindVertexArrayOES(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+        
+        
     });
 }
 
 -(void)updateSizeWithSize:(CGSize)size{
     // viewing matrices
-    if(!CGSizeEqualToSize(size, _paintingViewSize)){
-
-        _paintingViewSize = size;
-        GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(-1, 1, -1, 1, -2.0, 2.0);
-        GLKMatrix4 modelViewMatrix = GLKMatrix4Identity; // this sample uses a constant identity modelView matrix
-        GLKMatrix4 MVPMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
-        glError();
+    runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext setActiveShaderProgram:filterProgram];
+        if(!CGSizeEqualToSize(size, _paintingViewSize)){
 
-        glUniformMatrix4fv(mvp, 1, GL_FALSE, MVPMatrix.m);
-        glError();
+            _paintingViewSize = size;
+           if (outputFramebuffer) {
+                [outputFramebuffer unlock];
+            }
 
-        if (outputFramebuffer) {
-            [outputFramebuffer unlock];
+            outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
+            [outputFramebuffer activateFramebuffer];
+            glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
+            glClear(GL_COLOR_BUFFER_BIT);
+            glError();
         }
-        glError();
-
-        outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
-        [outputFramebuffer activateFramebuffer];
-        glError();
-
-        glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_POINTS, 0, 0);
-        glError();
-
-    }
+    });
 
 }
 
@@ -422,22 +417,25 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         glError();
         if (group->vertexCount > 0) {
             GVertex* data = glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
-            data[0].x = 1.0;
-            data[0].y = 1.0;
-            data[1].x = -1.0;
-            data[1].y = 1.0;
-            data[2].x = 1.0;
-            data[2].y = -1.0;
+//            data[0].x = 0.5;
+//            data[0].y = 0.5;
+//            data[1].x = -0.5;
+//            data[1].y = 0.5;
+//            data[2].x = 0.5;
+//            data[2].y = -0.5;
             glError();
 //            int step = sizeof(GVertex);
+            memcpy(data, group->vertexs, sizeof(GVertex)*group->vertexCount);
 //            for (int i = 0 ; i<group->vertexCount; i++) {
-//                memcpy(data+i*step, (group->vertexs+i), sizeof(GVertex));
+//                data[i] = group->vertexs[i];
+//                printf("x:%f ,y:%f",data[i].x,data[i].y);
 //            }
+//            printf("\n");
             glUnmapBufferOES(GL_ARRAY_BUFFER);
         }
         glError();
 
-        glDrawArrays(GL_TRIANGLE_STRIP, 0,3);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0,group->vertexCount);
         glError();
 
         glBindVertexArrayOES(0);
@@ -505,13 +503,20 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 }
 
 -(void)longTapEvent:(UITapGestureRecognizer*)gesture{
-    
+    runAsynchronouslyOnVideoProcessingQueue(^{
+        [GPUImageContext useImageProcessingContext];
+        if (outputFramebuffer) {
+            [outputFramebuffer activateFramebuffer];
+            glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+    });
 }
 
 -(GVertex)viewPointToGLPoint:(CGPoint)point viewSize:(CGSize)size{
     GVertex vertex;
     vertex.x = point.x / size.width * 2.0 - 1;
-    vertex.y = 1 - point.y / size.height*2.0;
+    vertex.y = (point.y / size.height*2 - 1);
     return vertex;
 }
 
