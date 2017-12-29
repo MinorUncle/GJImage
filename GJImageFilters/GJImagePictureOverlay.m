@@ -76,7 +76,9 @@
     BOOL finsh;
     NSInteger currentIndex = _frameCount%_overlays.count;
     GJOverlayAttribute* attribute = _overlays[currentIndex];
-    if (_fps <= 0 || [current timeIntervalSinceDate:_nextDate] > 0) {
+    CGFloat interval = [current timeIntervalSinceDate:_nextDate];
+    NSLog(@"interval:%f",interval);
+    if (_fps <= 0 || interval > 0) {
         if (_frameCount%_overlays.count == _overlays.count -1) {
             finsh = YES;
         }else{
@@ -89,7 +91,7 @@
                 _frameCache[@(currentIndex)] = nil;
             }
         }
-        
+        _frameCount ++;
         if (finsh) {
             outputFramebuffer = firstInputFramebuffer;
             _updateBlock = nil;
@@ -172,7 +174,6 @@
 //    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glFlush();
     [firstInputFramebuffer unlock];
-    _frameCount ++;
     
     if (usingNextFrameForImageCapture)
     {

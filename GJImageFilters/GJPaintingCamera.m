@@ -24,7 +24,7 @@ printf("glError: %04x caught at %s:%u\n", err, __FILE__, __LINE__); \
 #define kBrushPixelStep		3
 #define kBrushScale			2
 
-#define TIP_OFFSET_RATE_MAX  0.5 //max pen tip offest,min is zero
+#define TIP_OFFSET_RATE_MAX  0.4 //max pen tip offest,min is zero
 #define VELOCITY_CLAMP_MIN 20
 #define VELOCITY_CLAMP_MAX 5000
 #define STROKE_WIDTH_SMOOTHING 0.5     // Low pass filter alpha
@@ -128,9 +128,18 @@ void groupClusterCreate(GVertexGroupCluster** cluster){
     GVertexGroupCluster* lineCluster = *cluster;
     lineCluster->groupCount = 0;
 }
+
 GVertexGroup* groupClusterGetLastGroup(GVertexGroupCluster* cluster){
     if (cluster->groupCount > 0) {
         return cluster->groups + cluster->groupCount-1;
+    }else{
+        return NULL;
+    }
+}
+
+GVertexGroup* groupClusterGetGroup(GVertexGroupCluster* cluster,int index){
+    if (cluster->groupCount > index) {
+        return cluster->groups + index;
     }else{
         return NULL;
     }
@@ -183,7 +192,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 //    let ret = GLKVector3.init(v: (p2.vertex.y - p1.vertex.y, -1 * (p2.vertex.x - p1.vertex.x), 0))
     return GLKVector2Make(p2.y - p1.y, p1.x - p2.x);
 }
-@interface GJPaintingCamera()<UIGestureRecognizerDelegate>
+@interface GJPaintingCamera()
 {
     
     GVertexColor brushColor;          // brush color
@@ -230,7 +239,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 - (id)init {
 
     if ((self = [super init])) {
-        _paintingViewSize = CGSizeZero;
+        _captureSize = CGSizeZero;
         _paintingView = [[GJImageView alloc]init];
 
         
@@ -242,7 +251,6 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         [_paintingView addGestureRecognizer:tapGesture];
         
         UIPanGestureRecognizer* panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panEvent:)];
-        panGesture.delegate = self;
         [_paintingView addGestureRecognizer:panGesture];
         
         UILongPressGestureRecognizer* longPressGesture = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(longTapEvent:)];
@@ -256,14 +264,14 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         // In this application, we want to retain the EAGLDrawable contents after a call to presentRenderbuffer.
         eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
                                         [NSNumber numberWithBool:YES], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
-        backgroundColorRed = 1.0;
-        backgroundColorBlue = 1.0;
-        backgroundColorGreen = 1.0;
-        backgroundColorAlpha = 1.0;
+        backgroundColorRed = 0.0;
+        backgroundColorBlue = 0.0;
+        backgroundColorGreen = 0.0;
+        backgroundColorAlpha = 0.0;
         frameRenderingSemaphore = dispatch_semaphore_create(1);
-        brushColor.r= 0.6;
-        brushColor.g = 0.2;
-        brushColor.b = 0.2;
+        brushColor.r= 0.8;
+        brushColor.g = 0.4;
+        brushColor.b = 0.4;
         brushColor.a = kBrushOpacity;
         penThickness = 0.003;
         groupClusterCreate(&lineCluster);
@@ -324,8 +332,6 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         glVertexAttribPointer(inVertex, 2, GL_FLOAT, GL_FALSE, step, 0);
         glBindVertexArrayOES(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        
-        
     });
 }
 
@@ -333,17 +339,26 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     // viewing matrices
     runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext setActiveShaderProgram:filterProgram];
-        if(!CGSizeEqualToSize(size, _paintingViewSize)){
+        if(!CGSizeEqualToSize(size, _captureSize)){
+            CGFloat xScale = size.width / _captureSize.width;
+            CGFloat yScale = size.height / _captureSize.height;
 
-            _paintingViewSize = size;
+            [self willChangeValueForKey:@"captureSize"];
+            _captureSize = size;
+            [self didChangeValueForKey:@"captureSize"];
+            for (int i = 0; i< lineCluster->groupCount; i++) {
+                GVertexGroup * group = lineCluster->groups + i;
+                for (int j = 0; j < group->vertexCount; j++) {
+                    GVertex* vertext = group->vertexs + j;
+                    vertext->x /= xScale;
+                    vertext->y /= yScale;
+                }
+            }
            if (outputFramebuffer) {
                 [outputFramebuffer unlock];
             }
-
             outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
-            [outputFramebuffer activateFramebuffer];
-            glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-            glClear(GL_COLOR_BUFFER_BIT);
+            [self updateScene];
         }
     });
 
@@ -379,16 +394,15 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 }
 
 -(void) addTriangleStripPointsForPrevious:(GVertex)previous next:(GVertex)next thickness:(CGFloat)penThickness {
-    CGFloat toTravel = penThickness / 2.0 ;
+    CGFloat offset = MIN(TIP_OFFSET_RATE_MAX, (1 - penThickness/STROKE_WIDTH_MAX))*penThickness;
+    CGFloat toTravel = penThickness / 2.0 + offset ;
     for(int i = 0;i<2 ;i++) {
         GVertex p = perpendicular( previous, next);
         GVertex p1 = next;
         GVertex ref = GLKVector2Add(p1, p);
         
         CGFloat distance = GLKVector2Distance(p1, ref);
-        if (distance < 0.000001) {
-            return;
-        }
+       
         CGFloat difX = p1.x - ref.x;
         CGFloat difY = p1.y - ref.y;
         CGFloat ratio = -1.0 * (toTravel / distance);
@@ -413,15 +427,32 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 -(void)doubleTapEvent:(UITapGestureRecognizer*)gesture{
     runAsynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext setActiveShaderProgram:filterProgram];
-        GVertexGroup* lastGroup = groupClusterGetLastGroup(lineCluster);
-        if (lastGroup) {
-            glUniform4f(vertexColor, backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-            [self drawGroup:lastGroup];
-            groupClusterDeleteLastGroup(lineCluster);
-            glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor);
-        }
+        groupClusterDeleteLastGroup(lineCluster);
+        [self updateScene];
     });
 }
+-(void)updateScene{
+    [GPUImageContext setActiveShaderProgram:filterProgram];
+
+    [outputFramebuffer activateFramebuffer];
+    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBindVertexArrayOES(vertexArray);
+    GVertex* data = glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
+    int indexCount = 0;
+    for (int i = 0 ; i<lineCluster->groupCount; i++) {
+        GVertexGroup* group = groupClusterGetGroup(lineCluster, i);
+        memcpy(data + indexCount, group->vertexs, sizeof(GVertex)*group->vertexCount);
+        indexCount += group->vertexCount;
+    }
+    glUnmapBufferOES(GL_ARRAY_BUFFER);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0,indexCount);
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
 -(void)drawGroup:(GVertexGroup*)group{
     
     if (group == NULL || !group->needUpdate) {
@@ -433,7 +464,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor);
     }
     if (outputFramebuffer == nil) {
-        outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:_paintingViewSize textureOptions:self.outputTextureOptions onlyTexture:NO];
+        outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:_captureSize textureOptions:self.outputTextureOptions onlyTexture:NO];
     }
     [outputFramebuffer activateFramebuffer];
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -488,7 +519,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
             
             previousPoint = location;
             previousMidPoint = location;
-            previousMidPoint.x -= 2;
+//            previousMidPoint.x -= 2;
             previousThickness = newThickness;
             
             previousVertex = [self viewPointToGLPoint:previousMidPoint viewSize:viewSize];
@@ -566,14 +597,9 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 }
 
 -(void)setCaptureSize:(CGSize)captureSize{
-    GJLOG(GNULL, GJ_LOGDEBUG, "UICapture can't set capture size");
+    GJLOG(GNULL, GJ_LOGFORBID, "UICapture can't set capture size");
 //    GJAssert(0, "set painting camera size WITH painting view frame");
 };
-
--(CGSize)captureSize{
-
-    return _paintingViewSize;
-}
 
 - (AVCaptureDevicePosition)cameraPosition{
     return AVCaptureDevicePositionFront;
@@ -613,14 +639,5 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     runSynchronouslyOnVideoProcessingQueue(^{
         groupClusterFree(lineCluster);
     });
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
-    NSLog(@"touch:%f",touch.force);
-    return YES;
-}
--(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceivePress:(UIPress *)press{
-    NSLog(@"press:%f",press.force);
-    return YES;
 }
 @end

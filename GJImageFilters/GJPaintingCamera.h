@@ -64,7 +64,6 @@
     GLProgram *filterProgram;
     GLint inVertex;
     GLint mvp,vertexColor;
-    CGSize _paintingViewSize;
 }
 @property(nonatomic, readonly) GJImageView * paintingView;
 @property(nonatomic, readwrite) CGPoint location;
@@ -74,6 +73,7 @@
 @property(readonly, nonatomic) BOOL isRunning;
 
 //设置采集的大小，如果不支持动画，务必自动设置成最佳的大小
+//kvo
 @property(assign, nonatomic) CGSize captureSize;
 @property(readonly, retain, nonatomic) AVCaptureSession *captureSession;
 @property (nonatomic,assign) CGFloat zoomFactor;
