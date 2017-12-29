@@ -85,16 +85,24 @@ static NSString *const kGJPaintingFragmentShaderString = GJSHADER_STRING
  );
 typedef GLKVector2 GVertex;
 typedef GLKVector4 GVertexColor;
+BOOL GVertextColorEquel(const GVertexColor* a,const GVertexColor* b){
+    return a->r - b->r > -0.000001 && a->r - b->r < 0.000001 &&
+            a->g - b->g > -0.000001 && a->g - b->g < 0.000001 &&
+                a->b - b->b > -0.000001 && a->b - b->b < 0.000001 &&
+                    a->a - b->a > -0.000001 && a->a - b->a < 0.000001;
+};
 #define GROUP_CAPACITY 500
 typedef struct _GVertexGroup{//一个点集合,例如表示一个线段，一个点
     GVertex* vertexs;
     GLint vertexCount;
     GVertexColor vertexColor;
+    BOOL needUpdate;//
 }GVertexGroup;
 void vertexGroupInit(GVertexGroup* group,GVertexColor color){
     group->vertexCount = 0;
     group->vertexs = NULL;
     group->vertexColor = color;
+    group->needUpdate = YES;
 }
 void vertexGroupUnInit(GVertexGroup* group){
     if (group->vertexs) {
@@ -106,7 +114,7 @@ void vertexGroupAddVertex(GVertexGroup* group,const GVertex* vertex){
         group->vertexs = (GVertex*)realloc(group->vertexs, sizeof(GVertex)*(group->vertexCount+GROUP_CAPACITY));
         NSLog(@"count:%d",group->vertexCount);
     }
-
+    group->needUpdate = YES;
     group->vertexs[group->vertexCount++] = *vertex;
 }
 
@@ -336,7 +344,6 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
             [outputFramebuffer activateFramebuffer];
             glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
             glClear(GL_COLOR_BUFFER_BIT);
-            glError();
         }
     });
 
@@ -352,21 +359,26 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 - (void)setBrushColorWithRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue
 {
 	// Update the brush color
-    brushColor.r= red * kBrushOpacity;
-    brushColor.g = green * kBrushOpacity;
-    brushColor.b = blue * kBrushOpacity;
-    brushColor.a = kBrushOpacity;
-    
-    runAsynchronouslyOnVideoProcessingQueue(^{
-        
-        [GPUImageContext setActiveShaderProgram:filterProgram];
-        glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor);
-    });
 
+    runAsynchronouslyOnVideoProcessingQueue(^{
+        GVertexGroup* group = groupClusterGetLastGroup(lineCluster);
+        if (group) {
+            group->vertexColor.r = red;
+            group->vertexColor.g = green;
+            group->vertexColor.b = blue;
+            group->vertexColor.a = kBrushOpacity;
+        }else{
+            brushColor.r= red;
+            brushColor.g = green;
+            brushColor.b = blue;
+            brushColor.a = kBrushOpacity;
+            [GPUImageContext setActiveShaderProgram:filterProgram];
+            glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor);
+        }
+    });
 }
 
 -(void) addTriangleStripPointsForPrevious:(GVertex)previous next:(GVertex)next thickness:(CGFloat)penThickness {
-    CGFloat offset = atan((next.y - previous.y) / (next.x - previous.x))/M_PI * 180;
     CGFloat toTravel = penThickness / 2.0 ;
     for(int i = 0;i<2 ;i++) {
         GVertex p = perpendicular( previous, next);
@@ -399,36 +411,42 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 
 }
 -(void)doubleTapEvent:(UITapGestureRecognizer*)gesture{
-    runSynchronouslyOnVideoProcessingQueue(^{
+    runAsynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext setActiveShaderProgram:filterProgram];
-        glUniform4f(vertexColor, backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-        [self drawGroup:groupClusterGetLastGroup(lineCluster)];
-        groupClusterDeleteLastGroup(lineCluster);
-        glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor);
+        GVertexGroup* lastGroup = groupClusterGetLastGroup(lineCluster);
+        if (lastGroup) {
+            glUniform4f(vertexColor, backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
+            [self drawGroup:lastGroup];
+            groupClusterDeleteLastGroup(lineCluster);
+            glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor);
+        }
     });
 }
 -(void)drawGroup:(GVertexGroup*)group{
     
-    if (group == NULL) {
+    if (group == NULL || !group->needUpdate) {
         return;
     }
     [GPUImageContext setActiveShaderProgram:filterProgram];
+    if (!GVertextColorEquel(&group->vertexColor, &brushColor)) {
+        brushColor = group->vertexColor;
+        glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor);
+    }
     if (outputFramebuffer == nil) {
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:_paintingViewSize textureOptions:self.outputTextureOptions onlyTexture:NO];
     }
     [outputFramebuffer activateFramebuffer];
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBindVertexArrayOES(vertexArray);
-    glError();
     if (group->vertexCount > 0) {
         GVertex* data = glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
         memcpy(data, group->vertexs, sizeof(GVertex)*group->vertexCount);
         glUnmapBufferOES(GL_ARRAY_BUFFER);
     }
-
     glDrawArrays(GL_TRIANGLE_STRIP, 0,group->vertexCount);
     glBindVertexArrayOES(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    group->needUpdate = NO;
 }
 
 
@@ -474,7 +492,12 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
             previousThickness = newThickness;
             
             previousVertex = [self viewPointToGLPoint:previousMidPoint viewSize:viewSize];
-            GVertexGroup* group = groupClusterGetNewGroup(lineCluster, brushColor);
+            GVertexGroup* lastGroup = groupClusterGetLastGroup(lineCluster);
+            GVertexColor groupColor = brushColor;
+            if (lastGroup) {
+                groupColor = lastGroup->vertexColor;
+            }
+            GVertexGroup* group = groupClusterGetNewGroup(lineCluster, groupColor);
             vertexGroupAddVertex(group, &previousVertex);
             vertexGroupAddVertex(group, &previousVertex);
         }else if(gesture.state == UIGestureRecognizerStateEnded || gesture.state == UIGestureRecognizerStateCancelled){
@@ -574,18 +597,11 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         {
             NSInteger indexOfObject = [targets indexOfObject:currentTarget];
             NSInteger textureIndexOfTarget = [[targetTextureIndices objectAtIndex:indexOfObject] integerValue];
-            glError();
 
             [self setInputFramebufferForTarget:currentTarget atIndex:textureIndexOfTarget];
-            glError();
-
             [currentTarget setInputSize:outputFramebuffer.size atIndex:textureIndexOfTarget];
             CMTime frameTime = CMTimeMake(CACurrentMediaTime()*1000,1000);
-            glError();
-
             [currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndexOfTarget];
-            glError();
-
         }
         
         dispatch_semaphore_signal(frameRenderingSemaphore);
