@@ -20,7 +20,7 @@ printf("glError: %04x caught at %s:%u\n", err, __FILE__, __LINE__); \
 
 //CONSTANTS:
 
-#define kBrushOpacity		(2.0 / 3.0)
+#define kBrushOpacity		(3.0 / 3.0)
 #define kBrushPixelStep		3
 #define kBrushScale			2
 
@@ -402,7 +402,9 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         GVertex ref = GLKVector2Add(p1, p);
         
         CGFloat distance = GLKVector2Distance(p1, ref);
-       
+        if (distance < 0.000001) {
+            return;
+        }
         CGFloat difX = p1.x - ref.x;
         CGFloat difY = p1.y - ref.y;
         CGFloat ratio = -1.0 * (toTravel / distance);
@@ -421,7 +423,56 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     }
 }
 -(void)tapEvent:(UITapGestureRecognizer*)gesture{
-    NSLog(@"signel");
+    CGPoint local = [gesture locationInView:_paintingView];
+    if (gesture.state == UIGestureRecognizerStateRecognized) {
+        runAsynchronouslyOnVideoProcessingQueue(^{
+            CGSize viewSize = _paintingView.bounds.size;
+            GVertex vertext = [self viewPointToGLPoint:local viewSize:viewSize];
+            CGFloat radius = (STROKE_WIDTH_MAX + STROKE_WIDTH_MIN)*0.5;
+            GLKVector2 rediusV = GLKVector2Make(radius*viewSize.height/viewSize.width, radius);
+            GLKVector2 point1 = GLKVector2Make(vertext.x, vertext.y + rediusV.y);
+            GLKVector2 point2 = GLKVector2Make(vertext.x + rediusV.x*sin(60/180.0*M_PI), vertext.y-rediusV.y*cos(60/180.0*M_PI));
+            GLKVector2 point3 = GLKVector2Make(vertext.x - rediusV.x*sin(60/180.0*M_PI), point2.y);
+
+            radius = radius*cos(30.0/180*M_PI)*2;
+            rediusV = GLKVector2Make(radius*viewSize.height/viewSize.width, radius);
+            int pointCount = 10;
+            GVertexColor color = brushColor;
+            GVertexGroup* last = groupClusterGetLastGroup(lineCluster);
+            if (last) {
+                color = last->vertexColor;
+            }
+            GVertexGroup* group = groupClusterGetNewGroup(lineCluster, color);
+            vertexGroupAddVertex(group, &point1);
+            GVertex point;
+            for (int i = 0; i<pointCount; i++) {
+                vertexGroupAddVertex(group, &point1);
+                point.x = point1.x - rediusV.x * cos((60+60.0*i/pointCount)/180*M_PI);
+                point.y = point1.y - rediusV.y * sin((60+60.0*i/pointCount)/180*M_PI);
+                vertexGroupAddVertex(group, &point);
+            }
+
+            for (int i = 0; i<pointCount; i++) {
+                vertexGroupAddVertex(group, &point2);
+                point.x = point2.x - rediusV.x * cos((60.0*i/pointCount)/180*M_PI);
+                point.y = point2.y + rediusV.y * sin((60.0*i/pointCount)/180*M_PI);
+                vertexGroupAddVertex(group, &point);
+            }
+//
+            for (int i = 0; i<pointCount; i++) {
+                vertexGroupAddVertex(group, &point3);
+                point.x = point3.x + rediusV.x * cos((60.0*i/pointCount)/180*M_PI);
+                point.y = point3.y + rediusV.y * sin((60.0*i/pointCount)/180*M_PI);
+                vertexGroupAddVertex(group, &point);
+            }
+            vertexGroupAddVertex(group, &point);
+            [self drawGroup:group];
+        });
+    }
+
+
+//    CGFloat radius = GLKVector2(v: (clamp(min: 0.00001, max: 0.02, value: penThickness * generateRandom(from: 0.5, to: 1.5)), clamp(min: 0.00001, max: 0.02, value: penThickness * generateRandom(from: 0.5, to: 1.5))));
+
 
 }
 -(void)doubleTapEvent:(UITapGestureRecognizer*)gesture{
@@ -482,19 +533,19 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 
 
 -(void)panEvent:(UIPanGestureRecognizer*)gesture{
-    
-    runSynchronouslyOnVideoProcessingQueue(^{
+    CGSize viewSize = _paintingView.bounds.size;
+    CGPoint veloctiy = [gesture velocityInView:_paintingView];
+    CGPoint location = [gesture locationInView:_paintingView];
+    UIGestureRecognizerState state = gesture.state;
+    runAsynchronouslyOnVideoProcessingQueue(^{
 
-        CGSize viewSize = _paintingView.bounds.size;
-        CGPoint veloctiy = [gesture velocityInView:_paintingView];
-        CGPoint location = [gesture locationInView:_paintingView];
         CGFloat veloctiyValue =  sqrtf(veloctiy.x * veloctiy.x + veloctiy.y * veloctiy.y);
         CGFloat clampedVeloctiyValue = MIN(VELOCITY_CLAMP_MAX,MAX(veloctiyValue, VELOCITY_CLAMP_MIN));
         CGFloat normalizedVeloctiyValue = (clampedVeloctiyValue - VELOCITY_CLAMP_MIN) / (VELOCITY_CLAMP_MAX - VELOCITY_CLAMP_MIN);
         CGFloat newThickness = (STROKE_WIDTH_MAX - STROKE_WIDTH_MIN) * (1 - normalizedVeloctiyValue) + (STROKE_WIDTH_MIN);
         penThickness = penThickness * STROKE_WIDTH_SMOOTHING + newThickness * (1 - STROKE_WIDTH_SMOOTHING);
         
-        if (gesture.state == UIGestureRecognizerStateChanged) {
+        if (state == UIGestureRecognizerStateChanged) {
             
             CGPoint mid = CGPointMake((location.x+previousPoint.x)*0.5, (location.y+previousPoint.y)*0.5);
             CGFloat distance = (mid.x - previousMidPoint.x) * (mid.x - previousMidPoint.x) ;
@@ -515,7 +566,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
             previousMidPoint = mid;
             previousPoint = location;
             
-        }else if (gesture.state == UIGestureRecognizerStateBegan){
+        }else if (state == UIGestureRecognizerStateBegan){
             
             previousPoint = location;
             previousMidPoint = location;
@@ -531,7 +582,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
             GVertexGroup* group = groupClusterGetNewGroup(lineCluster, groupColor);
             vertexGroupAddVertex(group, &previousVertex);
             vertexGroupAddVertex(group, &previousVertex);
-        }else if(gesture.state == UIGestureRecognizerStateEnded || gesture.state == UIGestureRecognizerStateCancelled){
+        }else if(state == UIGestureRecognizerStateEnded || state == UIGestureRecognizerStateCancelled){
             
             GVertex vertex = [self viewPointToGLPoint:location viewSize:viewSize];
             GVertexGroup* group = groupClusterGetLastGroup(lineCluster);
