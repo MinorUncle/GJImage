@@ -929,7 +929,7 @@ static NSString* getCapturePresetWithSize(CGSize size) {
         }
     }
 
-	CMTime currentTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+	CMTime currentTime = CMTimeMake(CACurrentMediaTime()*1000, 1000);
 
     [GPUImageContext useImageProcessingContext];
 
