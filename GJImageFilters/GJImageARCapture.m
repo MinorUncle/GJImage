@@ -24,6 +24,10 @@ static const void *kMetalLayerBufferKey = &kMetalLayerBufferKey;
     return obj;
 }
 -(void)setFreshImageBuffer:(NSNumber *)freshImageBuffer{
+    void* buffer = (void*)[self.freshImageBuffer longValue];
+    if (buffer) {
+        free(buffer);
+    }
     objc_setAssociatedObject(self, kMetalLayerBufferKey, freshImageBuffer, OBJC_ASSOCIATION_ASSIGN);
 }
 - (nullable id <CAMetalDrawable>)nextDrawable_swizzling{
@@ -47,6 +51,10 @@ static const void *kMetalLayerBufferKey = &kMetalLayerBufferKey;
 //        // Fallback on earlier versions
 //    }
     void* buffer = (void*)[self.freshImageBuffer longValue];
+    if(buffer == NULL){
+        buffer = malloc(1920*1080*4);
+        self.freshImageBuffer = @((long)buffer);
+    }
     [drawable.texture getBytes:buffer bytesPerRow:w*4 fromRegion:MTLRegionMake2D(0, 0, w, h) mipmapLevel:0];
     return drawable;
 }
@@ -101,10 +109,10 @@ static const void *kMetalLayerBufferKey = &kMetalLayerBufferKey;
         GJAssert(0, "setScene error");
     }
     
-    CAMetalLayer* metalLayer = (CAMetalLayer*)scene.scene.layer;
-    //临时解决办法，以后优化
-    void* buffer = malloc(1920*1080*4);
-    metalLayer.freshImageBuffer = @((long)buffer);
+//    CAMetalLayer* metalLayer = (CAMetalLayer*)scene.scene.layer;
+//    //临时解决办法，以后优化
+//    void* buffer = malloc(1920*1080*4);
+//    metalLayer.freshImageBuffer = @((long)buffer);
     
     if (_scene) {
         [_scene stopRun];
@@ -188,7 +196,7 @@ CGSize getSizeWithCapturePreset(NSString* capturePreset) {
             CGFloat scale = _scene.scene.layer.contentsScale;
             self.scene.scene.bounds = CGRectMake(0,0,captureSize.width/scale, captureSize.height/scale);
         }else{
-            dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_sync(dispatch_get_main_queue(), ^{
                 CGFloat scale = _scene.scene.layer.contentsScale;
                 self.scene.scene.bounds = CGRectMake(0,0,captureSize.width/scale, captureSize.height/scale);
             });

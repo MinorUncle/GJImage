@@ -77,7 +77,6 @@
     NSInteger currentIndex = _frameCount%_overlays.count;
     GJOverlayAttribute* attribute = _overlays[currentIndex];
     CGFloat interval = [current timeIntervalSinceDate:_nextDate];
-    NSLog(@"interval:%f",interval);
     if (_fps <= 0 || interval > 0) {
         if (_frameCount%_overlays.count == _overlays.count -1) {
             finsh = YES;
