@@ -45,7 +45,7 @@ NSString *const kGPUImageColorAveragingFragmentShaderString = SHADER_STRING
      highp vec4 lowerLeftColor = texture2D(inputImageTexture, lowerLeftInputTextureCoordinate);
      highp vec4 lowerRightColor = texture2D(inputImageTexture, lowerRightInputTextureCoordinate);
      
-     gl_FragColor = 0.25 * (upperLeftColor + upperRightColor + lowerLeftColor + lowerRightColor);
+     CHECK_GL(gl_FragColor = 0.25 * (upperLeftColor + upperRightColor + lowerLeftColor + lowerRightColor));
  }
 );
 #else
@@ -67,7 +67,7 @@ NSString *const kGPUImageColorAveragingFragmentShaderString = SHADER_STRING
      vec4 lowerLeftColor = texture2D(inputImageTexture, lowerLeftInputTextureCoordinate);
      vec4 lowerRightColor = texture2D(inputImageTexture, lowerRightInputTextureCoordinate);
      
-     gl_FragColor = 0.25 * (upperLeftColor + upperRightColor + lowerLeftColor + lowerRightColor);
+     CHECK_GL(gl_FragColor = 0.25 * (upperLeftColor + upperRightColor + lowerLeftColor + lowerRightColor));
  }
 );
 #endif
@@ -120,8 +120,8 @@ NSString *const kGPUImageColorAveragingFragmentShaderString = SHADER_STRING
     outputFramebuffer = nil;
     [GPUImageContext setActiveShaderProgram:filterProgram];
 
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
+    CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
 
     GLuint currentTexture = [firstInputFramebuffer texture];
     
@@ -136,18 +136,18 @@ NSString *const kGPUImageColorAveragingFragmentShaderString = SHADER_STRING
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:currentStageSize textureOptions:self.outputTextureOptions onlyTexture:NO];
         [outputFramebuffer activateFramebuffer];
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+        CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
         
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, currentTexture);
+        CHECK_GL(glActiveTexture(GL_TEXTURE2));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, currentTexture));
         
-        glUniform1i(filterInputTextureUniform, 2);
+        CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
         
-        glUniform1f(texelWidthUniform, 0.25 / currentStageSize.width);
-        glUniform1f(texelHeightUniform, 0.25 / currentStageSize.height);
+        CHECK_GL(glUniform1f(texelWidthUniform, 0.25 / currentStageSize.width));
+        CHECK_GL(glUniform1f(texelHeightUniform, 0.25 / currentStageSize.height));
         
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
 
         currentTexture = [outputFramebuffer texture];
         finalStageSize = currentStageSize;
@@ -177,7 +177,7 @@ NSString *const kGPUImageColorAveragingFragmentShaderString = SHADER_STRING
         
         [GPUImageContext useImageProcessingContext];
         [outputFramebuffer activateFramebuffer];
-        glReadPixels(0, 0, (int)finalStageSize.width, (int)finalStageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels);
+        CHECK_GL(glReadPixels(0, 0, (int)finalStageSize.width, (int)finalStageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels));
         
         NSUInteger redTotal = 0, greenTotal = 0, blueTotal = 0, alphaTotal = 0;
         NSUInteger byteIndex = 0;

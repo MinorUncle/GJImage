@@ -9,7 +9,7 @@ NSString *const kGPUImageCropFragmentShaderString =  SHADER_STRING
  
  void main()
  {
-     gl_FragColor = texture2D(inputImageTexture, textureCoordinate);
+     CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinate));
  }
 );
 #else
@@ -21,7 +21,7 @@ NSString *const kGPUImageCropFragmentShaderString =  SHADER_STRING
  
  void main()
  {
-     gl_FragColor = texture2D(inputImageTexture, textureCoordinate);
+     CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinate));
  }
 );
 #endif

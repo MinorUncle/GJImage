@@ -1,4 +1,5 @@
 #import "GPUImageContext.h"
+#include "GPUImageOutput.h"
 #import <OpenGLES/EAGLDrawable.h>
 #import <AVFoundation/AVFoundation.h>
 
@@ -112,7 +113,7 @@ static void *openGLESContextQueueKey;
     
     dispatch_once(&pred, ^{
         [self useImageProcessingContext];
-        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+        CHECK_GL(glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize));
     });
 
     return maxTextureSize;
@@ -125,7 +126,7 @@ static void *openGLESContextQueueKey;
 
     dispatch_once(&pred, ^{
         [self useImageProcessingContext];
-        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+        CHECK_GL(glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits));
     });
     
     return maxTextureUnits;
@@ -138,7 +139,7 @@ static void *openGLESContextQueueKey;
 
     dispatch_once(&pred, ^{
         [self useImageProcessingContext];
-        glGetIntegerv(GL_MAX_VARYING_VECTORS, &maxVaryingVectors);
+        CHECK_GL(glGetIntegerv(GL_MAX_VARYING_VECTORS, &maxVaryingVectors));
     });
 
     return maxVaryingVectors;
@@ -281,7 +282,7 @@ static void *openGLESContextQueueKey;
         [EAGLContext setCurrentContext:_context];
         
         // Set up a few global settings for the image processing pipeline
-        glDisable(GL_DEPTH_TEST);
+        CHECK_GL(glDisable(GL_DEPTH_TEST));
     }
     
     return _context;

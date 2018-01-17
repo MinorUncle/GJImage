@@ -76,7 +76,7 @@ NSString *const kGPUImageColorLocalBinaryPatternFragmentShaderString = SHADER_ST
      // TODO: Replace the above with a dot product and two vec4s
      // TODO: Apply step to a matrix, rather than individually
      
-     gl_FragColor = vec4(redByteTally, blueByteTally, greenByteTally, 1.0);
+     CHECK_GL(gl_FragColor = vec4(redByteTally, blueByteTally, greenByteTally, 1.0));
  }
 );
 #else
@@ -138,7 +138,7 @@ NSString *const kGPUImageColorLocalBinaryPatternFragmentShaderString = SHADER_ST
      // TODO: Replace the above with a dot product and two vec4s
      // TODO: Apply step to a matrix, rather than individually
      
-     gl_FragColor = vec4(redByteTally, blueByteTally, greenByteTally, 1.0);
+     CHECK_GL(gl_FragColor = vec4(redByteTally, blueByteTally, greenByteTally, 1.0));
  }
 );
 #endif

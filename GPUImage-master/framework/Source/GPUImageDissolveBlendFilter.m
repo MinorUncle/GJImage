@@ -15,7 +15,7 @@ NSString *const kGPUImageDissolveBlendFragmentShaderString = SHADER_STRING
     lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
     lowp vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate2);
     
-    gl_FragColor = mix(textureColor, textureColor2, mixturePercent);
+    CHECK_GL(gl_FragColor = mix(textureColor, textureColor2, mixturePercent));
  }
 );
 #else
@@ -33,7 +33,7 @@ NSString *const kGPUImageDissolveBlendFragmentShaderString = SHADER_STRING
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate2);
      
-     gl_FragColor = mix(textureColor, textureColor2, mixturePercent);
+     CHECK_GL(gl_FragColor = mix(textureColor, textureColor2, mixturePercent));
  }
 );
 #endif

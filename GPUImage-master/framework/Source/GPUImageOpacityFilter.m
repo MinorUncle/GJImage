@@ -16,7 +16,7 @@ NSString *const kGPUImageOpacityFragmentShaderString = SHADER_STRING
  {
      lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      
-     gl_FragColor = vec4(textureColor.rgb, textureColor.a * opacity);
+     CHECK_GL(gl_FragColor = vec4(textureColor.rgb, textureColor.a * opacity));
  }
 );
 #else
@@ -31,7 +31,7 @@ NSString *const kGPUImageOpacityFragmentShaderString = SHADER_STRING
  {
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      
-     gl_FragColor = vec4(textureColor.rgb, textureColor.a * opacity);
+     CHECK_GL(gl_FragColor = vec4(textureColor.rgb, textureColor.a * opacity));
  }
 );
 #endif

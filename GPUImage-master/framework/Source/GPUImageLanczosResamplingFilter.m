@@ -186,27 +186,27 @@ NSString *const kGPUImageLanczosFragmentShaderString = SHADER_STRING
     
     [self setUniformsForProgramAtIndex:0];
     
-    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]);
+	CHECK_GL(glActiveTexture(GL_TEXTURE2));
+	CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
 	
-	glUniform1i(filterInputTextureUniform, 2);
+	CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
     
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-	glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
+	CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     
     [firstInputFramebuffer unlock];
     
     // Run the second stage of the two-pass filter
     [GPUImageContext setActiveShaderProgram:secondFilterProgram];
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    CHECK_GL(glActiveTexture(GL_TEXTURE2));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, 0));
+    CHECK_GL(glActiveTexture(GL_TEXTURE3));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, 0));
     secondOutputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:[self sizeOfFBO] textureOptions:self.outputTextureOptions onlyTexture:NO];
     [secondOutputFramebuffer activateFramebuffer];
     if (usingNextFrameForImageCapture)
@@ -216,18 +216,18 @@ NSString *const kGPUImageLanczosFragmentShaderString = SHADER_STRING
 
     [self setUniformsForProgramAtIndex:1];
     
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]);
-    glVertexAttribPointer(secondFilterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]);
+    CHECK_GL(glActiveTexture(GL_TEXTURE3));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]));
+    CHECK_GL(glVertexAttribPointer(secondFilterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]));
     
-	glUniform1i(secondFilterInputTextureUniform, 3);
+	CHECK_GL(glUniform1i(secondFilterInputTextureUniform, 3));
     
-    glVertexAttribPointer(secondFilterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
+    CHECK_GL(glVertexAttribPointer(secondFilterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
     
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     [outputFramebuffer unlock];
     outputFramebuffer = nil;
     if (usingNextFrameForImageCapture)

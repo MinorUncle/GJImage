@@ -38,7 +38,7 @@ NSString *const kGPUImageSobelEdgeDetectionFragmentShaderString = SHADER_STRING
     
     float mag = length(vec2(h, v)) * edgeStrength;
     
-    gl_FragColor = vec4(vec3(mag), 1.0);
+    CHECK_GL(gl_FragColor = vec4(vec3(mag), 1.0));
  }
 );
 #else
@@ -74,7 +74,7 @@ NSString *const kGPUImageSobelEdgeDetectionFragmentShaderString = SHADER_STRING
      
      float mag = length(vec2(h, v)) * edgeStrength;
      
-     gl_FragColor = vec4(vec3(mag), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(mag), 1.0));
  }
 );
 #endif
@@ -127,8 +127,8 @@ NSString *const kGPUImageSobelEdgeDetectionFragmentShaderString = SHADER_STRING
         runSynchronouslyOnVideoProcessingQueue(^{
             GLProgram *previousProgram = [GPUImageContext sharedImageProcessingContext].currentShaderProgram;
             [GPUImageContext setActiveShaderProgram:secondFilterProgram];
-            glUniform1f(texelWidthUniform, _texelWidth);
-            glUniform1f(texelHeightUniform, _texelHeight);
+            CHECK_GL(glUniform1f(texelWidthUniform, _texelWidth));
+            CHECK_GL(glUniform1f(texelHeightUniform, _texelHeight));
             [GPUImageContext setActiveShaderProgram:previousProgram];
         });
     }
@@ -140,8 +140,8 @@ NSString *const kGPUImageSobelEdgeDetectionFragmentShaderString = SHADER_STRING
     
     if (programIndex == 1)
     {
-        glUniform1f(texelWidthUniform, _texelWidth);
-        glUniform1f(texelHeightUniform, _texelHeight);
+        CHECK_GL(glUniform1f(texelWidthUniform, _texelWidth));
+        CHECK_GL(glUniform1f(texelHeightUniform, _texelHeight));
     }
 }
 

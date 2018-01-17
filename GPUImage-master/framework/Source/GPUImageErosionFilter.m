@@ -23,7 +23,7 @@ NSString *const kGPUImageErosionRadiusOneFragmentShaderString = SHADER_STRING
      lowp float minValue = min(centerIntensity, oneStepPositiveIntensity);
      minValue = min(minValue, oneStepNegativeIntensity);
      
-     gl_FragColor = vec4(vec3(minValue), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(minValue), 1.0));
  }
 );
 
@@ -52,7 +52,7 @@ NSString *const kGPUImageErosionRadiusTwoFragmentShaderString = SHADER_STRING
      minValue = min(minValue, twoStepsPositiveIntensity);
      minValue = min(minValue, twoStepsNegativeIntensity);
      
-     gl_FragColor = vec4(vec3(minValue), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(minValue), 1.0));
  }
 );
 
@@ -87,7 +87,7 @@ NSString *const kGPUImageErosionRadiusThreeFragmentShaderString = SHADER_STRING
      minValue = min(minValue, threeStepsPositiveIntensity);
      minValue = min(minValue, threeStepsNegativeIntensity);
      
-     gl_FragColor = vec4(vec3(minValue), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(minValue), 1.0));
  }
 );
 
@@ -128,7 +128,7 @@ NSString *const kGPUImageErosionRadiusFourFragmentShaderString = SHADER_STRING
      minValue = min(minValue, fourStepsPositiveIntensity);
      minValue = min(minValue, fourStepsNegativeIntensity);
      
-     gl_FragColor = vec4(vec3(minValue), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(minValue), 1.0));
  }
 );
 #else
@@ -149,7 +149,7 @@ NSString *const kGPUImageErosionRadiusOneFragmentShaderString = SHADER_STRING
      float minValue = min(centerIntensity, oneStepPositiveIntensity);
      minValue = min(minValue, oneStepNegativeIntensity);
      
-     gl_FragColor = vec4(vec3(minValue), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(minValue), 1.0));
  }
 );
 
@@ -176,7 +176,7 @@ NSString *const kGPUImageErosionRadiusTwoFragmentShaderString = SHADER_STRING
      minValue = min(minValue, twoStepsPositiveIntensity);
      minValue = min(minValue, twoStepsNegativeIntensity);
      
-     gl_FragColor = vec4(vec3(minValue), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(minValue), 1.0));
  }
 );
 
@@ -209,7 +209,7 @@ NSString *const kGPUImageErosionRadiusThreeFragmentShaderString = SHADER_STRING
      minValue = min(minValue, threeStepsPositiveIntensity);
      minValue = min(minValue, threeStepsNegativeIntensity);
      
-     gl_FragColor = vec4(vec3(minValue), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(minValue), 1.0));
  }
 );
 
@@ -248,7 +248,7 @@ NSString *const kGPUImageErosionRadiusFourFragmentShaderString = SHADER_STRING
      minValue = min(minValue, fourStepsPositiveIntensity);
      minValue = min(minValue, fourStepsNegativeIntensity);
      
-     gl_FragColor = vec4(vec3(minValue), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(minValue), 1.0));
  }
 );
 #endif

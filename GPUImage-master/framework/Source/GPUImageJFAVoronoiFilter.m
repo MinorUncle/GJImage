@@ -356,7 +356,7 @@ NSString *const kGPUImageJFAVoronoiFragmentShaderString = SHADER_STRING
         NSLog(@"Voronoi point texture must be a power of 2.  Texture size: %f, %f", sizeInPixels.width, sizeInPixels.height);
         return;
     }
-    glUniform2f(sizeUniform, _sizeInPixels.width, _sizeInPixels.height);
+    CHECK_GL(glUniform2f(sizeUniform, _sizeInPixels.width, _sizeInPixels.height));
 }
 
 #pragma mark -
@@ -399,47 +399,47 @@ NSString *const kGPUImageJFAVoronoiFragmentShaderString = SHADER_STRING
     outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:[self sizeOfFBO] textureOptions:self.outputTextureOptions onlyTexture:NO];
     [outputFramebuffer activateFramebuffer];
     
-    glActiveTexture(GL_TEXTURE2);
+    CHECK_GL(glActiveTexture(GL_TEXTURE2));
     
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-    glUniform1f(sampleStepUniform, 0.5);
+    CHECK_GL(glUniform1f(sampleStepUniform, 0.5));
     
-    glUniform2f(sizeUniform, _sizeInPixels.width, _sizeInPixels.height);
+    CHECK_GL(glUniform2f(sizeUniform, _sizeInPixels.width, _sizeInPixels.height));
     
-    glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]);
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
     
-    glUniform1i(filterInputTextureUniform, 2);
+    CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
     
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
+    CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     
     for (int pass = 1; pass <= numPasses + 1; pass++) {
         currentPass = pass;
 //        [self setOutputFBO];
         
-        //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        //CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+        CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
         
-        glActiveTexture(GL_TEXTURE2);
+        CHECK_GL(glActiveTexture(GL_TEXTURE2));
         if (pass % 2 == 0) {
-            glBindTexture(GL_TEXTURE_2D, secondFilterOutputTexture);
+            CHECK_GL(glBindTexture(GL_TEXTURE_2D, secondFilterOutputTexture));
         } else {
-            glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]);
+            CHECK_GL(glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]));
         }
-        glUniform1i(filterInputTextureUniform, 2);
+        CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
         
         float step = pow(2.0, numPasses - pass) / pow(2.0, numPasses);
-        glUniform1f(sampleStepUniform, step);
-        glUniform2f(sizeUniform, _sizeInPixels.width, _sizeInPixels.height);
+        CHECK_GL(glUniform1f(sampleStepUniform, step));
+        CHECK_GL(glUniform2f(sizeUniform, _sizeInPixels.width, _sizeInPixels.height));
         
-        glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-        glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+        CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
+        CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
         
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     }
 }
 

@@ -21,11 +21,11 @@ NSString *const kGPUImagePixellationPositionFragmentShaderString = SHADER_STRING
      {
          highp vec2 sampleDivisor = vec2(fractionalWidthOfPixel, fractionalWidthOfPixel / aspectRatio);
          highp vec2 samplePos = textureCoordinate - mod(textureCoordinate, sampleDivisor) + 0.5 * sampleDivisor;
-         gl_FragColor = texture2D(inputImageTexture, samplePos );
+         CHECK_GL(gl_FragColor = texture2D(inputImageTexture, samplePos ));
      }
      else
      {
-         gl_FragColor = texture2D(inputImageTexture, textureCoordinate );
+         CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinate ));
      }
  }
 );
@@ -50,11 +50,11 @@ NSString *const kGPUImagePixellationPositionFragmentShaderString = SHADER_STRING
      {
          vec2 sampleDivisor = vec2(fractionalWidthOfPixel, fractionalWidthOfPixel / aspectRatio);
          vec2 samplePos = textureCoordinate - mod(textureCoordinate, sampleDivisor) + 0.5 * sampleDivisor;
-         gl_FragColor = texture2D(inputImageTexture, samplePos );
+         CHECK_GL(gl_FragColor = texture2D(inputImageTexture, samplePos ));
      }
      else
      {
-         gl_FragColor = texture2D(inputImageTexture, textureCoordinate );
+         CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinate ));
      }
  }
 );

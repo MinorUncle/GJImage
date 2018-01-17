@@ -61,7 +61,7 @@ NSString *const kGPUImageSharpenFragmentShaderString = SHADER_STRING
      mediump vec3 topTextureColor = texture2D(inputImageTexture, topTextureCoordinate).rgb;
      mediump vec3 bottomTextureColor = texture2D(inputImageTexture, bottomTextureCoordinate).rgb;
 
-     gl_FragColor = vec4((textureColor * centerMultiplier - (leftTextureColor * edgeMultiplier + rightTextureColor * edgeMultiplier + topTextureColor * edgeMultiplier + bottomTextureColor * edgeMultiplier)), texture2D(inputImageTexture, bottomTextureCoordinate).w);
+     CHECK_GL(gl_FragColor = vec4((textureColor * centerMultiplier - (leftTextureColor * edgeMultiplier + rightTextureColor * edgeMultiplier + topTextureColor * edgeMultiplier + bottomTextureColor * edgeMultiplier)), texture2D(inputImageTexture, bottomTextureCoordinate).w));
  }
 );
 #else
@@ -86,7 +86,7 @@ NSString *const kGPUImageSharpenFragmentShaderString = SHADER_STRING
      vec3 topTextureColor = texture2D(inputImageTexture, topTextureCoordinate).rgb;
      vec3 bottomTextureColor = texture2D(inputImageTexture, bottomTextureCoordinate).rgb;
      
-     gl_FragColor = vec4((textureColor * centerMultiplier - (leftTextureColor * edgeMultiplier + rightTextureColor * edgeMultiplier + topTextureColor * edgeMultiplier + bottomTextureColor * edgeMultiplier)), texture2D(inputImageTexture, bottomTextureCoordinate).w);
+     CHECK_GL(gl_FragColor = vec4((textureColor * centerMultiplier - (leftTextureColor * edgeMultiplier + rightTextureColor * edgeMultiplier + topTextureColor * edgeMultiplier + bottomTextureColor * edgeMultiplier)), texture2D(inputImageTexture, bottomTextureCoordinate).w));
  }
 );
 #endif
@@ -122,13 +122,13 @@ NSString *const kGPUImageSharpenFragmentShaderString = SHADER_STRING
         
         if (GPUImageRotationSwapsWidthAndHeight(inputRotation))
         {
-            glUniform1f(imageWidthFactorUniform, 1.0 / filterFrameSize.height);
-            glUniform1f(imageHeightFactorUniform, 1.0 / filterFrameSize.width);
+            CHECK_GL(glUniform1f(imageWidthFactorUniform, 1.0 / filterFrameSize.height));
+            CHECK_GL(glUniform1f(imageHeightFactorUniform, 1.0 / filterFrameSize.width));
         }
         else
         {
-            glUniform1f(imageWidthFactorUniform, 1.0 / filterFrameSize.width);
-            glUniform1f(imageHeightFactorUniform, 1.0 / filterFrameSize.height);
+            CHECK_GL(glUniform1f(imageWidthFactorUniform, 1.0 / filterFrameSize.width));
+            CHECK_GL(glUniform1f(imageHeightFactorUniform, 1.0 / filterFrameSize.height));
         }
     });
 }

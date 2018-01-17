@@ -61,7 +61,7 @@
      {\n\
      gl_Position = position;\n\
      \n\
-     vec2 singleStepOffset = vec2(texelWidthOffset, texelHeightOffset);\n", (unsigned long)(1 + (numberOfOptimizedOffsets * 2))];
+     vec2 sinCHECK_GL(gleStepOffset = vec2(texelWidthOffset, texelHeightOffset));\n", (unsigned long)(1 + (numberOfOptimizedOffsets * 2))];
     
     // Inner offset loop
     [shaderString appendString:@"blurCoordinates[0] = inputTextureCoordinate.xy;\n"];
@@ -158,9 +158,9 @@
     if (trueNumberOfOptimizedOffsets > numberOfOptimizedOffsets)
     {
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
-        [shaderString appendString:@"highp vec2 singleStepOffset = vec2(texelWidthOffset, texelHeightOffset);\n"];
+        [shaderString appendString:@"highp vec2 sinCHECK_GL(gleStepOffset = vec2(texelWidthOffset, texelHeightOffset));\n"];
 #else
-        [shaderString appendString:@"highp vec2 singleStepOffset = vec2(texelWidthOffset, texelHeightOffset);\n"];
+        [shaderString appendString:@"highp vec2 sinCHECK_GL(gleStepOffset = vec2(texelWidthOffset, texelHeightOffset));\n"];
 #endif
         
         for (NSUInteger currentOverlowTextureRead = numberOfOptimizedOffsets; currentOverlowTextureRead < trueNumberOfOptimizedOffsets; currentOverlowTextureRead++)
@@ -178,7 +178,7 @@
     
     // Footer
     [shaderString appendString:@"\
-     gl_FragColor = vec4(sum, sum, sum, 1.0);\n\
+     CHECK_GL(gl_FragColor = vec4(sum, sum, sum, 1.0));\n\
      }\n"];
     
     free(standardGaussianWeights);

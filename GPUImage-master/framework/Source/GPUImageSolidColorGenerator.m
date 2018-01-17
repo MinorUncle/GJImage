@@ -13,7 +13,7 @@ NSString *const kGPUSolidColorFragmentShaderString = SHADER_STRING
  void main()
  {
      lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
-     gl_FragColor = vec4(color.rgb, max(textureColor.a, 1.0 - useExistingAlpha));
+     CHECK_GL(gl_FragColor = vec4(color.rgb, max(textureColor.a, 1.0 - useExistingAlpha)));
  }
  );
 #else
@@ -27,7 +27,7 @@ NSString *const kGPUSolidColorFragmentShaderString = SHADER_STRING
  void main()
  {
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
-     gl_FragColor = vec4(color.rgb, max(textureColor.a, 1.0 - useExistingAlpha));
+     CHECK_GL(gl_FragColor = vec4(color.rgb, max(textureColor.a, 1.0 - useExistingAlpha)));
  }
  );
 #endif
@@ -65,8 +65,8 @@ NSString *const kGPUSolidColorFragmentShaderString = SHADER_STRING
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:[self sizeOfFBO] textureOptions:self.outputTextureOptions onlyTexture:NO];
         [outputFramebuffer activateFramebuffer];
         
-        glClearColor(_color.one, _color.two, _color.three, _color.four);
-        glClear(GL_COLOR_BUFFER_BIT);
+        CHECK_GL(glClearColor(_color.one, _color.two, _color.three, _color.four));
+        CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     });
 }
 

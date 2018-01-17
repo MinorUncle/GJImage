@@ -44,7 +44,7 @@ NSString *const kGPUImageGradientFragmentShaderString = SHADER_STRING
      horizontalDerivative = horizontalDerivative * edgeStrength;
      
      // Scaling the X * Y operation so that negative numbers are not clipped in the 0..1 range. This will be expanded in the corner detection filter
-     gl_FragColor = vec4(horizontalDerivative * horizontalDerivative, verticalDerivative * verticalDerivative, ((verticalDerivative * horizontalDerivative) + 1.0) / 2.0, 1.0);
+     CHECK_GL(gl_FragColor = vec4(horizontalDerivative * horizontalDerivative, verticalDerivative * verticalDerivative, ((verticalDerivative * horizontalDerivative) + 1.0) / 2.0, 1.0));
  }
 );
 #else
@@ -83,7 +83,7 @@ NSString *const kGPUImageGradientFragmentShaderString = SHADER_STRING
      horizontalDerivative = horizontalDerivative * edgeStrength;
      
      // Scaling the X * Y operation so that negative numbers are not clipped in the 0..1 range. This will be expanded in the corner detection filter
-     gl_FragColor = vec4(horizontalDerivative * horizontalDerivative, verticalDerivative * verticalDerivative, ((verticalDerivative * horizontalDerivative) + 1.0) / 2.0, 1.0);
+     CHECK_GL(gl_FragColor = vec4(horizontalDerivative * horizontalDerivative, verticalDerivative * verticalDerivative, ((verticalDerivative * horizontalDerivative) + 1.0) / 2.0, 1.0));
  }
 );
 #endif

@@ -30,7 +30,7 @@ NSString *const kGPUMonochromeFragmentShaderString = SHADER_STRING
                                  );
 	
 	//which is better, or are they equal?
-	gl_FragColor = vec4( mix(textureColor.rgb, outputColor.rgb, intensity), textureColor.a);
+	CHECK_GL(gl_FragColor = vec4( mix(textureColor.rgb, outputColor.rgb, intensity), textureColor.a));
  }
 );
 #else
@@ -61,7 +61,7 @@ NSString *const kGPUMonochromeFragmentShaderString = SHADER_STRING
                                   );
      
      //which is better, or are they equal?
-     gl_FragColor = vec4( mix(textureColor.rgb, outputColor.rgb, intensity), textureColor.a);
+     CHECK_GL(gl_FragColor = vec4( mix(textureColor.rgb, outputColor.rgb, intensity), textureColor.a));
  }
 );
 #endif

@@ -45,9 +45,9 @@ NSString *const kGPUImageThresholdedNonMaximumSuppressionFragmentShaderString = 
      lowp float finalValue = centerColor.r * step(maxValue, centerColor.r) * multiplier;
      finalValue = step(threshold, finalValue);
      
-     gl_FragColor = vec4(finalValue, finalValue, finalValue, 1.0);
+     CHECK_GL(gl_FragColor = vec4(finalValue, finalValue, finalValue, 1.0));
 //
-//     gl_FragColor = vec4((centerColor.rgb * step(maxValue, step(threshold, centerColor.r)) * multiplier), 1.0);
+//     CHECK_GL(gl_FragColor = vec4((centerColor.rgb * step(maxValue, step(threshold, centerColor.r)) * multiplier), 1.0));
  }
 );
 
@@ -138,7 +138,7 @@ NSString *const kGPUImageThresholdedNonMaximumSuppressionPackedColorspaceFragmen
      highp float midValue = centerColor * step(maxValue, centerColor) * multiplier;
      highp float finalValue = step(threshold, midValue);
      
-     gl_FragColor = vec4(finalValue * centerColor, topLeftColor, topRightColor, topColor);
+     CHECK_GL(gl_FragColor = vec4(finalValue * centerColor, topLeftColor, topRightColor, topColor));
  }
 );
 #else
@@ -186,9 +186,9 @@ NSString *const kGPUImageThresholdedNonMaximumSuppressionFragmentShaderString = 
      float finalValue = centerColor.r * step(maxValue, centerColor.r) * multiplier;
      finalValue = step(threshold, finalValue);
      
-     gl_FragColor = vec4(finalValue, finalValue, finalValue, 1.0);
+     CHECK_GL(gl_FragColor = vec4(finalValue, finalValue, finalValue, 1.0));
      //
-     //     gl_FragColor = vec4((centerColor.rgb * step(maxValue, step(threshold, centerColor.r)) * multiplier), 1.0);
+     //     CHECK_GL(gl_FragColor = vec4((centerColor.rgb * step(maxValue, step(threshold, centerColor.r)) * multiplier), 1.0));
  }
 );
 
@@ -236,9 +236,9 @@ NSString *const kGPUImageThresholdedNonMaximumSuppressionPackedColorspaceFragmen
      float finalValue = centerColor.r * step(maxValue, centerColor.r) * multiplier;
      finalValue = step(threshold, finalValue);
      
-     gl_FragColor = vec4(finalValue, finalValue, finalValue, 1.0);
+     CHECK_GL(gl_FragColor = vec4(finalValue, finalValue, finalValue, 1.0));
      //
-     //     gl_FragColor = vec4((centerColor.rgb * step(maxValue, step(threshold, centerColor.r)) * multiplier), 1.0);
+     //     CHECK_GL(gl_FragColor = vec4((centerColor.rgb * step(maxValue, step(threshold, centerColor.r)) * multiplier), 1.0));
  }
  );
 #endif

@@ -17,7 +17,7 @@ NSString *const kGPUImageSaturationFragmentShaderString = SHADER_STRING
     lowp float luminance = dot(textureColor.rgb, luminanceWeighting);
     lowp vec3 greyScaleColor = vec3(luminance);
     
-	gl_FragColor = vec4(mix(greyScaleColor, textureColor.rgb, saturation), textureColor.w);
+	CHECK_GL(gl_FragColor = vec4(mix(greyScaleColor, textureColor.rgb, saturation), textureColor.w));
 	 
  }
 );
@@ -38,7 +38,7 @@ NSString *const kGPUImageSaturationFragmentShaderString = SHADER_STRING
      float luminance = dot(textureColor.rgb, luminanceWeighting);
      vec3 greyScaleColor = vec3(luminance);
      
-     gl_FragColor = vec4(mix(greyScaleColor, textureColor.rgb, saturation), textureColor.w);
+     CHECK_GL(gl_FragColor = vec4(mix(greyScaleColor, textureColor.rgb, saturation), textureColor.w));
 	 
  }
  );

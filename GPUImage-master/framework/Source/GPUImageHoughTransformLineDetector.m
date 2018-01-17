@@ -122,7 +122,7 @@
         linesArray = calloc(1024 * 2, sizeof(GLfloat));
     }
     
-    glReadPixels(0, 0, (int)imageSize.width, (int)imageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels);
+    CHECK_GL(glReadPixels(0, 0, (int)imageSize.width, (int)imageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels));
     
 //    CFAbsoluteTime startTime = CFAbsoluteTimeGetCurrent();
     

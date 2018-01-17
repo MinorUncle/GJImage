@@ -131,30 +131,30 @@
     }
     [self setUniformsForProgramAtIndex:0];
     
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glDisable(GL_DEPTH_TEST);
-    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA));
+    CHECK_GL(glEnable(GL_BLEND));
+    CHECK_GL(glDisable(GL_DEPTH_TEST));
+    CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    CHECK_GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+    CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
     
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]);
-    glUniform1i(filterInputTextureUniform, 2);
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glActiveTexture(GL_TEXTURE2));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
+    CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
+    CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     
     
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, frame.texture);
-    glUniform1i(filterInputTextureUniform, 2);
+    CHECK_GL(glActiveTexture(GL_TEXTURE2));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, frame.texture));
+    CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
     
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, secondTexturePosition);
-    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, secondTexturePosition));
+    CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]));
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     
 //    glEnableVertexAttribArray(filterPositionAttribute);
 //    glEnableVertexAttribArray(filterTextureCoordinateAttribute);
@@ -171,7 +171,7 @@
 //    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
 //    
 //    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glFlush();
+    CHECK_GL(glFlush());
     [firstInputFramebuffer unlock];
     
     if (usingNextFrameForImageCapture)
@@ -375,19 +375,19 @@
     GPUImageFramebuffer* framebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:pixelSizeToUseForTexture onlyTexture:YES];
     [framebuffer disableReferenceCounting];
     
-    glBindTexture(GL_TEXTURE_2D, [framebuffer texture]);
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, [framebuffer texture]));
     if (self.shouldSmoothlyScaleOutput)
     {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
     }
     // no need to use self.outputTextureOptions here since pictures need this texture formats and type
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int)pixelSizeToUseForTexture.width, (int)pixelSizeToUseForTexture.height, 0, format, GL_UNSIGNED_BYTE, imageData);
+    CHECK_GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int)pixelSizeToUseForTexture.width, (int)pixelSizeToUseForTexture.height, 0, format, GL_UNSIGNED_BYTE, imageData));
     
     if (self.shouldSmoothlyScaleOutput)
     {
-        glGenerateMipmap(GL_TEXTURE_2D);
+        CHECK_GL(glGenerateMipmap(GL_TEXTURE_2D));
     }
-    glBindTexture(GL_TEXTURE_2D, 0);
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, 0));
     
     if (shouldRedrawUsingCoreGraphics)
     {

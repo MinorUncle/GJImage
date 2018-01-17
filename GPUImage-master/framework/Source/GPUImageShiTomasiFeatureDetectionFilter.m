@@ -20,7 +20,7 @@ NSString *const kGPUImageShiTomasiCornerDetectionFragmentShaderString = SHADER_S
      // R = Ix^2 + Iy^2 - sqrt( (Ix^2 - Iy^2)^2 + 4 * Ixy * Ixy)
      mediump float cornerness = derivativeElements.x + derivativeElements.y - sqrt(derivativeDifference * derivativeDifference + 4.0 * zElement * zElement);
 
-     gl_FragColor = vec4(vec3(cornerness * sensitivity), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(cornerness * sensitivity), 1.0));
  }
 );
 #else
@@ -41,7 +41,7 @@ NSString *const kGPUImageShiTomasiCornerDetectionFragmentShaderString = SHADER_S
      // R = Ix^2 + Iy^2 - sqrt( (Ix^2 - Iy^2)^2 + 4 * Ixy * Ixy)
      float cornerness = derivativeElements.x + derivativeElements.y - sqrt(derivativeDifference * derivativeDifference + 4.0 * zElement * zElement);
      
-     gl_FragColor = vec4(vec3(cornerness * sensitivity), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(cornerness * sensitivity), 1.0));
  }
 );
 #endif

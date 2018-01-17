@@ -17,7 +17,7 @@ NSString *const kGPUImageHoughAccumulationFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     gl_FragColor = vec4(0.004, 0.004, 0.004, 1.0);
+     CHECK_GL(gl_FragColor = vec4(0.004, 0.004, 0.004, 1.0));
  }
 );
 
@@ -39,7 +39,7 @@ NSString *const kGPUImageHoughAccumulationFBOReadFragmentShaderString = SHADER_S
      
      fragmentData = fract(fragmentData);
      
-     gl_FragColor = vec4(fragmentData.rgb, 1.0);
+     CHECK_GL(gl_FragColor = vec4(fragmentData.rgb, 1.0));
  }
 );
 
@@ -50,7 +50,7 @@ NSString *const kGPUImageHoughAccumulationFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     gl_FragColor = vec4(0.004, 0.004, 0.004, 1.0);
+     CHECK_GL(gl_FragColor = vec4(0.004, 0.004, 0.004, 1.0));
  }
 );
 
@@ -60,8 +60,8 @@ NSString *const kGPUImageHoughAccumulationFBOReadFragmentShaderString = SHADER_S
  
  void main()
  {
-     //     gl_FragColor = vec4(scalingFactor, scalingFactor, scalingFactor, 1.0);
-     gl_FragColor = vec4(0.004, 0.004, 0.004, 1.0);
+     //     CHECK_GL(gl_FragColor = vec4(scalingFactor, scalingFactor, scalingFactor, 1.0));
+     CHECK_GL(gl_FragColor = vec4(0.004, 0.004, 0.004, 1.0));
  }
 );
 #endif
@@ -155,8 +155,8 @@ NSString *const kGPUImageHoughAccumulationFBOReadFragmentShaderString = SHADER_S
     [GPUImageContext useImageProcessingContext];
     [firstInputFramebuffer activateFramebuffer];
 
-    glFinish();
-    glReadPixels(0, 0, inputTextureSize.width, inputTextureSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels);
+    CHECK_GL(glFinish());
+    CHECK_GL(glReadPixels(0, 0, inputTextureSize.width, inputTextureSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels));
     
     CGFloat xAspectMultiplier = 1.0, yAspectMultiplier = 1.0;
     
@@ -234,27 +234,27 @@ NSString *const kGPUImageHoughAccumulationFBOReadFragmentShaderString = SHADER_S
     [GPUImageContext setActiveShaderProgram:filterProgram];
     [self setUniformsForProgramAtIndex:0];
 
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(0.0, 0.0, 0.0, 1.0));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
     if (![GPUImageContext deviceSupportsFramebufferReads])
     {
-        glBlendEquation(GL_FUNC_ADD);
-        glBlendFunc(GL_ONE, GL_ONE);
-        glEnable(GL_BLEND);
+        CHECK_GL(glBlendEquation(GL_FUNC_ADD));
+        CHECK_GL(glBlendFunc(GL_ONE, GL_ONE));
+        CHECK_GL(glEnable(GL_BLEND));
     }
     else
     {
     }
 
-    glLineWidth(1);
+    CHECK_GL(glLineWidth(1));
 
-	glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, lineCoordinates);
-    glDrawArrays(GL_LINES, 0, (linePairsToRender * 4));
+	CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, lineCoordinates));
+    CHECK_GL(glDrawArrays(GL_LINES, 0, (linePairsToRender * 4)));
     
     if (![GPUImageContext deviceSupportsFramebufferReads])
     {
-        glDisable(GL_BLEND);
+        CHECK_GL(glDisable(GL_BLEND));
     }
     [firstInputFramebuffer unlock];
     if (usingNextFrameForImageCapture)

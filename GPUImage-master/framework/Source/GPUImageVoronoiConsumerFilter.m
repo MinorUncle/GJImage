@@ -88,7 +88,7 @@ NSString *const kGPUImageVoronoiConsumerFragmentShaderString = SHADER_STRING
         NSLog(@"Voronoi point texture must be a power of 2.  Texture size %f, %f", sizeInPixels.width, sizeInPixels.height);
         return;
     }
-    glUniform2f(sizeUniform, _sizeInPixels.width, _sizeInPixels.height);
+    CHECK_GL(glUniform2f(sizeUniform, _sizeInPixels.width, _sizeInPixels.height));
 }
 
 @end

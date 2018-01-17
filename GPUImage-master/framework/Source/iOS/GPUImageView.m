@@ -131,8 +131,8 @@
         displayInputTextureUniform = [displayProgram uniformIndex:@"inputImageTexture"]; // This does assume a name of "inputTexture" for the fragment shader
 
         [GPUImageContext setActiveShaderProgram:displayProgram];
-        glEnableVertexAttribArray(displayPositionAttribute);
-        glEnableVertexAttribArray(displayTextureCoordinateAttribute);
+        CHECK_GL(glEnableVertexAttribArray(displayPositionAttribute));
+        CHECK_GL(glEnableVertexAttribArray(displayTextureCoordinateAttribute));
         
         [self setBackgroundColorRed:0.0 green:0.0 blue:0.0 alpha:1.0];
         _fillMode = kGPUImageFillModePreserveAspectRatio;
@@ -169,18 +169,18 @@
 {
     [GPUImageContext useImageProcessingContext];
     
-    glGenFramebuffers(1, &displayFramebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, displayFramebuffer);
+    CHECK_GL(glGenFramebuffers(1, &displayFramebuffer));
+    CHECK_GL(glBindFramebuffer(GL_FRAMEBUFFER, displayFramebuffer));
 	
-    glGenRenderbuffers(1, &displayRenderbuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, displayRenderbuffer);
+    CHECK_GL(glGenRenderbuffers(1, &displayRenderbuffer));
+    CHECK_GL(glBindRenderbuffer(GL_RENDERBUFFER, displayRenderbuffer));
 	
     [[[GPUImageContext sharedImageProcessingContext] context] renderbufferStorage:GL_RENDERBUFFER fromDrawable:renderLayer];
 	
     GLint backingWidth, backingHeight;
 
-    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth);
-    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight);
+    CHECK_GL(glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth));
+    CHECK_GL(glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight));
     
     if ( (backingWidth == 0) || (backingHeight == 0) )
     {
@@ -193,9 +193,9 @@
 
 //    NSLog(@"Backing width: %d, height: %d", backingWidth, backingHeight);
 
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, displayRenderbuffer);
+    CHECK_GL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, displayRenderbuffer));
 	
-    __unused GLuint framebufferCreationStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    __unused GLuint framebufferCreationStatus = CHECK_GL(glCheckFramebufferStatus(GL_FRAMEBUFFER));
     NSAssert(framebufferCreationStatus == GL_FRAMEBUFFER_COMPLETE, @"Failure with display framebuffer generation for display of size: %f, %f", self.bounds.size.width, self.bounds.size.height);
     boundsSizeAtFrameBufferEpoch = renderBounds.size;
 
@@ -208,13 +208,13 @@
 
     if (displayFramebuffer)
 	{
-		glDeleteFramebuffers(1, &displayFramebuffer);
+		CHECK_GL(glDeleteFramebuffers(1, &displayFramebuffer));
 		displayFramebuffer = 0;
 	}
 	
 	if (displayRenderbuffer)
 	{
-		glDeleteRenderbuffers(1, &displayRenderbuffer);
+		CHECK_GL(glDeleteRenderbuffers(1, &displayRenderbuffer));
 		displayRenderbuffer = 0;
 	}
 }
@@ -226,14 +226,14 @@
         [self createDisplayFramebuffer];
     }
     
-    glBindFramebuffer(GL_FRAMEBUFFER, displayFramebuffer);
+    CHECK_GL(glBindFramebuffer(GL_FRAMEBUFFER, displayFramebuffer));
     
-    glViewport(0, 0, (GLint)_sizeInPixels.width, (GLint)_sizeInPixels.height);
+    CHECK_GL(glViewport(0, 0, (GLint)_sizeInPixels.width, (GLint)_sizeInPixels.height));
 }
 
 - (void)presentFramebuffer;
 {
-    glBindRenderbuffer(GL_RENDERBUFFER, displayRenderbuffer);
+    CHECK_GL(glBindRenderbuffer(GL_RENDERBUFFER, displayRenderbuffer));
     [[GPUImageContext sharedImageProcessingContext] presentBufferForDisplay];
 }
 
@@ -385,17 +385,17 @@
         [GPUImageContext setActiveShaderProgram:displayProgram];
         [self setDisplayFramebuffer];
         
-        glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+        CHECK_GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
         
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, [inputFramebufferForDisplay texture]);
-        glUniform1i(displayInputTextureUniform, 4);
+        CHECK_GL(glActiveTexture(GL_TEXTURE4));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, [inputFramebufferForDisplay texture]));
+        CHECK_GL(glUniform1i(displayInputTextureUniform, 4));
         
-        glVertexAttribPointer(displayPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices);
-        glVertexAttribPointer(displayTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageView textureCoordinatesForRotation:inputRotation]);
+        CHECK_GL(glVertexAttribPointer(displayPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices));
+        CHECK_GL(glVertexAttribPointer(displayTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageView textureCoordinatesForRotation:inputRotation]));
         
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
         
         [self presentFramebuffer];
         [inputFramebufferForDisplay unlock];

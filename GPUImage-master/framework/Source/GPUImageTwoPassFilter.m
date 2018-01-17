@@ -43,8 +43,8 @@
         
         [GPUImageContext setActiveShaderProgram:secondFilterProgram];
         
-        glEnableVertexAttribArray(secondFilterPositionAttribute);
-        glEnableVertexAttribArray(secondFilterTextureCoordinateAttribute);
+        CHECK_GL(glEnableVertexAttribArray(secondFilterPositionAttribute));
+        CHECK_GL(glEnableVertexAttribArray(secondFilterTextureCoordinateAttribute));
     });
 
     return self;
@@ -97,18 +97,18 @@
     
     [self setUniformsForProgramAtIndex:0];
     
-    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]);
+	CHECK_GL(glActiveTexture(GL_TEXTURE2));
+	CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
 	
-	glUniform1i(filterInputTextureUniform, 2);
+	CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
     
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-	glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
+	CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     
     [firstInputFramebuffer unlock];
     firstInputFramebuffer = nil;
@@ -131,32 +131,32 @@
 
     [self setUniformsForProgramAtIndex:1];
     
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]);
-    glVertexAttribPointer(secondFilterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]);
+    CHECK_GL(glActiveTexture(GL_TEXTURE3));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]));
+    CHECK_GL(glVertexAttribPointer(secondFilterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]));
 
     // TODO: Re-enable this monochrome optimization
 //    if (!currentlyReceivingMonochromeInput)
 //    {
-//        glActiveTexture(GL_TEXTURE3);
-//        glBindTexture(GL_TEXTURE_2D, outputTexture);
-//        glVertexAttribPointer(secondFilterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]);
+//        CHECK_GL(glActiveTexture(GL_TEXTURE3));
+//        CHECK_GL(glBindTexture(GL_TEXTURE_2D, outputTexture));
+//        CHECK_GL(glVertexAttribPointer(secondFilterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]));
 //    }
 //    else
 //    {
-//        glActiveTexture(GL_TEXTURE3);
-//        glBindTexture(GL_TEXTURE_2D, sourceTexture);
-//        glVertexAttribPointer(secondFilterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+//        CHECK_GL(glActiveTexture(GL_TEXTURE3));
+//        CHECK_GL(glBindTexture(GL_TEXTURE_2D, sourceTexture));
+//        CHECK_GL(glVertexAttribPointer(secondFilterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
 //    }
     
-	glUniform1i(secondFilterInputTextureUniform, 3);
+	CHECK_GL(glUniform1i(secondFilterInputTextureUniform, 3));
     
-    glVertexAttribPointer(secondFilterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
+    CHECK_GL(glVertexAttribPointer(secondFilterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     [outputFramebuffer unlock];
     outputFramebuffer = nil;
     

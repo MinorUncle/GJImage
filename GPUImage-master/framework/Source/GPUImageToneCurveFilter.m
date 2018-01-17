@@ -112,7 +112,7 @@ NSString *const kGPUImageToneCurveFragmentShaderString = SHADER_STRING
      lowp float greenCurveValue = texture2D(toneCurveTexture, vec2(textureColor.g, 0.0)).g;
      lowp float blueCurveValue = texture2D(toneCurveTexture, vec2(textureColor.b, 0.0)).b;
      
-     gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a));
  }
 );
 #else
@@ -129,7 +129,7 @@ NSString *const kGPUImageToneCurveFragmentShaderString = SHADER_STRING
      float greenCurveValue = texture2D(toneCurveTexture, vec2(textureColor.g, 0.0)).g;
      float blueCurveValue = texture2D(toneCurveTexture, vec2(textureColor.b, 0.0)).b;
      
-     gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a));
  }
 );
 #endif
@@ -234,7 +234,7 @@ NSString *const kGPUImageToneCurveFragmentShaderString = SHADER_STRING
 
         if (toneCurveTexture)
         {
-            glDeleteTextures(1, &toneCurveTexture);
+            CHECK_GL(glDeleteTextures(1, &toneCurveTexture));
             toneCurveTexture = 0;
             free(toneCurveByteArray);
         }
@@ -489,20 +489,20 @@ NSString *const kGPUImageToneCurveFragmentShaderString = SHADER_STRING
         [GPUImageContext useImageProcessingContext];
         if (!toneCurveTexture)
         {
-            glActiveTexture(GL_TEXTURE3);
-            glGenTextures(1, &toneCurveTexture);
-            glBindTexture(GL_TEXTURE_2D, toneCurveTexture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            CHECK_GL(glActiveTexture(GL_TEXTURE3));
+            CHECK_GL(glGenTextures(1, &toneCurveTexture));
+            CHECK_GL(glBindTexture(GL_TEXTURE_2D, toneCurveTexture));
+            CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+            CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+            CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+            CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
             
             toneCurveByteArray = calloc(256 * 4, sizeof(GLubyte));
         }
         else
         {
-            glActiveTexture(GL_TEXTURE3);
-            glBindTexture(GL_TEXTURE_2D, toneCurveTexture);
+            CHECK_GL(glActiveTexture(GL_TEXTURE3));
+            CHECK_GL(glBindTexture(GL_TEXTURE_2D, toneCurveTexture));
         }
         
         if ( ([_redCurve count] >= 256) && ([_greenCurve count] >= 256) && ([_blueCurve count] >= 256) && ([_rgbCompositeCurve count] >= 256))
@@ -519,7 +519,7 @@ NSString *const kGPUImageToneCurveFragmentShaderString = SHADER_STRING
                 toneCurveByteArray[currentCurveIndex * 4 + 3] = 255;
             }
             
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256 /*width*/, 1 /*height*/, 0, GL_BGRA, GL_UNSIGNED_BYTE, toneCurveByteArray);
+            CHECK_GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256 /*width*/, 1 /*height*/, 0, GL_BGRA, GL_UNSIGNED_BYTE, toneCurveByteArray));
         }        
     });
 }
@@ -543,21 +543,21 @@ NSString *const kGPUImageToneCurveFragmentShaderString = SHADER_STRING
         [outputFramebuffer lock];
     }
 
-    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-  	glActiveTexture(GL_TEXTURE2);
-  	glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]);
-  	glUniform1i(filterInputTextureUniform, 2);	
+  	CHECK_GL(glActiveTexture(GL_TEXTURE2));
+  	CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
+  	CHECK_GL(glUniform1i(filterInputTextureUniform, 2));	
     
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, toneCurveTexture);                
-    glUniform1i(toneCurveTextureUniform, 3);	
+    CHECK_GL(glActiveTexture(GL_TEXTURE3));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, toneCurveTexture));                
+    CHECK_GL(glUniform1i(toneCurveTextureUniform, 3));	
     
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
+    CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     [firstInputFramebuffer unlock];
     if (usingNextFrameForImageCapture)
     {

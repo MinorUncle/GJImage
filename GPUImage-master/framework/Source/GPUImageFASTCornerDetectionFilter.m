@@ -50,7 +50,7 @@ NSString *const kGPUImageFASTDetectorFragmentShaderString = SHADER_STRING
      // TODO: Replace the above with a dot product and two vec4s
      // TODO: Apply step to a matrix, rather than individually
      
-     gl_FragColor = vec4(byteTally, byteTally, byteTally, 1.0);
+     CHECK_GL(gl_FragColor = vec4(byteTally, byteTally, byteTally, 1.0));
  }
  );
 

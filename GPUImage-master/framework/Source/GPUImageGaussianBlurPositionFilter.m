@@ -20,7 +20,7 @@ NSString *const kGPUImageGaussianBlurPositionVertexShaderString = SHADER_STRING
  	// Calculate the positions for the blur
  	int multiplier = 0;
  	vec2 blurStep;
-    vec2 singleStepOffset = vec2(texelWidthOffset, texelHeightOffset);
+    vec2 sinCHECK_GL(gleStepOffset = vec2(texelWidthOffset, texelHeightOffset));
      
  	for (int i = 0; i < GAUSSIAN_SAMPLES; i++) {
  		multiplier = (i - ((GAUSSIAN_SAMPLES - 1) / 2));
@@ -67,7 +67,7 @@ NSString *const kGPUImageGaussianBlurPositionFragmentShaderString = SHADER_STRIN
      }
      else
      {
-         gl_FragColor = texture2D(inputImageTexture, textureCoordinate);
+         CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinate));
      }
  }
 );
@@ -108,7 +108,7 @@ NSString *const kGPUImageGaussianBlurPositionFragmentShaderString = SHADER_STRIN
      }
      else
      {
-         gl_FragColor = texture2D(inputImageTexture, textureCoordinate);
+         CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinate));
      }
  }
 );

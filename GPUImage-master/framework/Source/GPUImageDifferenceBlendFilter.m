@@ -13,7 +13,7 @@ NSString *const kGPUImageDifferenceBlendFragmentShaderString = SHADER_STRING
  {
      mediump vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      mediump vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate2);
-     gl_FragColor = vec4(abs(textureColor2.rgb - textureColor.rgb), textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(abs(textureColor2.rgb - textureColor.rgb), textureColor.a));
  }
 );
 #else
@@ -29,7 +29,7 @@ NSString *const kGPUImageDifferenceBlendFragmentShaderString = SHADER_STRING
  {
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate2);
-     gl_FragColor = vec4(abs(textureColor2.rgb - textureColor.rgb), textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(abs(textureColor2.rgb - textureColor.rgb), textureColor.a));
  }
 );
 #endif

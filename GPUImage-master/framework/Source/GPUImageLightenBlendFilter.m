@@ -14,7 +14,7 @@ NSString *const kGPUImageLightenBlendFragmentShaderString = SHADER_STRING
     lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
     lowp vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate2);
     
-    gl_FragColor = max(textureColor, textureColor2);
+    CHECK_GL(gl_FragColor = max(textureColor, textureColor2));
  }
 );
 #else
@@ -31,7 +31,7 @@ NSString *const kGPUImageLightenBlendFragmentShaderString = SHADER_STRING
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate2);
      
-     gl_FragColor = max(textureColor, textureColor2);
+     CHECK_GL(gl_FragColor = max(textureColor, textureColor2));
  }
  );
 #endif

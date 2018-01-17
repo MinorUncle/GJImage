@@ -25,11 +25,11 @@ NSString *const kGPUImagePinchDistortionFragmentShaderString = SHADER_STRING
          textureCoordinateToUse = textureCoordinateToUse * percent;
          textureCoordinateToUse += center;
          
-         gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse );
+         CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse ));
      }
      else
      {
-         gl_FragColor = texture2D(inputImageTexture, textureCoordinate );
+         CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinate ));
      }
  }
 );
@@ -58,11 +58,11 @@ NSString *const kGPUImagePinchDistortionFragmentShaderString = SHADER_STRING
          textureCoordinateToUse = textureCoordinateToUse * percent;
          textureCoordinateToUse += center;
          
-         gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse );
+         CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse ));
      }
      else
      {
-         gl_FragColor = texture2D(inputImageTexture, textureCoordinate );
+         CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinate ));
      }
  }
 );

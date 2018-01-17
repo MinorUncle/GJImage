@@ -33,7 +33,7 @@ NSString *const kGPUImageLevelsFragmentShaderString = SHADER_STRING
  {
      mediump vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      
-     gl_FragColor = vec4(LevelsControl(textureColor.rgb, levelMinimum, levelMiddle, levelMaximum, minOutput, maxOutput), textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(LevelsControl(textureColor.rgb, levelMinimum, levelMiddle, levelMaximum, minOutput, maxOutput), textureColor.a));
  }
 );
 #else
@@ -52,7 +52,7 @@ NSString *const kGPUImageLevelsFragmentShaderString = SHADER_STRING
  {
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      
-     gl_FragColor = vec4(LevelsControl(textureColor.rgb, levelMinimum, levelMiddle, levelMaximum, minOutput, maxOutput), textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(LevelsControl(textureColor.rgb, levelMinimum, levelMiddle, levelMaximum, minOutput, maxOutput), textureColor.a));
  }
 );
 #endif

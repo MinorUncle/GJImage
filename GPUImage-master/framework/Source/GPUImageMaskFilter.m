@@ -21,8 +21,8 @@ NSString *const kGPUImageMaskShaderString = SHADER_STRING
 	 //Typical/ideal case, R,G, and B will be the same, and Alpha will be 1.0
 	 lowp float newAlpha = dot(textureColor2.rgb, vec3(.33333334, .33333334, .33333334)) * textureColor2.a;
 	 	 
-	 gl_FragColor = vec4(textureColor.xyz, newAlpha);
-//	 gl_FragColor = vec4(textureColor2);
+	 CHECK_GL(gl_FragColor = vec4(textureColor.xyz, newAlpha));
+//	 CHECK_GL(gl_FragColor = vec4(textureColor2));
  }
 );
 #else
@@ -46,8 +46,8 @@ NSString *const kGPUImageMaskShaderString = SHADER_STRING
 	 //Typical/ideal case, R,G, and B will be the same, and Alpha will be 1.0
 	 float newAlpha = dot(textureColor2.rgb, vec3(.33333334, .33333334, .33333334)) * textureColor2.a;
      
-	 gl_FragColor = vec4(textureColor.xyz, newAlpha);
-     //	 gl_FragColor = vec4(textureColor2);
+	 CHECK_GL(gl_FragColor = vec4(textureColor.xyz, newAlpha));
+     //	 CHECK_GL(gl_FragColor = vec4(textureColor2));
  }
 );
 #endif
@@ -66,10 +66,10 @@ NSString *const kGPUImageMaskShaderString = SHADER_STRING
 
 - (void)renderToTextureWithVertices:(const GLfloat *)vertices textureCoordinates:(const GLfloat *)textureCoordinates;
 {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    CHECK_GL(glEnable(GL_BLEND));
+    CHECK_GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     [super renderToTextureWithVertices:vertices textureCoordinates:textureCoordinates];
-    glDisable(GL_BLEND);
+    CHECK_GL(glDisable(GL_BLEND));
 }
 
 @end

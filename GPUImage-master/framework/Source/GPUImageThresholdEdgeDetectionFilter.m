@@ -53,10 +53,10 @@ NSString *const kGPUImageThresholdEdgeDetectionFragmentShaderString = SHADER_STR
      
 //     float mag = abs(h);
      
-//     gl_FragColor = vec4(h, h, h, 1.0);
-//     gl_FragColor = vec4(texture2D(inputImageTexture, textureCoordinate));
-//     gl_FragColor = vec4(h, centerIntensity, j, 1.0);
-     gl_FragColor = vec4(mag, mag, mag, 1.0);
+//     CHECK_GL(gl_FragColor = vec4(h, h, h, 1.0));
+//     CHECK_GL(gl_FragColor = vec4(texture2D(inputImageTexture, textureCoordinate)));
+//     CHECK_GL(gl_FragColor = vec4(h, centerIntensity, j, 1.0));
+     CHECK_GL(gl_FragColor = vec4(mag, mag, mag, 1.0));
  }
 );
 #else
@@ -97,7 +97,7 @@ NSString *const kGPUImageThresholdEdgeDetectionFragmentShaderString = SHADER_STR
      float mag = length(vec2(h, v)) * edgeStrength;
      mag = step(threshold, mag);
      
-     gl_FragColor = vec4(vec3(mag), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(mag), 1.0));
  }
 );
 #endif

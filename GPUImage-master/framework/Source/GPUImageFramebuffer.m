@@ -116,14 +116,14 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
 
 - (void)generateTexture;
 {
-    glActiveTexture(GL_TEXTURE1);
-    glGenTextures(1, &_texture);
-    glBindTexture(GL_TEXTURE_2D, _texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _textureOptions.minFilter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _textureOptions.magFilter);
+    CHECK_GL(glActiveTexture(GL_TEXTURE1));
+    CHECK_GL(glGenTextures(1, &_texture));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _texture));
+    CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _textureOptions.minFilter));
+    CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _textureOptions.magFilter));
     // This is necessary for non-power-of-two textures
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _textureOptions.wrapS);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _textureOptions.wrapT);
+    CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _textureOptions.wrapS));
+    CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _textureOptions.wrapT));
     
     // TODO: Handle mipmaps
 }
@@ -133,8 +133,8 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
     runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
     
-        glGenFramebuffers(1, &framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        CHECK_GL(glGenFramebuffers(1, &framebuffer));
+        CHECK_GL(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer));
         
         // By default, all framebuffers on iOS 5.0+ devices are backed by texture caches, using one shared cache
         if ([GPUImageContext supportsFastTextureUpload])
@@ -174,30 +174,30 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
             CFRelease(attrs);
             CFRelease(empty);
             
-            glBindTexture(CVOpenGLESTextureGetTarget(renderTexture), CVOpenGLESTextureGetName(renderTexture));
+            CHECK_GL(glBindTexture(CVOpenGLESTextureGetTarget(renderTexture), CVOpenGLESTextureGetName(renderTexture)));
             _texture = CVOpenGLESTextureGetName(renderTexture);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _textureOptions.wrapS);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _textureOptions.wrapT);
+            CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _textureOptions.wrapS));
+            CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _textureOptions.wrapT));
             
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, CVOpenGLESTextureGetName(renderTexture), 0);
+            CHECK_GL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, CVOpenGLESTextureGetName(renderTexture), 0));
 #endif
         }
         else
         {
             [self generateTexture];
 
-            glBindTexture(GL_TEXTURE_2D, _texture);
+            CHECK_GL(glBindTexture(GL_TEXTURE_2D, _texture));
             
-            glTexImage2D(GL_TEXTURE_2D, 0, _textureOptions.internalFormat, (int)_size.width, (int)_size.height, 0, _textureOptions.format, _textureOptions.type, 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0);
+            CHECK_GL(glTexImage2D(GL_TEXTURE_2D, 0, _textureOptions.internalFormat, (int)_size.width, (int)_size.height, 0, _textureOptions.format, _textureOptions.type, 0));
+            CHECK_GL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0));
         }
         
         #ifndef NS_BLOCK_ASSERTIONS
-        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        GLenum status = CHECK_GL(glCheckFramebufferStatus(GL_FRAMEBUFFER));
         NSAssert(status == GL_FRAMEBUFFER_COMPLETE, @"Incomplete filter FBO: %d", status);
         #endif
         
-        glBindTexture(GL_TEXTURE_2D, 0);
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, 0));
     });
 }
 
@@ -208,7 +208,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
         
         if (framebuffer)
         {
-            glDeleteFramebuffers(1, &framebuffer);
+            CHECK_GL(glDeleteFramebuffers(1, &framebuffer));
             framebuffer = 0;
         }
 
@@ -231,7 +231,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
         }
         else
         {
-            glDeleteTextures(1, &_texture);
+            CHECK_GL(glDeleteTextures(1, &_texture));
         }
 
     });
@@ -242,8 +242,8 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
 
 - (void)activateFramebuffer;
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-    glViewport(0, 0, (int)_size.width, (int)_size.height);
+    CHECK_GL(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer));
+    CHECK_GL(glViewport(0, 0, (int)_size.width, (int)_size.height));
 }
 
 #pragma mark -
@@ -329,7 +329,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
             NSUInteger paddedWidthOfImage = CVPixelBufferGetBytesPerRow(renderTarget) / 4.0;
             NSUInteger paddedBytesForImage = paddedWidthOfImage * (int)_size.height * 4;
             
-            glFinish();
+            CHECK_GL(glFinish());
             CFRetain(renderTarget); // I need to retain the pixel buffer here and release in the data source callback to prevent its bytes from being prematurely deallocated during a photo write operation
             [self lockForReading];
             rawImagePixels = (GLubyte *)CVPixelBufferGetBaseAddress(renderTarget);
@@ -342,7 +342,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
         {
             [self activateFramebuffer];
             rawImagePixels = (GLubyte *)malloc(totalBytesForImage);
-            glReadPixels(0, 0, (int)_size.width, (int)_size.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels);
+            CHECK_GL(glReadPixels(0, 0, (int)_size.width, (int)_size.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels));
             dataProvider = CGDataProviderCreateWithData(NULL, rawImagePixels, totalBytesForImage, dataProviderReleaseCallback);
             [self unlock]; // Don't need to keep this around anymore
         }

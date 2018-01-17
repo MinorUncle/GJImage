@@ -81,11 +81,11 @@ NSString *const kGPUImageColourFASTSamplingFragmentShaderString = SHADER_STRING
      float componentLength = length(colorComparison);
      float avgX = dot(absoluteDifference, dirX) / componentLength;
      float avgY = dot(absoluteDifference, dirY) / componentLength;
-     float angle = atan(avgY, avgX);
+     float anCHECK_GL(gle = atan(avgY, avgX));
      
      vec3 normalizedColorComparison = (colorComparison + 1.0) * 0.5;
      
-     gl_FragColor = vec4(normalizedColorComparison, (angle+PI)/PITwo);
+     CHECK_GL(gl_FragColor = vec4(normalizedColorComparison, (angle+PI)/PITwo));
  }
 );
 #else
@@ -128,11 +128,11 @@ NSString *const kGPUImageColourFASTSamplingFragmentShaderString = SHADER_STRING
      float componentLength = length(colorComparison);
      float avgX = dot(absoluteDifference, dirX) / componentLength;
      float avgY = dot(absoluteDifference, dirY) / componentLength;
-     float angle = atan(avgY, avgX);
+     float anCHECK_GL(gle = atan(avgY, avgX));
      
      vec3 normalizedColorComparison = (colorComparison + 1.0) * 0.5;
      
-     gl_FragColor = vec4(normalizedColorComparison, (angle+PI)/PITwo);
+     CHECK_GL(gl_FragColor = vec4(normalizedColorComparison, (angle+PI)/PITwo));
  }
 );
 #endif
@@ -170,13 +170,13 @@ NSString *const kGPUImageColourFASTSamplingFragmentShaderString = SHADER_STRING
             [GPUImageContext setActiveShaderProgram:filterProgram];
             if (GPUImageRotationSwapsWidthAndHeight(inputRotation))
             {
-                glUniform1f(texelWidthUniform, _texelHeight);
-                glUniform1f(texelHeightUniform, _texelWidth);
+                CHECK_GL(glUniform1f(texelWidthUniform, _texelHeight));
+                CHECK_GL(glUniform1f(texelHeightUniform, _texelWidth));
             }
             else
             {
-                glUniform1f(texelWidthUniform, _texelWidth);
-                glUniform1f(texelHeightUniform, _texelHeight);
+                CHECK_GL(glUniform1f(texelWidthUniform, _texelWidth));
+                CHECK_GL(glUniform1f(texelHeightUniform, _texelHeight));
             }
         });
     }

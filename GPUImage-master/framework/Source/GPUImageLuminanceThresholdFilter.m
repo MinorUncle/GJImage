@@ -16,7 +16,7 @@ NSString *const kGPUImageLuminanceThresholdFragmentShaderString = SHADER_STRING
      highp float luminance = dot(textureColor.rgb, W);
      highp float thresholdResult = step(threshold, luminance);
      
-     gl_FragColor = vec4(vec3(thresholdResult), textureColor.w);
+     CHECK_GL(gl_FragColor = vec4(vec3(thresholdResult), textureColor.w));
  }
 );
 #else
@@ -35,7 +35,7 @@ NSString *const kGPUImageLuminanceThresholdFragmentShaderString = SHADER_STRING
      float luminance = dot(textureColor.rgb, W);
      float thresholdResult = step(threshold, luminance);
      
-     gl_FragColor = vec4(vec3(thresholdResult), textureColor.w);
+     CHECK_GL(gl_FragColor = vec4(vec3(thresholdResult), textureColor.w));
  }
 );
 #endif

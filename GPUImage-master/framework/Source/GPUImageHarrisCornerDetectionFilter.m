@@ -38,7 +38,7 @@ NSString *const kGPUImageHarrisCornerDetectionFragmentShaderString = SHADER_STRI
      // R = Ix^2 * Iy^2 - Ixy * Ixy - k * (Ix^2 + Iy^2)^2
      mediump float cornerness = derivativeElements.x * derivativeElements.y - (zElement * zElement) - harrisConstant * derivativeSum * derivativeSum;
      
-     gl_FragColor = vec4(vec3(cornerness * sensitivity), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(cornerness * sensitivity), 1.0));
  }
 );
 #else
@@ -62,7 +62,7 @@ NSString *const kGPUImageHarrisCornerDetectionFragmentShaderString = SHADER_STRI
      // R = Ix^2 * Iy^2 - Ixy * Ixy - k * (Ix^2 + Iy^2)^2
      float cornerness = derivativeElements.x * derivativeElements.y - (zElement * zElement) - harrisConstant * derivativeSum * derivativeSum;
      
-     gl_FragColor = vec4(vec3(cornerness * sensitivity), 1.0);
+     CHECK_GL(gl_FragColor = vec4(vec3(cornerness * sensitivity), 1.0));
  }
 );
 #endif
@@ -218,7 +218,7 @@ NSString *const kGPUImageHarrisCornerDetectionFragmentShaderString = SHADER_STRI
         cornersArray = calloc(512 * 2, sizeof(GLfloat));
     }    
     
-    glReadPixels(0, 0, (int)imageSize.width, (int)imageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels);
+    CHECK_GL(glReadPixels(0, 0, (int)imageSize.width, (int)imageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels));
 
     CFAbsoluteTime startTime = CFAbsoluteTimeGetCurrent();
 

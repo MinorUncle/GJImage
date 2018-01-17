@@ -17,7 +17,7 @@ NSString *const kGPUImageSolarizeFragmentShaderString = SHADER_STRING
      highp float thresholdResult = step(luminance, threshold);
      highp vec3 finalColor = abs(thresholdResult - textureColor.rgb);
      
-     gl_FragColor = vec4(finalColor, textureColor.w);
+     CHECK_GL(gl_FragColor = vec4(finalColor, textureColor.w));
  }
 );
 #else
@@ -37,7 +37,7 @@ NSString *const kGPUImageSolarizeFragmentShaderString = SHADER_STRING
      float thresholdResult = step(luminance, threshold);
      vec3 finalColor = abs(thresholdResult - textureColor.rgb);
 
-     gl_FragColor = vec4(vec3(finalColor), textureColor.w);
+     CHECK_GL(gl_FragColor = vec4(vec3(finalColor), textureColor.w));
  }
 );
 #endif

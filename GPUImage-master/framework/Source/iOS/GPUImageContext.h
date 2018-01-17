@@ -20,6 +20,9 @@ typedef NS_ENUM(NSUInteger, GPUImageRotationMode) {
 	kGPUImageRotate180
 };
 
+
+
+
 @interface GPUImageContext : NSObject
 
 @property(readonly, nonatomic) dispatch_queue_t contextQueue;

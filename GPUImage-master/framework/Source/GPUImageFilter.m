@@ -27,7 +27,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     gl_FragColor = texture2D(inputImageTexture, textureCoordinate);
+     CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinate));
  }
 );
 
@@ -41,7 +41,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     gl_FragColor = texture2D(inputImageTexture, textureCoordinate);
+     CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinate));
  }
 );
 #endif
@@ -101,8 +101,8 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
         
         [GPUImageContext setActiveShaderProgram:filterProgram];
         
-        glEnableVertexAttribArray(filterPositionAttribute);
-        glEnableVertexAttribArray(filterTextureCoordinateAttribute);    
+        CHECK_GL(glEnableVertexAttribArray(filterPositionAttribute));
+        CHECK_GL(glEnableVertexAttribArray(filterTextureCoordinateAttribute));    
     });
     
     return self;
@@ -308,18 +308,18 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
 
     [self setUniformsForProgramAtIndex:0];
     
-    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
 
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]);
+	CHECK_GL(glActiveTexture(GL_TEXTURE2));
+	CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
 	
-	glUniform1i(filterInputTextureUniform, 2);	
+	CHECK_GL(glUniform1i(filterInputTextureUniform, 2));	
 
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-	glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
+	CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     
     [firstInputFramebuffer unlock];
     
@@ -437,7 +437,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
     runAsynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext setActiveShaderProgram:shaderProgram];
         [self setAndExecuteUniformStateCallbackAtIndex:uniform forProgram:shaderProgram toBlock:^{
-            glUniformMatrix3fv(uniform, 1, GL_FALSE, (GLfloat *)&matrix);
+            CHECK_GL(glUniformMatrix3fv(uniform, 1, GL_FALSE, (GLfloat *)&matrix));
         }];
     });
 }
@@ -447,7 +447,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
     runAsynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext setActiveShaderProgram:shaderProgram];
         [self setAndExecuteUniformStateCallbackAtIndex:uniform forProgram:shaderProgram toBlock:^{
-            glUniformMatrix4fv(uniform, 1, GL_FALSE, (GLfloat *)&matrix);
+            CHECK_GL(glUniformMatrix4fv(uniform, 1, GL_FALSE, (GLfloat *)&matrix));
         }];
     });
 }
@@ -457,7 +457,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
     runAsynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext setActiveShaderProgram:shaderProgram];
         [self setAndExecuteUniformStateCallbackAtIndex:uniform forProgram:shaderProgram toBlock:^{
-            glUniform1f(uniform, floatValue);
+            CHECK_GL(glUniform1f(uniform, floatValue));
         }];
     });
 }
@@ -471,7 +471,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
             positionArray[0] = pointValue.x;
             positionArray[1] = pointValue.y;
             
-            glUniform2fv(uniform, 1, positionArray);
+            CHECK_GL(glUniform2fv(uniform, 1, positionArray));
         }];
     });
 }
@@ -486,7 +486,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
             sizeArray[0] = sizeValue.width;
             sizeArray[1] = sizeValue.height;
             
-            glUniform2fv(uniform, 1, sizeArray);
+            CHECK_GL(glUniform2fv(uniform, 1, sizeArray));
         }];
     });
 }
@@ -497,7 +497,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
         [GPUImageContext setActiveShaderProgram:shaderProgram];
 
         [self setAndExecuteUniformStateCallbackAtIndex:uniform forProgram:shaderProgram toBlock:^{
-            glUniform3fv(uniform, 1, (GLfloat *)&vectorValue);
+            CHECK_GL(glUniform3fv(uniform, 1, (GLfloat *)&vectorValue));
         }];
     });
 }
@@ -508,7 +508,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
         [GPUImageContext setActiveShaderProgram:shaderProgram];
         
         [self setAndExecuteUniformStateCallbackAtIndex:uniform forProgram:shaderProgram toBlock:^{
-            glUniform4fv(uniform, 1, (GLfloat *)&vectorValue);
+            CHECK_GL(glUniform4fv(uniform, 1, (GLfloat *)&vectorValue));
         }];
     });
 }
@@ -522,7 +522,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
         [GPUImageContext setActiveShaderProgram:shaderProgram];
         
         [self setAndExecuteUniformStateCallbackAtIndex:uniform forProgram:shaderProgram toBlock:^{
-            glUniform1fv(uniform, arrayLength, [arrayData bytes]);
+            CHECK_GL(glUniform1fv(uniform, arrayLength, [arrayData bytes]));
         }];
     });
 }
@@ -533,7 +533,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
         [GPUImageContext setActiveShaderProgram:shaderProgram];
 
         [self setAndExecuteUniformStateCallbackAtIndex:uniform forProgram:shaderProgram toBlock:^{
-            glUniform1i(uniform, intValue);
+            CHECK_GL(glUniform1i(uniform, intValue));
         }];
     });
 }

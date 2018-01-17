@@ -36,7 +36,7 @@ NSString *const kGPUImageDivideBlendFragmentShaderString = SHADER_STRING
 
    mediump float a = overlay.a + base.a - overlay.a * base.a;
    
-	 gl_FragColor = vec4(ra, ga, ba, a);
+	 CHECK_GL(gl_FragColor = vec4(ra, ga, ba, a));
  }
 );
 #else
@@ -75,7 +75,7 @@ NSString *const kGPUImageDivideBlendFragmentShaderString = SHADER_STRING
      
      float a = overlay.a + base.a - overlay.a * base.a;
      
-	 gl_FragColor = vec4(ra, ga, ba, a);
+	 CHECK_GL(gl_FragColor = vec4(ra, ga, ba, a));
  }
  );
 #endif

@@ -11,7 +11,7 @@ NSString *const kGPUImageCrosshairVertexShaderString = SHADER_STRING
  
  void main()
  {
-     gl_Position = vec4(((position.xy * 2.0) - 1.0), 0.0, 1.0);
+     CHECK_GL(gl_Position = vec4(((position.xy * 2.0) - 1.0), 0.0, 1.0));
      gl_PointSize = crosshairWidth + 1.0;
      pointSpacing = 1.0 / crosshairWidth;
      centerLocation = vec2(pointSpacing * ceil(crosshairWidth / 2.0), pointSpacing * ceil(crosshairWidth / 2.0));
@@ -28,11 +28,11 @@ NSString *const kGPUImageCrosshairFragmentShaderString = SHADER_STRING
 
  void main()
  {
-     lowp vec2 distanceFromCenter = abs(centerLocation - gl_PointCoord.xy);
-     lowp float axisTest = step(pointSpacing, gl_PointCoord.y) * step(distanceFromCenter.x, 0.09) + step(pointSpacing, gl_PointCoord.x) * step(distanceFromCenter.y, 0.09);
+     lowp vec2 distanceFromCenter = abs(centerLocation - CHECK_GL(gl_PointCoord.xy));
+     lowp float axisTest = step(pointSpacing, CHECK_GL(gl_PointCoord.y) * step(distanceFromCenter.x, 0.09) + step(pointSpacing, gl_PointCoord.x) * step(distanceFromCenter.y, 0.09));
 
-     gl_FragColor = vec4(crosshairColor * axisTest, axisTest);
-//     gl_FragColor = vec4(distanceFromCenterInX, distanceFromCenterInY, 0.0, 1.0);
+     CHECK_GL(gl_FragColor = vec4(crosshairColor * axisTest, axisTest));
+//     CHECK_GL(gl_FragColor = vec4(distanceFromCenterInX, distanceFromCenterInY, 0.0, 1.0));
  }
 );
 #else
@@ -47,11 +47,11 @@ NSString *const kGPUImageCrosshairFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     vec2 distanceFromCenter = abs(centerLocation - gl_PointCoord.xy);
-     float axisTest = step(pointSpacing, gl_PointCoord.y) * step(distanceFromCenter.x, 0.09) + step(pointSpacing, gl_PointCoord.x) * step(distanceFromCenter.y, 0.09);
+     vec2 distanceFromCenter = abs(centerLocation - CHECK_GL(gl_PointCoord.xy));
+     float axisTest = step(pointSpacing, CHECK_GL(gl_PointCoord.y) * step(distanceFromCenter.x, 0.09) + step(pointSpacing, gl_PointCoord.x) * step(distanceFromCenter.y, 0.09));
      
-     gl_FragColor = vec4(crosshairColor * axisTest, axisTest);
-     //     gl_FragColor = vec4(distanceFromCenterInX, distanceFromCenterInY, 0.0, 1.0);
+     CHECK_GL(gl_FragColor = vec4(crosshairColor * axisTest, axisTest));
+     //     CHECK_GL(gl_FragColor = vec4(distanceFromCenterInX, distanceFromCenterInY, 0.0, 1.0));
  }
 );
 #endif
@@ -96,19 +96,19 @@ NSString *const kGPUImageCrosshairFragmentShaderString = SHADER_STRING
         
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
 #else
-        glEnable(GL_POINT_SPRITE);
-        glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+        CHECK_GL(glEnable(GL_POINT_SPRITE));
+        CHECK_GL(glEnable(GL_VERTEX_PROGRAM_POINT_SIZE));
 #endif
         
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:[self sizeOfFBO] textureOptions:self.outputTextureOptions onlyTexture:NO];
         [outputFramebuffer activateFramebuffer];
         
-        glClearColor(0.0, 0.0, 0.0, 0.0);
-        glClear(GL_COLOR_BUFFER_BIT);
+        CHECK_GL(glClearColor(0.0, 0.0, 0.0, 0.0));
+        CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
         
-        glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, crosshairCoordinates);
+        CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, crosshairCoordinates));
         
-        glDrawArrays(GL_POINTS, 0, (GLsizei)numberOfCrosshairs);
+        CHECK_GL(glDrawArrays(GL_POINTS, 0, (GLsizei)numberOfCrosshairs));
         
         [self informTargetsAboutNewFrameAtTime:frameTime];
     });

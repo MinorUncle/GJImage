@@ -19,9 +19,9 @@ NSString *const kGPUImageUnsharpMaskFragmentShaderString = SHADER_STRING
      lowp vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
      lowp vec3 blurredImageColor = texture2D(inputImageTexture2, textureCoordinate2).rgb;
      
-     gl_FragColor = vec4(sharpImageColor.rgb * intensity + blurredImageColor * (1.0 - intensity), sharpImageColor.a);
-//     gl_FragColor = mix(blurredImageColor, sharpImageColor, intensity);
-//     gl_FragColor = vec4(sharpImageColor.rgb - (blurredImageColor.rgb * intensity), 1.0);
+     CHECK_GL(gl_FragColor = vec4(sharpImageColor.rgb * intensity + blurredImageColor * (1.0 - intensity), sharpImageColor.a));
+//     CHECK_GL(gl_FragColor = mix(blurredImageColor, sharpImageColor, intensity));
+//     CHECK_GL(gl_FragColor = vec4(sharpImageColor.rgb - (blurredImageColor.rgb * intensity), 1.0));
  }
 );
 #else
@@ -40,9 +40,9 @@ NSString *const kGPUImageUnsharpMaskFragmentShaderString = SHADER_STRING
      vec4 sharpImageColor = texture2D(inputImageTexture, textureCoordinate);
      vec3 blurredImageColor = texture2D(inputImageTexture2, textureCoordinate2).rgb;
      
-     gl_FragColor = vec4(sharpImageColor.rgb * intensity + blurredImageColor * (1.0 - intensity), sharpImageColor.a);
-     //     gl_FragColor = mix(blurredImageColor, sharpImageColor, intensity);
-     //     gl_FragColor = vec4(sharpImageColor.rgb - (blurredImageColor.rgb * intensity), 1.0);
+     CHECK_GL(gl_FragColor = vec4(sharpImageColor.rgb * intensity + blurredImageColor * (1.0 - intensity), sharpImageColor.a));
+     //     CHECK_GL(gl_FragColor = mix(blurredImageColor, sharpImageColor, intensity));
+     //     CHECK_GL(gl_FragColor = vec4(sharpImageColor.rgb - (blurredImageColor.rgb * intensity), 1.0));
  }
 );
 #endif

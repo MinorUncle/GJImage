@@ -49,7 +49,7 @@ NSString *const kGPUImageToonFragmentShaderString = SHADER_STRING
      
      float thresholdTest = 1.0 - step(threshold, mag);
      
-     gl_FragColor = vec4(posterizedImageColor * thresholdTest, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(posterizedImageColor * thresholdTest, textureColor.a));
  }
 );
 #else
@@ -96,7 +96,7 @@ NSString *const kGPUImageToonFragmentShaderString = SHADER_STRING
      
      float thresholdTest = 1.0 - step(threshold, mag);
      
-     gl_FragColor = vec4(posterizedImageColor * thresholdTest, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(posterizedImageColor * thresholdTest, textureColor.a));
  }
 );
 #endif

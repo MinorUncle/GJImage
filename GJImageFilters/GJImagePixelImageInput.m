@@ -39,7 +39,7 @@ static NSString *const kGJImageYpCbCr8BiPlanarFragmentShaderString = SHADER_STRI
      yuv.yz = texture2D(SamplerU, textureCoordinate).ra - vec2(0.5, 0.5);
      
      rgb = colorConversionMatrix * yuv;
-     gl_FragColor = vec4(rgb, 1);
+     CHECK_GL(gl_FragColor = vec4(rgb, 1));
  }
  );
 
@@ -62,7 +62,7 @@ static NSString *const kGJImageYpCbCr8PlanarFragmentShaderString = SHADER_STRING
      yuv.y = texture2D(SamplerU, textureCoordinate).r - 0.5;
      yuv.z = texture2D(SamplerV, textureCoordinate).r - 0.5;
      rgb = colorConversionMatrix * yuv;
-     gl_FragColor = vec4(rgb, 1);
+     CHECK_GL(gl_FragColor = vec4(rgb, 1));
  }
  );
 
@@ -184,12 +184,12 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         }
         [GPUImageContext setActiveShaderProgram:filterProgram];
         if (isFullYUVRange) {
-            glUniform1f(fullVar, 0.0);
+            CHECK_GL(glUniform1f(fullVar, 0.0));
         }else{
-            glUniform1f(fullVar, 16.0/255.0);
+            CHECK_GL(glUniform1f(fullVar, 16.0/255.0));
         }
-        glEnableVertexAttribArray(filterPositionAttribute);
-        glEnableVertexAttribArray(filterTextureCoordinateAttribute);
+        CHECK_GL(glEnableVertexAttribArray(filterPositionAttribute));
+        CHECK_GL(glEnableVertexAttribArray(filterTextureCoordinateAttribute));
     });
     return YES;
 }
@@ -240,7 +240,6 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         CGSize size = CVImageBufferGetEncodedSize(imageBuffer);
         CVOpenGLESTextureRef bgraTextureRef = NULL;
         GLuint bgraTexture;
-        glActiveTexture(GL_TEXTURE4);
         CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RGBA, size.width, size.height, _sourceRgbFormat, GL_UNSIGNED_BYTE, 0, &bgraTextureRef);
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
         if (err)
@@ -252,9 +251,9 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         }
         
         bgraTexture = CVOpenGLESTextureGetName(bgraTextureRef);
-        glBindTexture(GL_TEXTURE_2D, bgraTexture);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, bgraTexture));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         
         outputFramebuffer = [[GJImageFramebuffer alloc]initWithSize:size overriddenGLTexture:bgraTextureRef];
         for (id<GPUImageInput> currentTarget in targets)
@@ -324,7 +323,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         CVPixelBufferLockBaseAddress(imageBuffer, 0);
         CVReturn err;
         // Y-plane
-        glActiveTexture(GL_TEXTURE4);
+        CHECK_GL(glActiveTexture(GL_TEXTURE4));
         //        if ([GPUImageContext deviceSupportsRedTextures])
         //        {
         //            err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RED_EXT, size.width, size.height, GL_RED_EXT, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
@@ -342,9 +341,9 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
             return;
         }
         YPTexture = CVOpenGLESTextureGetName(YPTextureRef);
-        glBindTexture(GL_TEXTURE_2D, YPTexture);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, YPTexture));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         
         err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE, size.width/4, size.height/4, GL_LUMINANCE, GL_UNSIGNED_BYTE, 1, &CBTextureRef);
         //        }
@@ -359,9 +358,9 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         }
         
         CBTexture = CVOpenGLESTextureGetName(CBTextureRef);
-        glBindTexture(GL_TEXTURE_2D, CBTexture);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, CBTexture));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         
         err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE, size.width/4, size.height/4, GL_LUMINANCE, GL_UNSIGNED_BYTE, 2, &CRTextureRef);
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
@@ -377,9 +376,9 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         }
         
         CRTexture = CVOpenGLESTextureGetName(CRTextureRef);
-        glBindTexture(GL_TEXTURE_2D, CRTexture);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, CRTexture));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
     
         [GPUImageContext useImageProcessingContext];
         [GPUImageContext setActiveShaderProgram:filterProgram];
@@ -387,22 +386,22 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
         [outputFramebuffer activateFramebuffer];
         
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+        CHECK_GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
         
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, YPTexture);
-        glUniform1i(YTextureUniform, 4);
+        CHECK_GL(glActiveTexture(GL_TEXTURE4));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, YPTexture));
+        CHECK_GL(glUniform1i(YTextureUniform, 4));
         
-        glActiveTexture(GL_TEXTURE5);
-        glBindTexture(GL_TEXTURE_2D, CRTexture);
-        glUniform1i(UTextureUniform, 5);
+        CHECK_GL(glActiveTexture(GL_TEXTURE5));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, CRTexture));
+        CHECK_GL(glUniform1i(UTextureUniform, 5));
         
-        glActiveTexture(GL_TEXTURE6);
-        glBindTexture(GL_TEXTURE_2D, CBTexture);
-        glUniform1i(VTextureUniform, 6);
+        CHECK_GL(glActiveTexture(GL_TEXTURE6));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, CBTexture));
+        CHECK_GL(glUniform1i(VTextureUniform, 6));
         
-        glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion);
+        CHECK_GL(glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion));
         
         
         static const GLfloat squareVertices[] = {
@@ -411,10 +410,10 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
             -1.0f,  1.0f,
             1.0f,  1.0f,
         };
-        glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices);
-        glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageFilter textureCoordinatesForRotation:inputRotation]);
+        CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices));
+        CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageFilter textureCoordinatesForRotation:inputRotation]));
         
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
         
         
         
@@ -492,7 +491,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     CVPixelBufferLockBaseAddress(imageBuffer, 0);
     CVReturn err;
     // Y-plane
-    glActiveTexture(GL_TEXTURE4);
+    CHECK_GL(glActiveTexture(GL_TEXTURE4));
     //        if ([GPUImageContext deviceSupportsRedTextures])
     //        {
     //            err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RED_EXT, size.width, size.height, GL_RED_EXT, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
@@ -514,7 +513,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
 
     
     
-    glActiveTexture(GL_TEXTURE5);
+    CHECK_GL(glActiveTexture(GL_TEXTURE5));
     err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE_ALPHA, size.width/2, size.height/2, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, 1, &chrominanceTextureRef);
     CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
     
@@ -535,23 +534,23 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
         [outputFramebuffer activateFramebuffer];
         
-//        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//        CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+//        CHECK_GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
         
         
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, luminanceTexture);
-        glUniform1i(YTextureUniform, 4);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        CHECK_GL(glActiveTexture(GL_TEXTURE4));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, luminanceTexture));
+        CHECK_GL(glUniform1i(YTextureUniform, 4));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         
-        glActiveTexture(GL_TEXTURE5);
-        glBindTexture(GL_TEXTURE_2D, chrominanceTexture);
-        glUniform1i(UTextureUniform, 5);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        CHECK_GL(glActiveTexture(GL_TEXTURE5));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, chrominanceTexture));
+        CHECK_GL(glUniform1i(UTextureUniform, 5));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         
-        glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion);
+        CHECK_GL(glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion));
         
         
         static const GLfloat squareVertices[] = {
@@ -560,10 +559,10 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
             -1.0f,  1.0f,
             1.0f,  1.0f,
         };
-        glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices);
-        glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageFilter textureCoordinatesForRotation:inputRotation]);
+        CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices));
+        CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageFilter textureCoordinatesForRotation:inputRotation]));
         
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
         
         
         for (id<GPUImageInput> currentTarget in targets)

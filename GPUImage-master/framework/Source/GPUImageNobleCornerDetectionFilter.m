@@ -25,8 +25,8 @@ NSString *const kGPUImageNobleCornerDetectionFragmentShaderString = SHADER_STRIN
      // R = Ix^2 * Iy^2 - Ixy * Ixy - k * (Ix^2 + Iy^2)^2
      //     highp float harrisIntensity = derivativeElements.x * derivativeElements.y - (derivativeElements.z * derivativeElements.z) - harrisConstant * derivativeSum * derivativeSum;
      
-     //     gl_FragColor = vec4(vec3(harrisIntensity * 7.0), 1.0);
-     gl_FragColor = vec4(vec3(cornerness * sensitivity), 1.0);
+     //     CHECK_GL(gl_FragColor = vec4(vec3(harrisIntensity * 7.0), 1.0));
+     CHECK_GL(gl_FragColor = vec4(vec3(cornerness * sensitivity), 1.0));
  }
 );
 #else
@@ -52,8 +52,8 @@ NSString *const kGPUImageNobleCornerDetectionFragmentShaderString = SHADER_STRIN
      // R = Ix^2 * Iy^2 - Ixy * Ixy - k * (Ix^2 + Iy^2)^2
      //     highp float harrisIntensity = derivativeElements.x * derivativeElements.y - (derivativeElements.z * derivativeElements.z) - harrisConstant * derivativeSum * derivativeSum;
      
-     //     gl_FragColor = vec4(vec3(harrisIntensity * 7.0), 1.0);
-     gl_FragColor = vec4(vec3(cornerness * sensitivity), 1.0);
+     //     CHECK_GL(gl_FragColor = vec4(vec3(harrisIntensity * 7.0), 1.0));
+     CHECK_GL(gl_FragColor = vec4(vec3(cornerness * sensitivity), 1.0));
  }
 );
 #endif

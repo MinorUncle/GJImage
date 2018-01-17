@@ -136,8 +136,8 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
         
         [_movieWriterContext setContextShaderProgram:colorSwizzlingProgram];
         
-        glEnableVertexAttribArray(colorSwizzlingPositionAttribute);
-        glEnableVertexAttribArray(colorSwizzlingTextureCoordinateAttribute);
+        CHECK_GL(glEnableVertexAttribArray(colorSwizzlingPositionAttribute));
+        CHECK_GL(glEnableVertexAttribArray(colorSwizzlingTextureCoordinateAttribute));
     });
         
     [self initializeMovieWithOutputSettings:outputSettings];
@@ -564,9 +564,9 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
 
 - (void)createDataFBO;
 {
-    glActiveTexture(GL_TEXTURE1);
-    glGenFramebuffers(1, &movieFramebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, movieFramebuffer);
+    CHECK_GL(glActiveTexture(GL_TEXTURE1));
+    CHECK_GL(glGenFramebuffers(1, &movieFramebuffer));
+    CHECK_GL(glBindFramebuffer(GL_FRAMEBUFFER, movieFramebuffer));
     
     if ([GPUImageContext supportsFastTextureUpload])
     {
@@ -595,22 +595,22 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
                                                       0,
                                                       &renderTexture);
         
-        glBindTexture(CVOpenGLESTextureGetTarget(renderTexture), CVOpenGLESTextureGetName(renderTexture));
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        CHECK_GL(glBindTexture(CVOpenGLESTextureGetTarget(renderTexture), CVOpenGLESTextureGetName(renderTexture)));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, CVOpenGLESTextureGetName(renderTexture), 0);
+        CHECK_GL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, CVOpenGLESTextureGetName(renderTexture), 0));
     }
     else
     {
-        glGenRenderbuffers(1, &movieRenderbuffer);
-        glBindRenderbuffer(GL_RENDERBUFFER, movieRenderbuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, (int)videoSize.width, (int)videoSize.height);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, movieRenderbuffer);	
+        CHECK_GL(glGenRenderbuffers(1, &movieRenderbuffer));
+        CHECK_GL(glBindRenderbuffer(GL_RENDERBUFFER, movieRenderbuffer));
+        CHECK_GL(glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, (int)videoSize.width, (int)videoSize.height));
+        CHECK_GL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, movieRenderbuffer));	
     }
     
 	
-	__unused GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	__unused GLenum status = CHECK_GL(glCheckFramebufferStatus(GL_FRAMEBUFFER));
     
     NSAssert(status == GL_FRAMEBUFFER_COMPLETE, @"Incomplete filter FBO: %d", status);
 }
@@ -622,13 +622,13 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
 
         if (movieFramebuffer)
         {
-            glDeleteFramebuffers(1, &movieFramebuffer);
+            CHECK_GL(glDeleteFramebuffers(1, &movieFramebuffer));
             movieFramebuffer = 0;
         }
         
         if (movieRenderbuffer)
         {
-            glDeleteRenderbuffers(1, &movieRenderbuffer);
+            CHECK_GL(glDeleteRenderbuffers(1, &movieRenderbuffer));
             movieRenderbuffer = 0;
         }
         
@@ -654,9 +654,9 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
         [self createDataFBO];
     }
     
-    glBindFramebuffer(GL_FRAMEBUFFER, movieFramebuffer);
+    CHECK_GL(glBindFramebuffer(GL_FRAMEBUFFER, movieFramebuffer));
     
-    glViewport(0, 0, (int)videoSize.width, (int)videoSize.height);
+    CHECK_GL(glViewport(0, 0, (int)videoSize.width, (int)videoSize.height));
 }
 
 - (void)renderAtInternalSizeUsingFramebuffer:(GPUImageFramebuffer *)inputFramebufferToUse;
@@ -666,8 +666,8 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
     
     [_movieWriterContext setContextShaderProgram:colorSwizzlingProgram];
     
-    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    CHECK_GL(glClearColor(1.0f, 0.0f, 0.0f, 1.0f));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     
     // This needs to be flipped to write out to video correctly
     static const GLfloat squareVertices[] = {
@@ -679,17 +679,17 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
     
     const GLfloat *textureCoordinates = [GPUImageFilter textureCoordinatesForRotation:inputRotation];
     
-	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, [inputFramebufferToUse texture]);
-	glUniform1i(colorSwizzlingInputTextureUniform, 4);
+	CHECK_GL(glActiveTexture(GL_TEXTURE4));
+	CHECK_GL(glBindTexture(GL_TEXTURE_2D, [inputFramebufferToUse texture]));
+	CHECK_GL(glUniform1i(colorSwizzlingInputTextureUniform, 4));
     
 //    NSLog(@"Movie writer framebuffer: %@", inputFramebufferToUse);
     
-    glVertexAttribPointer(colorSwizzlingPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices);
-	glVertexAttribPointer(colorSwizzlingTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+    CHECK_GL(glVertexAttribPointer(colorSwizzlingPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices));
+	CHECK_GL(glVertexAttribPointer(colorSwizzlingTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glFinish();
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
+    CHECK_GL(glFinish());
 }
 
 #pragma mark -
@@ -748,7 +748,7 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
     }
 
     GPUImageFramebuffer *inputFramebufferForBlock = firstInputFramebuffer;
-    glFinish();
+    CHECK_GL(glFinish());
 
     runAsynchronouslyOnContextQueue(_movieWriterContext, ^{
         if (!assetWriterVideoInput.readyForMoreMediaData && _encodingLiveVideo)
@@ -782,7 +782,7 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
                 CVPixelBufferLockBaseAddress(pixel_buffer, 0);
                 
                 GLubyte *pixelBufferData = (GLubyte *)CVPixelBufferGetBaseAddress(pixel_buffer);
-                glReadPixels(0, 0, videoSize.width, videoSize.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelBufferData);
+                CHECK_GL(glReadPixels(0, 0, videoSize.width, videoSize.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelBufferData));
             }
         }
         

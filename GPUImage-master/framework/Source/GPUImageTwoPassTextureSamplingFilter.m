@@ -37,13 +37,13 @@
     
     if (programIndex == 0)
     {
-        glUniform1f(verticalPassTexelWidthOffsetUniform, verticalPassTexelWidthOffset);
-        glUniform1f(verticalPassTexelHeightOffsetUniform, verticalPassTexelHeightOffset);
+        CHECK_GL(glUniform1f(verticalPassTexelWidthOffsetUniform, verticalPassTexelWidthOffset));
+        CHECK_GL(glUniform1f(verticalPassTexelHeightOffsetUniform, verticalPassTexelHeightOffset));
     }
     else
     {
-        glUniform1f(horizontalPassTexelWidthOffsetUniform, horizontalPassTexelWidthOffset);
-        glUniform1f(horizontalPassTexelHeightOffsetUniform, horizontalPassTexelHeightOffset);
+        CHECK_GL(glUniform1f(horizontalPassTexelWidthOffsetUniform, horizontalPassTexelWidthOffset));
+        CHECK_GL(glUniform1f(horizontalPassTexelHeightOffsetUniform, horizontalPassTexelHeightOffset));
     }
 }
 

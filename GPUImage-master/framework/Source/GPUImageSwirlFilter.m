@@ -27,7 +27,7 @@ NSString *const kGPUImageSwirlFragmentShaderString = SHADER_STRING
          textureCoordinateToUse += center;
      }
     
-     gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse );
+     CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse ));
      
  }
 );
@@ -57,7 +57,7 @@ NSString *const kGPUImageSwirlFragmentShaderString = SHADER_STRING
          textureCoordinateToUse += center;
      }
      
-     gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse );
+     CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse ));
  }
 );
 #endif

@@ -28,7 +28,7 @@ NSString *const kGPUImageBulgeDistortionFragmentShaderString = SHADER_STRING
         textureCoordinateToUse += center;
     }
     
-    gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse );    
+    CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse ));    
  }
 );
 #else
@@ -59,7 +59,7 @@ NSString *const kGPUImageBulgeDistortionFragmentShaderString = SHADER_STRING
         textureCoordinateToUse += center;
     }
     
-    gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse );
+    CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse ));
  }
 );
 #endif

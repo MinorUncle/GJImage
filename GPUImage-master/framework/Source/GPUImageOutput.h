@@ -19,6 +19,11 @@ typedef NS_ENUM(NSInteger, UIImageOrientation) {
 };
 #endif
 
+
+
+
+
+
 dispatch_queue_attr_t GPUImageDefaultQueueAttribute(void);
 void runOnMainQueueWithoutDeadlocking(void (^block)(void));
 void runSynchronouslyOnVideoProcessingQueue(void (^block)(void));
@@ -26,6 +31,19 @@ void runAsynchronouslyOnVideoProcessingQueue(void (^block)(void));
 void runSynchronouslyOnContextQueue(GPUImageContext *context, void (^block)(void));
 void runAsynchronouslyOnContextQueue(GPUImageContext *context, void (^block)(void));
 void reportAvailableMemoryForGPUImage(NSString *tag);
+
+int  checkGLError(void);
+//查找字符   ^( *)gl(.*?\));
+//替换字符   $1CHECK_GL\(gl$2);
+#define ENABLE_GL_CHECK true
+
+#if ENABLE_GL_CHECK
+#define CHECK_GL(glFunc) \
+glFunc; \
+checkGLError();
+#else
+#define CHECK_GL(glFunc)  glFunc;
+#endif
 
 @class GPUImageMovieWriter;
 

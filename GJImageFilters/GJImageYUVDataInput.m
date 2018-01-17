@@ -66,7 +66,7 @@ static NSString *const kGJImageYUV420PFragmentShaderString = GJSHADER_STRING
         rgb = mat3( 1,       1,         1,
                    0,       -0.39465,  2.03211,
                    1.13983, -0.58060,  0) * yuv;
-        gl_FragColor = vec4(rgb, 1);
+        CHECK_GL(gl_FragColor = vec4(rgb, 1));
     }
 );
 
@@ -85,7 +85,7 @@ static NSString *const kGJImageYUV420PFragmentShaderString = GJSHADER_STRING
 //    yuv.yz = texture2D(chrominanceTexture, textureCoordinate).ra - vec2(0.5, 0.5);
 //    rgb = colorConversionMatrix * yuv;
 //
-//    gl_FragColor = vec4(rgb, 1);
+//    CHECK_GL(gl_FragColor = vec4(rgb, 1));
 //}
 
 static NSString *const kGJImageYV12FragmentShaderString = GJSHADER_STRING
@@ -104,7 +104,7 @@ static NSString *const kGJImageYV12FragmentShaderString = GJSHADER_STRING
      yuv.yz = texture2D(SamplerU, textureCoordinate).ra - vec2(0.5, 0.5);
 
      rgb = colorConversionMatrix * yuv;
-     gl_FragColor = vec4(rgb, 1);
+     CHECK_GL(gl_FragColor = vec4(rgb, 1));
     }
 );
 static NSString *const kGJImageNV12FragmentShaderString = GJSHADER_STRING
@@ -123,7 +123,7 @@ static NSString *const kGJImageNV12FragmentShaderString = GJSHADER_STRING
      yuv.yz = texture2D(SamplerU, textureCoordinate).ra - vec2(0.5, 0.5);
      
      rgb = colorConversionMatrix * yuv;
-     gl_FragColor = vec4(rgb, 1);
+     CHECK_GL(gl_FragColor = vec4(rgb, 1));
  }
 );
 
@@ -144,7 +144,7 @@ static NSString *const kGJImageNV21FragmentShaderString = GJSHADER_STRING
      rgb = mat3( 1,       1,         1,
                 0,       -0.39465,  2.03211,
                 1.13983, -0.58060,  0) * yuv;
-     gl_FragColor = vec4(rgb, 1);
+     CHECK_GL(gl_FragColor = vec4(rgb, 1));
     }
 );
 
@@ -158,7 +158,7 @@ static NSString *const kGJImageNV21FragmentShaderString = GJSHADER_STRING
 //    rgb = mat3( 1.164,       0,         1.596,
 //               1.164,       -0.392,     -0.813,
 //               1.164,       2.017,      0) * yuv;
-//    gl_FragColor = vec4(rgb, 1);
+//    CHECK_GL(gl_FragColor = vec4(rgb, 1));
 //}
 ////1*y+1*u+1*v
 ////-0.39465*u+2.03211v
@@ -267,8 +267,8 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         }
         [GPUImageContext setActiveShaderProgram:filterProgram];
         
-        glEnableVertexAttribArray(filterPositionAttribute);
-        glEnableVertexAttribArray(filterTextureCoordinateAttribute);
+        CHECK_GL(glEnableVertexAttribArray(filterPositionAttribute));
+        CHECK_GL(glEnableVertexAttribArray(filterTextureCoordinateAttribute));
     });
 }
 - (void)initializeAttributes;
@@ -397,27 +397,27 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     
     GLsizei w  = uploadedImageSize.width;
     GLsizei h = uploadedImageSize.height;
-    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RED_EXT, _pixelType, Ybytes);
-    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_RED_EXT, _pixelType, Ubytes);
-    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_RED_EXT, _pixelType, Vbytes);
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
+    CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RED_EXT, _pixelType, Ybytes));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
+    CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_RED_EXT, _pixelType, Ubytes));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]));
+    CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_RED_EXT, _pixelType, Vbytes));
 
-    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]);
-    glUniform1i(YTextureUniform, 0);
+    CHECK_GL(glActiveTexture(GL_TEXTURE0));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
+    CHECK_GL(glUniform1i(YTextureUniform, 0));
     
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]);
-    glUniform1i(YTextureUniform, 1);
+    CHECK_GL(glActiveTexture(GL_TEXTURE1));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
+    CHECK_GL(glUniform1i(YTextureUniform, 1));
     
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]);
-    glUniform1i(YTextureUniform, 2);
+    CHECK_GL(glActiveTexture(GL_TEXTURE2));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]));
+    CHECK_GL(glUniform1i(YTextureUniform, 2));
     
     
     static const GLfloat imageVertices[] = {
@@ -426,10 +426,10 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         -1.0f,  1.0f,
         1.0f,  1.0f,
     };
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices);
-    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation]);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices));
+    CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation]));
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     
     runAsynchronouslyOnVideoProcessingQueue(^{
                 
@@ -467,27 +467,27 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     
     GLsizei w  = uploadedImageSize.width;
     GLsizei h = uploadedImageSize.height;
-    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RED_EXT, pixelType, Ybytes);
-    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_RED_EXT, pixelType, CrBrbytes);
-//    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]);
-//    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_RED_EXT, pixelType, CrBrbytes);
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
+    CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RED_EXT, pixelType, Ybytes));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
+    CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_RED_EXT, pixelType, CrBrbytes));
+//    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]));
+//    CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_RED_EXT, pixelType, CrBrbytes));
     
-    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]);
-    glUniform1i(YTextureUniform, 0);
+    CHECK_GL(glActiveTexture(GL_TEXTURE0));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
+    CHECK_GL(glUniform1i(YTextureUniform, 0));
     
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]);
-    glUniform1i(YTextureUniform, 1);
+    CHECK_GL(glActiveTexture(GL_TEXTURE1));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
+    CHECK_GL(glUniform1i(YTextureUniform, 1));
     
-//    glActiveTexture(GL_TEXTURE2);
-//    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]);
-//    glUniform1i(YTextureUniform, 2);
+//    CHECK_GL(glActiveTexture(GL_TEXTURE2));
+//    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]));
+//    CHECK_GL(glUniform1i(YTextureUniform, 2));
     
     
     static const GLfloat imageVertices[] = {
@@ -496,10 +496,10 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         -1.0f,  1.0f,
         1.0f,  1.0f,
     };
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices);
-    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation]);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices));
+    CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation]));
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     
     runAsynchronouslyOnVideoProcessingQueue(^{
         
@@ -594,7 +594,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         CVPixelBufferLockBaseAddress(imageBuffer, 0);
         CVReturn err;
         // Y-plane
-        glActiveTexture(GL_TEXTURE4);
+        CHECK_GL(glActiveTexture(GL_TEXTURE4));
 //        if ([GPUImageContext deviceSupportsRedTextures])
 //        {
 //            err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RED_EXT, size.width, size.height, GL_RED_EXT, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
@@ -609,9 +609,9 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         }
         
         luminanceTexture = CVOpenGLESTextureGetName(luminanceTextureRef);
-        glBindTexture(GL_TEXTURE_2D, luminanceTexture);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, luminanceTexture));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         
         err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE_ALPHA, size.width/2, size.height/2, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, 1, &chrominanceTextureRef);
         if (err)
@@ -619,9 +619,9 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
             NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
         }
         chrominanceTexture = CVOpenGLESTextureGetName(chrominanceTextureRef);
-        glBindTexture(GL_TEXTURE_2D, chrominanceTexture);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, chrominanceTexture));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         dispatch_semaphore_signal(dataUpdateSemaphore);
 
         
@@ -630,8 +630,8 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
         [outputFramebuffer activateFramebuffer];
         
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+        CHECK_GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
         
         static const GLfloat squareVertices[] = {
             -1.0f, -1.0f,
@@ -640,25 +640,25 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
             1.0f,  1.0f,
         };
         
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, luminanceTexture);
-        glUniform1i(YTextureUniform, 4);
+        CHECK_GL(glActiveTexture(GL_TEXTURE4));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, luminanceTexture));
+        CHECK_GL(glUniform1i(YTextureUniform, 4));
         
-        glActiveTexture(GL_TEXTURE5);
-        glBindTexture(GL_TEXTURE_2D, chrominanceTexture);
-        glUniform1i(UTextureUniform, 5);
+        CHECK_GL(glActiveTexture(GL_TEXTURE5));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, chrominanceTexture));
+        CHECK_GL(glUniform1i(UTextureUniform, 5));
         
-        glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion);
+        CHECK_GL(glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion));
         if (isFullYUVRange) {
-            glUniform1f(fullVar, 0.0);
+            CHECK_GL(glUniform1f(fullVar, 0.0));
         }else{
-            glUniform1f(fullVar, 16.0/255.0);
+            CHECK_GL(glUniform1f(fullVar, 16.0/255.0));
         }
         
-        glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices);
-        glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation]);
+        CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices));
+        CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation]));
         
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
         
 
         
@@ -695,7 +695,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
 //    CVOpenGLESTextureCacheRef coreVideoTextureCache = [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache];
 //    
 //    CVOpenGLESTextureRef yTexture,uvTexture;
-//    glActiveTexture(GL_TEXTURE0);
+//    CHECK_GL(glActiveTexture(GL_TEXTURE0));
 //    CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage (kCFAllocatorDefault, coreVideoTextureCache, imageBuffer,
 //                                                                 NULL, // texture attributes
 //                                                                 GL_TEXTURE_2D,
@@ -709,7 +709,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
 //
 //    NSAssert(err == kCVReturnSuccess,@"纹理1创建失败");
 //    
-//    glActiveTexture(GL_TEXTURE1);
+//    CHECK_GL(glActiveTexture(GL_TEXTURE1));
 //    err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
 //                                                       coreVideoTextureCache,
 //                                                       imageBuffer,
@@ -729,8 +729,8 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
 //    outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:outputSize textureOptions:self.outputTextureOptions onlyTexture:NO];
 //    [outputFramebuffer activateFramebuffer];
 //    
-//    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-//    glClear(GL_COLOR_BUFFER_BIT);
+//    CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+//    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
 //    
 //    static const GLfloat imageVertices[] = {
 //        -1.0f, -1.0f,
@@ -738,10 +738,10 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
 //        -1.0f,  1.0f,
 //        1.0f,  1.0f,
 //    };
-//    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices);
-//    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation]);
+//    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices));
+//    CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation]));
 //    
-//    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+//    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     
     runAsynchronouslyOnVideoProcessingQueue(^{
         

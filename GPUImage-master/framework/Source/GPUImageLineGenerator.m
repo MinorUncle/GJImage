@@ -17,7 +17,7 @@ NSString *const kGPUImageLineGeneratorFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     gl_FragColor = vec4(lineColor, 1.0);
+     CHECK_GL(gl_FragColor = vec4(lineColor, 1.0));
  }
 );
 #else
@@ -27,7 +27,7 @@ NSString *const kGPUImageLineGeneratorFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     gl_FragColor = vec4(lineColor, 1.0);
+     CHECK_GL(gl_FragColor = vec4(lineColor, 1.0));
  }
 );
 #endif
@@ -122,17 +122,17 @@ NSString *const kGPUImageLineGeneratorFragmentShaderString = SHADER_STRING
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:[self sizeOfFBO] textureOptions:self.outputTextureOptions onlyTexture:NO];
         [outputFramebuffer activateFramebuffer];
         
-        glClearColor(0.0, 0.0, 0.0, 0.0);
-        glClear(GL_COLOR_BUFFER_BIT);
+        CHECK_GL(glClearColor(0.0, 0.0, 0.0, 0.0));
+        CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
         
-        glBlendEquation(GL_FUNC_ADD);
-        glBlendFunc(GL_ONE, GL_ONE);
-        glEnable(GL_BLEND);
+        CHECK_GL(glBlendEquation(GL_FUNC_ADD));
+        CHECK_GL(glBlendFunc(GL_ONE, GL_ONE));
+        CHECK_GL(glEnable(GL_BLEND));
         
-        glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, lineCoordinates);
-        glDrawArrays(GL_LINES, 0, ((unsigned int)numberOfLines * 2));
+        CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, lineCoordinates));
+        CHECK_GL(glDrawArrays(GL_LINES, 0, ((unsigned int)numberOfLines * 2)));
         
-        glDisable(GL_BLEND);
+        CHECK_GL(glDisable(GL_BLEND));
 
         [self informTargetsAboutNewFrameAtTime:frameTime];
     });
@@ -150,7 +150,7 @@ NSString *const kGPUImageLineGeneratorFragmentShaderString = SHADER_STRING
 {
     _lineWidth = newValue;
     [GPUImageContext setActiveShaderProgram:filterProgram];
-    glLineWidth(newValue);
+    CHECK_GL(glLineWidth(newValue));
 }
 
 - (void)setLineColorRed:(GLfloat)redComponent green:(GLfloat)greenComponent blue:(GLfloat)blueComponent;

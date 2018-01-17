@@ -14,7 +14,7 @@ NSString *const kGPUImageDarkenBlendFragmentShaderString = SHADER_STRING
     lowp vec4 base = texture2D(inputImageTexture, textureCoordinate);
     lowp vec4 overlayer = texture2D(inputImageTexture2, textureCoordinate2);
     
-    gl_FragColor = vec4(min(overlayer.rgb * base.a, base.rgb * overlayer.a) + overlayer.rgb * (1.0 - base.a) + base.rgb * (1.0 - overlayer.a), 1.0);
+    CHECK_GL(gl_FragColor = vec4(min(overlayer.rgb * base.a, base.rgb * overlayer.a) + overlayer.rgb * (1.0 - base.a) + base.rgb * (1.0 - overlayer.a), 1.0));
  }
 );
 #else
@@ -31,7 +31,7 @@ NSString *const kGPUImageDarkenBlendFragmentShaderString = SHADER_STRING
      vec4 base = texture2D(inputImageTexture, textureCoordinate);
      vec4 overlayer = texture2D(inputImageTexture2, textureCoordinate2);
      
-     gl_FragColor = vec4(min(overlayer.rgb * base.a, base.rgb * overlayer.a) + overlayer.rgb * (1.0 - base.a) + base.rgb * (1.0 - overlayer.a), 1.0);
+     CHECK_GL(gl_FragColor = vec4(min(overlayer.rgb * base.a, base.rgb * overlayer.a) + overlayer.rgb * (1.0 - base.a) + base.rgb * (1.0 - overlayer.a), 1.0));
  }
  );
 #endif

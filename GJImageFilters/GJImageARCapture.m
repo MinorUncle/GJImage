@@ -386,19 +386,19 @@ CGSize getSizeWithCapturePreset(NSString* capturePreset) {
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:pixelSizeToUseForTexture onlyTexture:YES];
         [outputFramebuffer disableReferenceCounting];
         
-        glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]);
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]));
         if (self.shouldSmoothlyScaleOutput)
         {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
         }
         // no need to use self.outputTextureOptions here since pictures need this texture formats and type
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int)pixelSizeToUseForTexture.width, (int)pixelSizeToUseForTexture.height, 0, format, GL_UNSIGNED_BYTE, imageData);
+        CHECK_GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int)pixelSizeToUseForTexture.width, (int)pixelSizeToUseForTexture.height, 0, format, GL_UNSIGNED_BYTE, imageData));
         
         if (self.shouldSmoothlyScaleOutput)
         {
-            glGenerateMipmap(GL_TEXTURE_2D);
+            CHECK_GL(glGenerateMipmap(GL_TEXTURE_2D));
         }
-        glBindTexture(GL_TEXTURE_2D, 0);
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, 0));
     });
     
     if (shouldRedrawUsingCoreGraphics)

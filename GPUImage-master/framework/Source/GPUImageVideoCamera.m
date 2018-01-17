@@ -225,8 +225,8 @@ static NSString* getCapturePresetWithSize(CGSize size) {
             
             [GPUImageContext setActiveShaderProgram:yuvConversionProgram];
             
-            glEnableVertexAttribArray(yuvConversionPositionAttribute);
-            glEnableVertexAttribArray(yuvConversionTextureCoordinateAttribute);
+            CHECK_GL(glEnableVertexAttribArray(yuvConversionPositionAttribute));
+            CHECK_GL(glEnableVertexAttribArray(yuvConversionTextureCoordinateAttribute));
         }
     });
     
@@ -967,9 +967,9 @@ static NSString* getCapturePresetWithSize(CGSize size) {
             }
             
             luminanceTexture = CVOpenGLESTextureGetName(luminanceTextureRef);
-            glBindTexture(GL_TEXTURE_2D, luminanceTexture);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            CHECK_GL(glBindTexture(GL_TEXTURE_2D, luminanceTexture));
+            CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+            CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
             
             // UV-plane
 //            glActiveTexture(GL_TEXTURE5);
@@ -988,9 +988,9 @@ static NSString* getCapturePresetWithSize(CGSize size) {
             }
             
             chrominanceTexture = CVOpenGLESTextureGetName(chrominanceTextureRef);
-            glBindTexture(GL_TEXTURE_2D, chrominanceTexture);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            CHECK_GL(glBindTexture(GL_TEXTURE_2D, chrominanceTexture));
+            CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+            CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
             
 //            if (!allTargetsWantMonochromeData)
 //            {
@@ -1057,13 +1057,13 @@ static NSString* getCapturePresetWithSize(CGSize size) {
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:CGSizeMake(bytesPerRow / 4, bufferHeight) onlyTexture:YES];
         [outputFramebuffer activateFramebuffer];
 
-        glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]);
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]));
         
         //        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bufferWidth, bufferHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(cameraFrame));
         
         // Using BGRA extension to pull in video frame data directly
         // The use of bytesPerRow / 4 accounts for a display glitch present in preview video frames when using the photo preset on the camera
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bytesPerRow / 4, bufferHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(cameraFrame));
+        CHECK_GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bytesPerRow / 4, bufferHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(cameraFrame)));
         
         [self updateTargetsForVideoCameraUsingCacheTextureAtWidth:bytesPerRow / 4 height:bufferHeight time:currentTime];
         
@@ -1095,8 +1095,8 @@ static NSString* getCapturePresetWithSize(CGSize size) {
     outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:CGSizeMake(rotatedImageBufferWidth, rotatedImageBufferHeight) textureOptions:self.outputTextureOptions onlyTexture:NO];
     [outputFramebuffer activateFramebuffer];
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     
     static const GLfloat squareVertices[] = {
         -1.0f, -1.0f,
@@ -1109,16 +1109,16 @@ static NSString* getCapturePresetWithSize(CGSize size) {
 	glBindTexture(GL_TEXTURE_2D, luminanceTexture);
 	glUniform1i(yuvConversionLuminanceTextureUniform, 4);
 
-    glActiveTexture(GL_TEXTURE5);
+    CHECK_GL(glActiveTexture(GL_TEXTURE5));
 	glBindTexture(GL_TEXTURE_2D, chrominanceTexture);
 	glUniform1i(yuvConversionChrominanceTextureUniform, 5);
     
-    glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion);
+    CHECK_GL(glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion));
 
-    glVertexAttribPointer(yuvConversionPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices);
+    CHECK_GL(glVertexAttribPointer(yuvConversionPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices));
 	glVertexAttribPointer(yuvConversionTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageFilter textureCoordinatesForRotation:kGPUImageNoRotation]);
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
 }
 
 #pragma mark -

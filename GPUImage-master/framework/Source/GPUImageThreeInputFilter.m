@@ -58,7 +58,7 @@ NSString *const kGPUImageThreeInputTextureVertexShaderString = SHADER_STRING
         filterThirdTextureCoordinateAttribute = [filterProgram attributeIndex:@"inputTextureCoordinate3"];
         
         filterInputTextureUniform3 = [filterProgram uniformIndex:@"inputImageTexture3"]; // This does assume a name of "inputImageTexture3" for the third input texture in the fragment shader
-        glEnableVertexAttribArray(filterThirdTextureCoordinateAttribute);
+        CHECK_GL(glEnableVertexAttribArray(filterThirdTextureCoordinateAttribute));
     });
     
     return self;
@@ -98,27 +98,27 @@ NSString *const kGPUImageThreeInputTextureVertexShaderString = SHADER_STRING
 
     [self setUniformsForProgramAtIndex:0];
     
-    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]);
-	glUniform1i(filterInputTextureUniform, 2);
+	CHECK_GL(glActiveTexture(GL_TEXTURE2));
+	CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
+	CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
     
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, [secondInputFramebuffer texture]);
-    glUniform1i(filterInputTextureUniform2, 3);
+    CHECK_GL(glActiveTexture(GL_TEXTURE3));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, [secondInputFramebuffer texture]));
+    CHECK_GL(glUniform1i(filterInputTextureUniform2, 3));
 
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D, [thirdInputFramebuffer texture]);
-    glUniform1i(filterInputTextureUniform3, 4);
+    CHECK_GL(glActiveTexture(GL_TEXTURE4));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, [thirdInputFramebuffer texture]));
+    CHECK_GL(glUniform1i(filterInputTextureUniform3, 4));
 
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-	glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
-    glVertexAttribPointer(filterSecondTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation2]);
-    glVertexAttribPointer(filterThirdTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation3]);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
+	CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
+    CHECK_GL(glVertexAttribPointer(filterSecondTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation2]));
+    CHECK_GL(glVertexAttribPointer(filterThirdTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation3]));
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     [firstInputFramebuffer unlock];
     [secondInputFramebuffer unlock];
     [thirdInputFramebuffer unlock];

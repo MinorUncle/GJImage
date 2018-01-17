@@ -47,7 +47,7 @@ NSString *const kGPUImageColorPackingFragmentShaderString = SHADER_STRING
      float lowerLeftIntensity = texture2D(inputImageTexture, lowerLeftInputTextureCoordinate).r;
      float lowerRightIntensity = texture2D(inputImageTexture, lowerRightInputTextureCoordinate).r;
      
-     gl_FragColor = vec4(upperLeftIntensity, upperRightIntensity, lowerLeftIntensity, lowerRightIntensity);
+     CHECK_GL(gl_FragColor = vec4(upperLeftIntensity, upperRightIntensity, lowerLeftIntensity, lowerRightIntensity));
  }
 );
 #else
@@ -71,7 +71,7 @@ NSString *const kGPUImageColorPackingFragmentShaderString = SHADER_STRING
      float lowerLeftIntensity = texture2D(inputImageTexture, lowerLeftInputTextureCoordinate).r;
      float lowerRightIntensity = texture2D(inputImageTexture, lowerRightInputTextureCoordinate).r;
      
-     gl_FragColor = vec4(upperLeftIntensity, upperRightIntensity, lowerLeftIntensity, lowerRightIntensity);
+     CHECK_GL(gl_FragColor = vec4(upperLeftIntensity, upperRightIntensity, lowerLeftIntensity, lowerRightIntensity));
  }
 );
 #endif
@@ -101,8 +101,8 @@ NSString *const kGPUImageColorPackingFragmentShaderString = SHADER_STRING
 
     runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext setActiveShaderProgram:filterProgram];
-        glUniform1f(texelWidthUniform, texelWidth);
-        glUniform1f(texelHeightUniform, texelHeight);
+        CHECK_GL(glUniform1f(texelWidthUniform, texelWidth));
+        CHECK_GL(glUniform1f(texelHeightUniform, texelHeight));
     });
 }
 

@@ -44,7 +44,7 @@ NSString *const kGPUImagePoissonBlendFragmentShaderString = SHADER_STRING
      
      vec3 gradColor = (meanColor + diffColor2);
      
-	 gl_FragColor = vec4(mix(centerColor.rgb, gradColor, centerColor2.a * mixturePercent), centerColor.a);
+	 CHECK_GL(gl_FragColor = vec4(mix(centerColor.rgb, gradColor, centerColor2.a * mixturePercent), centerColor.a));
  }
 );
 #else
@@ -89,7 +89,7 @@ NSString *const kGPUImagePoissonBlendFragmentShaderString = SHADER_STRING
      
      vec3 gradColor = (meanColor + diffColor2);
      
-	 gl_FragColor = vec4(mix(centerColor.rgb, gradColor, centerColor2.a * mixturePercent), centerColor.a);
+	 CHECK_GL(gl_FragColor = vec4(mix(centerColor.rgb, gradColor, centerColor2.a * mixturePercent), centerColor.a));
  }
 );
 #endif
@@ -152,22 +152,22 @@ NSString *const kGPUImagePoissonBlendFragmentShaderString = SHADER_STRING
             
             [GPUImageContext setActiveShaderProgram:filterProgram];
             
-            glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-            glClear(GL_COLOR_BUFFER_BIT);
+            CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+            CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
             
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]);
-            glUniform1i(filterInputTextureUniform, 2);
+            CHECK_GL(glActiveTexture(GL_TEXTURE2));
+            CHECK_GL(glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]));
+            CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
             
-            glActiveTexture(GL_TEXTURE3);
-            glBindTexture(GL_TEXTURE_2D, [secondInputFramebuffer texture]);
-            glUniform1i(filterInputTextureUniform2, 3);
+            CHECK_GL(glActiveTexture(GL_TEXTURE3));
+            CHECK_GL(glBindTexture(GL_TEXTURE_2D, [secondInputFramebuffer texture]));
+            CHECK_GL(glUniform1i(filterInputTextureUniform2, 3));
             
-            glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-            glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]);
-            glVertexAttribPointer(filterSecondTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation2]);
+            CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
+            CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]));
+            CHECK_GL(glVertexAttribPointer(filterSecondTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation2]));
             
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);            
+            CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));            
         }
     }
 }

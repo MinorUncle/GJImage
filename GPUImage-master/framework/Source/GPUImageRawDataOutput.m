@@ -111,8 +111,8 @@
         lockNextFramebuffer = NO;
     }
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     
     static const GLfloat squareVertices[] = {
         -1.0f, -1.0f,
@@ -128,17 +128,17 @@
         1.0f, 1.0f,
     };
     
-	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]);
-	glUniform1i(dataInputTextureUniform, 4);	
+	CHECK_GL(glActiveTexture(GL_TEXTURE4));
+	CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
+	CHECK_GL(glUniform1i(dataInputTextureUniform, 4));	
     
-    glVertexAttribPointer(dataPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices);
-	glVertexAttribPointer(dataTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+    CHECK_GL(glVertexAttribPointer(dataPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices));
+	CHECK_GL(glVertexAttribPointer(dataTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
     
-    glEnableVertexAttribArray(dataPositionAttribute);
-	glEnableVertexAttribArray(dataTextureCoordinateAttribute);
+    CHECK_GL(glEnableVertexAttribArray(dataPositionAttribute));
+	CHECK_GL(glEnableVertexAttribArray(dataTextureCoordinateAttribute));
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     [firstInputFramebuffer unlock];
 }
 
@@ -260,14 +260,14 @@
             
             if ([GPUImageContext supportsFastTextureUpload])
             {
-                glFinish();
+                CHECK_GL(glFinish());
                 _rawBytesForImage = [outputFramebuffer byteBuffer];
             }
             else
             {
-                glReadPixels(0, 0, imageSize.width, imageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, _rawBytesForImage);
+                CHECK_GL(glReadPixels(0, 0, imageSize.width, imageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, _rawBytesForImage));
                 // GL_EXT_read_format_bgra
-                //            glReadPixels(0, 0, imageSize.width, imageSize.height, GL_BGRA_EXT, GL_UNSIGNED_BYTE, _rawBytesForImage);
+                //            CHECK_GL(glReadPixels(0, 0, imageSize.width, imageSize.height, GL_BGRA_EXT, GL_UNSIGNED_BYTE, _rawBytesForImage));
             }
           
             hasReadFromTheCurrentFrame = YES;

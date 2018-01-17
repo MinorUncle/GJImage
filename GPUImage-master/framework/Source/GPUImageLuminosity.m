@@ -24,7 +24,7 @@ NSString *const kGPUImageInitialLuminosityFragmentShaderString = SHADER_STRING
      highp float lowerRightLuminance = dot(texture2D(inputImageTexture, lowerRightInputTextureCoordinate).rgb, W);
 
      highp float luminosity = 0.25 * (upperLeftLuminance + upperRightLuminance + lowerLeftLuminance + lowerRightLuminance);
-     gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0);
+     CHECK_GL(gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0));
  }
 );
 
@@ -49,7 +49,7 @@ NSString *const kGPUImageLuminosityFragmentShaderString = SHADER_STRING
      highp float lowerRightLuminance = texture2D(inputImageTexture, lowerRightInputTextureCoordinate).r;
      
      highp float luminosity = 0.25 * (upperLeftLuminance + upperRightLuminance + lowerLeftLuminance + lowerRightLuminance);
-     gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0);
+     CHECK_GL(gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0));
  }
 );
 #else
@@ -74,7 +74,7 @@ NSString *const kGPUImageInitialLuminosityFragmentShaderString = SHADER_STRING
      float lowerRightLuminance = dot(texture2D(inputImageTexture, lowerRightInputTextureCoordinate).rgb, W);
      
      float luminosity = 0.25 * (upperLeftLuminance + upperRightLuminance + lowerLeftLuminance + lowerRightLuminance);
-     gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0);
+     CHECK_GL(gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0));
  }
 );
 
@@ -97,7 +97,7 @@ NSString *const kGPUImageLuminosityFragmentShaderString = SHADER_STRING
      float lowerRightLuminance = texture2D(inputImageTexture, lowerRightInputTextureCoordinate).r;
      
      float luminosity = 0.25 * (upperLeftLuminance + upperRightLuminance + lowerLeftLuminance + lowerRightLuminance);
-     gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0);
+     CHECK_GL(gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0));
  }
 );
 #endif
@@ -156,8 +156,8 @@ NSString *const kGPUImageLuminosityFragmentShaderString = SHADER_STRING
 
         [GPUImageContext setActiveShaderProgram:secondFilterProgram];
         
-        glEnableVertexAttribArray(secondFilterPositionAttribute);
-        glEnableVertexAttribArray(secondFilterTextureCoordinateAttribute);
+        CHECK_GL(glEnableVertexAttribArray(secondFilterPositionAttribute));
+        CHECK_GL(glEnableVertexAttribArray(secondFilterTextureCoordinateAttribute));
     });
 
     return self;
@@ -181,72 +181,72 @@ NSString *const kGPUImageLuminosityFragmentShaderString = SHADER_STRING
     // Do an initial render pass that both convert to luminance and reduces
     [GPUImageContext setActiveShaderProgram:filterProgram];
     
-    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
+    CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
 
     GLuint currentFramebuffer = [[stageFramebuffers objectAtIndex:0] intValue];
-    glBindFramebuffer(GL_FRAMEBUFFER, currentFramebuffer);
+    CHECK_GL(glBindFramebuffer(GL_FRAMEBUFFER, currentFramebuffer));
     
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
     CGSize currentStageSize = [[stageSizes objectAtIndex:0] CGSizeValue];
 #else
     NSSize currentStageSize = [[stageSizes objectAtIndex:0] sizeValue];
 #endif
-    glViewport(0, 0, (int)currentStageSize.width, (int)currentStageSize.height);
+    CHECK_GL(glViewport(0, 0, (int)currentStageSize.width, (int)currentStageSize.height));
 
     GLuint currentTexture = [firstInputFramebuffer texture];
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, currentTexture);
+    CHECK_GL(glActiveTexture(GL_TEXTURE2));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, currentTexture));
     
-    glUniform1i(filterInputTextureUniform, 2);
+    CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
     
-    glUniform1f(texelWidthUniform, 0.5 / currentStageSize.width);
-    glUniform1f(texelHeightUniform, 0.5 / currentStageSize.height);
+    CHECK_GL(glUniform1f(texelWidthUniform, 0.5 / currentStageSize.width));
+    CHECK_GL(glUniform1f(texelHeightUniform, 0.5 / currentStageSize.height));
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     
     currentTexture = [[stageTextures objectAtIndex:0] intValue];
 
     // Just perform reductions from this point on
     [GPUImageContext setActiveShaderProgram:secondFilterProgram];
-    glVertexAttribPointer(secondFilterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices);
-    glVertexAttribPointer(secondFilterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+    CHECK_GL(glVertexAttribPointer(secondFilterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
+    CHECK_GL(glVertexAttribPointer(secondFilterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
 
     NSUInteger numberOfStageFramebuffers = [stageFramebuffers count];
     for (NSUInteger currentStage = 1; currentStage < numberOfStageFramebuffers; currentStage++)
     {
         currentFramebuffer = [[stageFramebuffers objectAtIndex:currentStage] intValue];
-        glBindFramebuffer(GL_FRAMEBUFFER, currentFramebuffer);
+        CHECK_GL(glBindFramebuffer(GL_FRAMEBUFFER, currentFramebuffer));
         
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
         currentStageSize = [[stageSizes objectAtIndex:currentStage] CGSizeValue];
 #else
         currentStageSize = [[stageSizes objectAtIndex:currentStage] sizeValue];
 #endif
-        glViewport(0, 0, (int)currentStageSize.width, (int)currentStageSize.height);
+        CHECK_GL(glViewport(0, 0, (int)currentStageSize.width, (int)currentStageSize.height));
         
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+        CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
         
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, currentTexture);
+        CHECK_GL(glActiveTexture(GL_TEXTURE2));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, currentTexture));
         
-        glUniform1i(secondFilterInputTextureUniform, 2);
+        CHECK_GL(glUniform1i(secondFilterInputTextureUniform, 2));
         
-        glUniform1f(secondFilterTexelWidthUniform, 0.5 / currentStageSize.width);
-        glUniform1f(secondFilterTexelHeightUniform, 0.5 / currentStageSize.height);
+        CHECK_GL(glUniform1f(secondFilterTexelWidthUniform, 0.5 / currentStageSize.width));
+        CHECK_GL(glUniform1f(secondFilterTexelHeightUniform, 0.5 / currentStageSize.height));
         
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
         
         currentTexture = [[stageTextures objectAtIndex:currentStage] intValue];
         
 //        NSUInteger totalBytesForImage = (int)currentStageSize.width * (int)currentStageSize.height * 4;
 //        GLubyte *rawImagePixels2 = (GLubyte *)malloc(totalBytesForImage);
-//        glReadPixels(0, 0, (int)currentStageSize.width, (int)currentStageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels2);
+//        CHECK_GL(glReadPixels(0, 0, (int)currentStageSize.width, (int)currentStageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels2));
 //        CGDataProviderRef dataProvider = CGDataProviderCreateWithData(NULL, rawImagePixels2, totalBytesForImage, NULL);
 //        CGColorSpaceRef defaultRGBColorSpace = CGColorSpaceCreateDeviceRGB();
 //
@@ -306,7 +306,7 @@ NSString *const kGPUImageLuminosityFragmentShaderString = SHADER_STRING
         [GPUImageContext useImageProcessingContext];
         [outputFramebuffer activateFramebuffer];
 
-        glReadPixels(0, 0, (int)finalStageSize.width, (int)finalStageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels);
+        CHECK_GL(glReadPixels(0, 0, (int)finalStageSize.width, (int)finalStageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels));
         
         NSUInteger luminanceTotal = 0;
         NSUInteger byteIndex = 0;

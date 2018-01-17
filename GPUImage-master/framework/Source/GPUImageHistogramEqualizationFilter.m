@@ -20,7 +20,7 @@ NSString *const kGPUImageRedHistogramEqualizationFragmentShaderString = SHADER_S
      lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      lowp float redCurveValue = texture2D(inputImageTexture2, vec2(textureColor.r, 0.0)).r;
      
-     gl_FragColor = vec4(redCurveValue, textureColor.g, textureColor.b, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(redCurveValue, textureColor.g, textureColor.b, textureColor.a));
  }
  );
 #else
@@ -35,7 +35,7 @@ NSString *const kGPUImageRedHistogramEqualizationFragmentShaderString = SHADER_S
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      float redCurveValue = texture2D(inputImageTexture2, vec2(textureColor.r, 0.0)).r;
      
-     gl_FragColor = vec4(redCurveValue, textureColor.g, textureColor.b, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(redCurveValue, textureColor.g, textureColor.b, textureColor.a));
  }
  );
 #endif
@@ -52,7 +52,7 @@ NSString *const kGPUImageGreenHistogramEqualizationFragmentShaderString = SHADER
      lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      lowp float greenCurveValue = texture2D(inputImageTexture2, vec2(textureColor.g, 0.0)).g;
      
-     gl_FragColor = vec4(textureColor.r, greenCurveValue, textureColor.b, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(textureColor.r, greenCurveValue, textureColor.b, textureColor.a));
  }
  );
 #else
@@ -67,7 +67,7 @@ NSString *const kGPUImageGreenHistogramEqualizationFragmentShaderString = SHADER
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      float greenCurveValue = texture2D(inputImageTexture2, vec2(textureColor.g, 0.0)).g;
      
-     gl_FragColor = vec4(textureColor.r, greenCurveValue, textureColor.b, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(textureColor.r, greenCurveValue, textureColor.b, textureColor.a));
  }
  );
 #endif
@@ -84,7 +84,7 @@ NSString *const kGPUImageBlueHistogramEqualizationFragmentShaderString = SHADER_
      lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      lowp float blueCurveValue = texture2D(inputImageTexture2, vec2(textureColor.b, 0.0)).b;
      
-     gl_FragColor = vec4(textureColor.r, textureColor.g, blueCurveValue, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(textureColor.r, textureColor.g, blueCurveValue, textureColor.a));
  }
  );
 #else
@@ -99,7 +99,7 @@ NSString *const kGPUImageBlueHistogramEqualizationFragmentShaderString = SHADER_
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      float blueCurveValue = texture2D(inputImageTexture2, vec2(textureColor.b, 0.0)).b;
      
-     gl_FragColor = vec4(textureColor.r, textureColor.g, blueCurveValue, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(textureColor.r, textureColor.g, blueCurveValue, textureColor.a));
  }
  );
 #endif
@@ -118,7 +118,7 @@ NSString *const kGPUImageRGBHistogramEqualizationFragmentShaderString = SHADER_S
      lowp float greenCurveValue = texture2D(inputImageTexture2, vec2(textureColor.g, 0.0)).g;
      lowp float blueCurveValue = texture2D(inputImageTexture2, vec2(textureColor.b, 0.0)).b;
      
-     gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a));
  }
  );
 #else
@@ -135,7 +135,7 @@ NSString *const kGPUImageRGBHistogramEqualizationFragmentShaderString = SHADER_S
      float greenCurveValue = texture2D(inputImageTexture2, vec2(textureColor.g, 0.0)).g;
      float blueCurveValue = texture2D(inputImageTexture2, vec2(textureColor.b, 0.0)).b;
      
-     gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a));
  }
  );
 #endif
@@ -160,7 +160,7 @@ NSString *const kGPUImageLuminanceHistogramEqualizationFragmentShaderString = SH
      lowp float green = clamp(textureColor.g + deltaLuminance, 0.0, 1.0);
      lowp float blue  = clamp(textureColor.b + deltaLuminance, 0.0, 1.0);
 
-     gl_FragColor = vec4(red, green, blue, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(red, green, blue, textureColor.a));
  }
  );
 #else
@@ -183,7 +183,7 @@ NSString *const kGPUImageLuminanceHistogramEqualizationFragmentShaderString = SH
      float green = clamp(textureColor.g + deltaLuminance, 0.0, 1.0);
      float blue  = clamp(textureColor.b + deltaLuminance, 0.0, 1.0);
      
-     gl_FragColor = vec4(red, green, blue, textureColor.a);
+     CHECK_GL(gl_FragColor = vec4(red, green, blue, textureColor.a));
  }
  );
 #endif

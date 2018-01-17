@@ -9,9 +9,9 @@
 
 
 #define glError() { \
-GLenum err = glGetError(); \
+GLenum err = CHECK_GL(glGetError()); \
 if (err != GL_NO_ERROR) { \
-printf("glError: %04x caught at %s:%u\n", err, __FILE__, __LINE__); \
+printf("CHECK_GL(glError: %04x caught at %s:%u\n", err, __FILE__, __LINE__)); \
 } \
 }
 
@@ -71,7 +71,7 @@ static NSString *const kGJPaintingVertexShaderString = GJSHADER_STRING
      uniform mat4 MVP;
      void main()
     {
-        gl_Position = MVP *   vec4(inVertex.x,inVertex.y, 1.0, 1.0);
+        CHECK_GL(gl_Position = MVP *   vec4(inVertex.x,inVertex.y, 1.0, 1.0));
     }
  );
 
@@ -313,25 +313,25 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         mvp = [filterProgram uniformIndex:@"MVP"];
         vertexColor = [filterProgram uniformIndex:@"vertexColor"];
         [GPUImageContext setActiveShaderProgram:filterProgram];
-        glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor);
+        CHECK_GL(glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor));
 
         GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(-1, 1, -1, 1, -2.0, 2.0);
         GLKMatrix4 modelViewMatrix = GLKMatrix4Identity; // this sample uses a constant identity modelView matrix
         GLKMatrix4 MVPMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
-        glUniformMatrix4fv(mvp, 1, GL_FALSE, MVPMatrix.m);
+        CHECK_GL(glUniformMatrix4fv(mvp, 1, GL_FALSE, MVPMatrix.m));
         
-        glGenVertexArraysOES(1, &vertexArray);
-        glBindVertexArrayOES(vertexArray);
-        glGenBuffers(1, &vertexBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexArray);
+        CHECK_GL(glGenVertexArraysOES(1, &vertexArray));
+        CHECK_GL(glBindVertexArrayOES(vertexArray));
+        CHECK_GL(glGenBuffers(1, &vertexBuffer));
+        CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, vertexArray));
         int step = sizeof(GVertex);
         bufferMemory = malloc(MAXIMUM_VERTECES*step);
-        glBufferData(GL_ARRAY_BUFFER, MAXIMUM_VERTECES*step, bufferMemory, GL_DYNAMIC_DRAW);
+        CHECK_GL(glBufferData(GL_ARRAY_BUFFER, MAXIMUM_VERTECES*step, bufferMemory, GL_DYNAMIC_DRAW));
 
-        glEnableVertexAttribArray(inVertex);
-        glVertexAttribPointer(inVertex, 2, GL_FLOAT, GL_FALSE, step, 0);
-        glBindVertexArrayOES(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        CHECK_GL(glEnableVertexAttribArray(inVertex));
+        CHECK_GL(glVertexAttribPointer(inVertex, 2, GL_FLOAT, GL_FALSE, step, 0));
+        CHECK_GL(glBindVertexArrayOES(0));
+        CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
     });
 }
 
@@ -388,7 +388,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
             brushColor.b = blue;
             brushColor.a = kBrushOpacity;
             [GPUImageContext setActiveShaderProgram:filterProgram];
-            glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor);
+            CHECK_GL(glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor));
         }
     });
 }
@@ -489,22 +489,22 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     [GPUImageContext setActiveShaderProgram:filterProgram];
 
     [outputFramebuffer activateFramebuffer];
-    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBindVertexArrayOES(vertexArray);
-    GVertex* data = glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
+    CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer));
+    CHECK_GL(glBindVertexArrayOES(vertexArray));
+    GVertex* data = CHECK_GL(glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES));
     int indexCount = 0;
     for (int i = 0 ; i<lineCluster->groupCount; i++) {
         GVertexGroup* group = groupClusterGetGroup(lineCluster, i);
         memcpy(data + indexCount, group->vertexs, sizeof(GVertex)*group->vertexCount);
         indexCount += group->vertexCount;
     }
-    glUnmapBufferOES(GL_ARRAY_BUFFER);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0,indexCount);
-    glBindVertexArrayOES(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    CHECK_GL(glUnmapBufferOES(GL_ARRAY_BUFFER));
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0,indexCount));
+    CHECK_GL(glBindVertexArrayOES(0));
+    CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
 -(void)drawGroup:(GVertexGroup*)group{
@@ -515,22 +515,22 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     [GPUImageContext setActiveShaderProgram:filterProgram];
     if (!GVertextColorEquel(&group->vertexColor, &brushColor)) {
         brushColor = group->vertexColor;
-        glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor);
+        CHECK_GL(glUniform4fv(vertexColor, 1, (const GLfloat*)&brushColor));
     }
     if (outputFramebuffer == nil) {
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:_captureSize textureOptions:self.outputTextureOptions onlyTexture:NO];
     }
     [outputFramebuffer activateFramebuffer];
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBindVertexArrayOES(vertexArray);
+    CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer));
+    CHECK_GL(glBindVertexArrayOES(vertexArray));
     if (group->vertexCount > 0) {
-        GVertex* data = glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
+        GVertex* data = CHECK_GL(glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES));
         memcpy(data, group->vertexs, sizeof(GVertex)*group->vertexCount);
-        glUnmapBufferOES(GL_ARRAY_BUFFER);
+        CHECK_GL(glUnmapBufferOES(GL_ARRAY_BUFFER));
     }
-    glDrawArrays(GL_TRIANGLE_STRIP, 0,group->vertexCount);
-    glBindVertexArrayOES(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0,group->vertexCount));
+    CHECK_GL(glBindVertexArrayOES(0));
+    CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
     group->needUpdate = NO;
 }
 
@@ -602,8 +602,8 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
         [GPUImageContext useImageProcessingContext];
         if (outputFramebuffer) {
             [outputFramebuffer activateFramebuffer];
-            glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-            glClear(GL_COLOR_BUFFER_BIT);
+            CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
+            CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
         }
     });
 }

@@ -3,6 +3,26 @@
 #import "GPUImagePicture.h"
 #import <mach/mach.h>
 
+
+
+int checkGLError(void)
+{
+    int e = glGetError();
+    if (e != 0){
+        char* errorString = "";
+        switch(e)
+        {
+            case GL_INVALID_ENUM:       errorString = "GL_INVALID_ENUM";        break;
+            case GL_INVALID_VALUE:      errorString = "GL_INVALID_VALUE";       break;
+            case GL_INVALID_OPERATION:  errorString = "GL_INVALID_OPERATION";   break;
+            case GL_OUT_OF_MEMORY:      errorString = "GL_OUT_OF_MEMORY";       break;
+            default:                                                            break;
+        }
+        printf("ERROR, GL ERROR 0x%04X %s ",e,errorString);
+    }
+    return e;
+}
+
 dispatch_queue_attr_t GPUImageDefaultQueueAttribute(void)
 {
 #if TARGET_OS_IPHONE
@@ -424,15 +444,15 @@ void reportAvailableMemoryForGPUImage(NSString *tag)
     
     if( outputFramebuffer.texture )
     {
-        glBindTexture(GL_TEXTURE_2D,  outputFramebuffer.texture);
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D,  outputFramebuffer.texture));
         //_outputTextureOptions.format
         //_outputTextureOptions.internalFormat
         //_outputTextureOptions.magFilter
         //_outputTextureOptions.minFilter
         //_outputTextureOptions.type
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _outputTextureOptions.wrapS);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _outputTextureOptions.wrapT);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _outputTextureOptions.wrapS));
+        CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _outputTextureOptions.wrapT));
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, 0));
     }
 }
 

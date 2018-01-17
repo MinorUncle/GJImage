@@ -19,7 +19,7 @@ NSString *const kGPUImageCGAColorspaceFragmentShaderString = SHADER_STRING
      highp vec2 samplePos = textureCoordinate - mod(textureCoordinate, sampleDivisor);
      highp vec4 color = texture2D(inputImageTexture, samplePos );
      
-     //gl_FragColor = texture2D(inputImageTexture, samplePos );
+     //CHECK_GL(gl_FragColor = texture2D(inputImageTexture, samplePos ));
      mediump vec4 colorCyan = vec4(85.0 / 255.0, 1.0, 1.0, 1.0);
      mediump vec4 colorMagenta = vec4(1.0, 85.0 / 255.0, 1.0, 1.0);
      mediump vec4 colorWhite = vec4(1.0, 1.0, 1.0, 1.0);
@@ -65,7 +65,7 @@ NSString *const kGPUImageCGAColorspaceFragmentShaderString = SHADER_STRING
      vec2 samplePos = textureCoordinate - mod(textureCoordinate, sampleDivisor);
      vec4 color = texture2D(inputImageTexture, samplePos );
      
-     //gl_FragColor = texture2D(inputImageTexture, samplePos );
+     //CHECK_GL(gl_FragColor = texture2D(inputImageTexture, samplePos ));
      vec4 colorCyan = vec4(85.0 / 255.0, 1.0, 1.0, 1.0);
      vec4 colorMagenta = vec4(1.0, 85.0 / 255.0, 1.0, 1.0);
      vec4 colorWhite = vec4(1.0, 1.0, 1.0, 1.0);

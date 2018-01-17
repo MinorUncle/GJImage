@@ -46,7 +46,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForRGFragmentShaderString = SHAD
      yuv.yz = texture2D(chrominanceTexture, textureCoordinate).rg - vec2(0.5, 0.5);
      rgb = colorConversionMatrix * yuv;
      
-     gl_FragColor = vec4(rgb, 1);
+     CHECK_GL(gl_FragColor = vec4(rgb, 1));
  }
  );
 #else
@@ -77,7 +77,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForRGFragmentShaderString = SHAD
                 0, -.21482, 2.12798,
                 1.28033, -.38059,       0) * yuv;
      
-     gl_FragColor = vec4(rgb, 1);
+     CHECK_GL(gl_FragColor = vec4(rgb, 1));
  }
  );
 #endif
@@ -99,7 +99,7 @@ NSString *const kGPUImageYUVFullRangeConversionForLAFragmentShaderString = SHADE
      yuv.yz = texture2D(chrominanceTexture, textureCoordinate).ra - vec2(0.5, 0.5);
      rgb = colorConversionMatrix * yuv;
      
-     gl_FragColor = vec4(rgb, 1);
+     CHECK_GL(gl_FragColor = vec4(rgb, 1));
  }
  );
 
@@ -121,7 +121,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
      yuv.yz = texture2D(chrominanceTexture, textureCoordinate).ra - vec2(0.5, 0.5);
      rgb = colorConversionMatrix * yuv;
      
-     gl_FragColor = vec4(rgb, 1);
+     CHECK_GL(gl_FragColor = vec4(rgb, 1));
  }
  );
 #else
@@ -152,7 +152,7 @@ NSString *const kGPUImageYUVVideoRangeConversionForLAFragmentShaderString = SHAD
                 0, -.21482, 2.12798,
                 1.28033, -.38059,       0) * yuv;
      
-     gl_FragColor = vec4(rgb, 1);
+     CHECK_GL(gl_FragColor = vec4(rgb, 1));
  }
  );
 #endif

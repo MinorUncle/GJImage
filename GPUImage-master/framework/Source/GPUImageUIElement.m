@@ -115,9 +115,9 @@
     outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:layerPixelSize textureOptions:self.outputTextureOptions onlyTexture:YES];
 
     
-    glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]);
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]));
     // no need to use self.outputTextureOptions here, we always need these texture options
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int)layerPixelSize.width, (int)layerPixelSize.height, 0, GL_BGRA, GL_UNSIGNED_BYTE, imageData);
+    CHECK_GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int)layerPixelSize.width, (int)layerPixelSize.height, 0, GL_BGRA, GL_UNSIGNED_BYTE, imageData));
     
 //    static int count;
 //    NSData* data = [NSData dataWithBytesNoCopy:imageData length:layerPixelSize.height*layerPixelSize.width*4 freeWhenDone:NO];

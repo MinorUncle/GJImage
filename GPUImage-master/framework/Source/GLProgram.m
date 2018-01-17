@@ -4,6 +4,7 @@
 
 
 #import "GLProgram.h"
+#import "GPUImageOutput.h"
 // START:typedefs
 #pragma mark Function Pointer Definitions
 typedef void (*GLInfoFunction)(GLuint program, GLenum pname, GLint* params);
@@ -35,7 +36,7 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
         
         attributes = [[NSMutableArray alloc] init];
         uniforms = [[NSMutableArray alloc] init];
-        program = glCreateProgram();
+        program = CHECK_GL(glCreateProgram());
         
         if (![self compileShader:&vertShader 
                             type:GL_VERTEX_SHADER 
@@ -52,8 +53,8 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
             NSLog(@"Failed to compile fragment shader");
         }
         
-        glAttachShader(program, vertShader);
-        glAttachShader(program, fragShader);
+        CHECK_GL(glAttachShader(program, vertShader));
+        CHECK_GL(glAttachShader(program, fragShader));
     }
     
     return self;
@@ -106,20 +107,20 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
         return NO;
     }
     
-    *shader = glCreateShader(type);
-    glShaderSource(*shader, 1, &source, NULL);
-    glCompileShader(*shader);
+    *shader = CHECK_GL(glCreateShader(type));
+    CHECK_GL(glShaderSource(*shader, 1, &source, NULL));
+    CHECK_GL(glCompileShader(*shader));
     
-    glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
+    CHECK_GL(glGetShaderiv(*shader, GL_COMPILE_STATUS, &status));
 
 	if (status != GL_TRUE)
 	{
 		GLint logLength;
-		glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
+		CHECK_GL(glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength));
 		if (logLength > 0)
 		{
 			GLchar *log = (GLchar *)malloc(logLength);
-			glGetShaderInfoLog(*shader, logLength, &logLength, log);
+			CHECK_GL(glGetShaderInfoLog(*shader, logLength, &logLength, log));
             if (shader == &vertShader)
             {
                 self.vertexShaderLog = [NSString stringWithFormat:@"%s", log];
@@ -159,7 +160,7 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
 }
 - (GLuint)uniformIndex:(NSString *)uniformName
 {
-    return glGetUniformLocation(program, [uniformName UTF8String]);
+    return CHECK_GL(glGetUniformLocation(program, [uniformName UTF8String]));
 }
 // END:indexmethods
 #pragma mark -
@@ -170,20 +171,20 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
 
     GLint status;
     
-    glLinkProgram(program);
+    CHECK_GL(glLinkProgram(program));
     
-    glGetProgramiv(program, GL_LINK_STATUS, &status);
+    CHECK_GL(glGetProgramiv(program, GL_LINK_STATUS, &status));
     if (status == GL_FALSE)
         return NO;
     
     if (vertShader)
     {
-        glDeleteShader(vertShader);
+        CHECK_GL(glDeleteShader(vertShader));
         vertShader = 0;
     }
     if (fragShader)
     {
-        glDeleteShader(fragShader);
+        CHECK_GL(glDeleteShader(fragShader));
         fragShader = 0;
     }
     
@@ -198,7 +199,7 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
 // START:use
 - (void)use
 {
-    glUseProgram(program);
+    CHECK_GL(glUseProgram(program));
 }
 // END:use
 #pragma mark -
@@ -207,12 +208,12 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
 {
 	GLint logLength;
 	
-	glValidateProgram(program);
-	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+	CHECK_GL(glValidateProgram(program));
+	CHECK_GL(glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength));
 	if (logLength > 0)
 	{
 		GLchar *log = (GLchar *)malloc(logLength);
-		glGetProgramInfoLog(program, logLength, &logLength, log);
+		CHECK_GL(glGetProgramInfoLog(program, logLength, &logLength, log));
         self.programLog = [NSString stringWithFormat:@"%s", log];
 		free(log);
 	}	
@@ -223,13 +224,13 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
 - (void)dealloc
 {
     if (vertShader)
-        glDeleteShader(vertShader);
+        CHECK_GL(glDeleteShader(vertShader));
         
     if (fragShader)
-        glDeleteShader(fragShader);
+        CHECK_GL(glDeleteShader(fragShader));
     
     if (program)
-        glDeleteProgram(program);
+        CHECK_GL(glDeleteProgram(program));
        
 }
 // END:dealloc
