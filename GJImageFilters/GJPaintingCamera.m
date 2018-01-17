@@ -9,9 +9,9 @@
 
 
 #define glError() { \
-GLenum err = CHECK_GL(glGetError()); \
+GLenum err = glGetError(); \
 if (err != GL_NO_ERROR) { \
-printf("CHECK_GL(glError: %04x caught at %s:%u\n", err, __FILE__, __LINE__)); \
+printf("glError: %04x caught at %s:%u\n", err, __FILE__, __LINE__); \
 } \
 }
 
@@ -71,7 +71,7 @@ static NSString *const kGJPaintingVertexShaderString = GJSHADER_STRING
      uniform mat4 MVP;
      void main()
     {
-        CHECK_GL(gl_Position = MVP *   vec4(inVertex.x,inVertex.y, 1.0, 1.0));
+        gl_Position = MVP *   vec4(inVertex.x,inVertex.y, 1.0, 1.0);
     }
  );
 
@@ -494,7 +494,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     
     CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer));
     CHECK_GL(glBindVertexArrayOES(vertexArray));
-    GVertex* data = CHECK_GL(glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES));
+    GVertex* data = glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
     int indexCount = 0;
     for (int i = 0 ; i<lineCluster->groupCount; i++) {
         GVertexGroup* group = groupClusterGetGroup(lineCluster, i);
@@ -524,7 +524,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer));
     CHECK_GL(glBindVertexArrayOES(vertexArray));
     if (group->vertexCount > 0) {
-        GVertex* data = CHECK_GL(glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES));
+        GVertex* data = glMapBufferOES(GL_ARRAY_BUFFER, GL_WRITE_ONLY_OES);
         memcpy(data, group->vertexs, sizeof(GVertex)*group->vertexCount);
         CHECK_GL(glUnmapBufferOES(GL_ARRAY_BUFFER));
     }

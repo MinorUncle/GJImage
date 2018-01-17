@@ -11,7 +11,7 @@ NSString *const kGPUImageCrosshairVertexShaderString = SHADER_STRING
  
  void main()
  {
-     CHECK_GL(gl_Position = vec4(((position.xy * 2.0) - 1.0), 0.0, 1.0));
+     gl_Position = vec4(((position.xy * 2.0) - 1.0), 0.0, 1.0);
      gl_PointSize = crosshairWidth + 1.0;
      pointSpacing = 1.0 / crosshairWidth;
      centerLocation = vec2(pointSpacing * ceil(crosshairWidth / 2.0), pointSpacing * ceil(crosshairWidth / 2.0));
@@ -28,11 +28,11 @@ NSString *const kGPUImageCrosshairFragmentShaderString = SHADER_STRING
 
  void main()
  {
-     lowp vec2 distanceFromCenter = abs(centerLocation - CHECK_GL(gl_PointCoord.xy));
-     lowp float axisTest = step(pointSpacing, CHECK_GL(gl_PointCoord.y) * step(distanceFromCenter.x, 0.09) + step(pointSpacing, gl_PointCoord.x) * step(distanceFromCenter.y, 0.09));
+     lowp vec2 distanceFromCenter = abs(centerLocation - gl_PointCoord.xy);
+     lowp float axisTest = step(pointSpacing, gl_PointCoord.y) * step(distanceFromCenter.x, 0.09) + step(pointSpacing, gl_PointCoord.x) * step(distanceFromCenter.y, 0.09);
 
-     CHECK_GL(gl_FragColor = vec4(crosshairColor * axisTest, axisTest));
-//     CHECK_GL(gl_FragColor = vec4(distanceFromCenterInX, distanceFromCenterInY, 0.0, 1.0));
+     gl_FragColor = vec4(crosshairColor * axisTest, axisTest);
+//     gl_FragColor = vec4(distanceFromCenterInX, distanceFromCenterInY, 0.0, 1.0);
  }
 );
 #else
@@ -47,11 +47,11 @@ NSString *const kGPUImageCrosshairFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     vec2 distanceFromCenter = abs(centerLocation - CHECK_GL(gl_PointCoord.xy));
-     float axisTest = step(pointSpacing, CHECK_GL(gl_PointCoord.y) * step(distanceFromCenter.x, 0.09) + step(pointSpacing, gl_PointCoord.x) * step(distanceFromCenter.y, 0.09));
+     vec2 distanceFromCenter = abs(centerLocation - gl_PointCoord.xy);
+     float axisTest = step(pointSpacing, gl_PointCoord.y) * step(distanceFromCenter.x, 0.09) + step(pointSpacing, gl_PointCoord.x) * step(distanceFromCenter.y, 0.09);
      
-     CHECK_GL(gl_FragColor = vec4(crosshairColor * axisTest, axisTest));
-     //     CHECK_GL(gl_FragColor = vec4(distanceFromCenterInX, distanceFromCenterInY, 0.0, 1.0));
+     gl_FragColor = vec4(crosshairColor * axisTest, axisTest);
+     //     gl_FragColor = vec4(distanceFromCenterInX, distanceFromCenterInY, 0.0, 1.0);
  }
 );
 #endif

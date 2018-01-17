@@ -27,7 +27,7 @@ void main()
 		(rgb.g < 0.5 ? (2.0 * rgb.g * warmFilter.g) : (1.0 - 2.0 * (1.0 - rgb.g) * (1.0 - warmFilter.g))), 
 		(rgb.b < 0.5 ? (2.0 * rgb.b * warmFilter.b) : (1.0 - 2.0 * (1.0 - rgb.b) * (1.0 - warmFilter.b))));
 
-	CHECK_GL(gl_FragColor = vec4(mix(rgb, processed, temperature), source.a));
+	gl_FragColor = vec4(mix(rgb, processed, temperature), source.a);
 }
 );
 #else
@@ -57,7 +57,7 @@ NSString *const kGPUImageWhiteBalanceFragmentShaderString = SHADER_STRING
                                (rgb.g < 0.5 ? (2.0 * rgb.g * warmFilter.g) : (1.0 - 2.0 * (1.0 - rgb.g) * (1.0 - warmFilter.g))),
                                (rgb.b < 0.5 ? (2.0 * rgb.b * warmFilter.b) : (1.0 - 2.0 * (1.0 - rgb.b) * (1.0 - warmFilter.b))));
     
-	CHECK_GL(gl_FragColor = vec4(mix(rgb, processed, temperature), source.a));
+	gl_FragColor = vec4(mix(rgb, processed, temperature), source.a);
 }
 );
 #endif

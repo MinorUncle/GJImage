@@ -20,7 +20,7 @@ NSString *const kGPUImageRGBErosionRadiusOneFragmentShaderString = SHADER_STRING
      
      lowp vec4 minValue = min(centerIntensity, oneStepPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = min(minValue, oneStepNegativeIntensity));
+     gl_FragColor = min(minValue, oneStepNegativeIntensity);
  }
 );
 
@@ -48,7 +48,7 @@ NSString *const kGPUImageRGBErosionRadiusTwoFragmentShaderString = SHADER_STRING
      minValue = min(minValue, oneStepNegativeIntensity);
      minValue = min(minValue, twoStepsPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = min(minValue, twoStepsNegativeIntensity));
+     gl_FragColor = min(minValue, twoStepsNegativeIntensity);
  }
  );
 
@@ -82,7 +82,7 @@ NSString *const kGPUImageRGBErosionRadiusThreeFragmentShaderString = SHADER_STRI
      minValue = min(minValue, twoStepsNegativeIntensity);
      minValue = min(minValue, threeStepsPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = min(minValue, threeStepsNegativeIntensity));
+     gl_FragColor = min(minValue, threeStepsNegativeIntensity);
  }
  );
 
@@ -122,7 +122,7 @@ NSString *const kGPUImageRGBErosionRadiusFourFragmentShaderString = SHADER_STRIN
      minValue = min(minValue, threeStepsNegativeIntensity);
      minValue = min(minValue, fourStepsPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = min(minValue, fourStepsNegativeIntensity));
+     gl_FragColor = min(minValue, fourStepsNegativeIntensity);
  }
 );
 #else
@@ -142,7 +142,7 @@ NSString *const kGPUImageRGBErosionRadiusOneFragmentShaderString = SHADER_STRING
      
      vec4 minValue = min(centerIntensity, oneStepPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = min(minValue, oneStepNegativeIntensity));
+     gl_FragColor = min(minValue, oneStepNegativeIntensity);
  }
 );
 
@@ -168,7 +168,7 @@ NSString *const kGPUImageRGBErosionRadiusTwoFragmentShaderString = SHADER_STRING
      minValue = min(minValue, oneStepNegativeIntensity);
      minValue = min(minValue, twoStepsPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = min(minValue, twoStepsNegativeIntensity));
+     gl_FragColor = min(minValue, twoStepsNegativeIntensity);
  }
 );
 
@@ -200,7 +200,7 @@ NSString *const kGPUImageRGBErosionRadiusThreeFragmentShaderString = SHADER_STRI
      minValue = min(minValue, twoStepsNegativeIntensity);
      minValue = min(minValue, threeStepsPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = min(minValue, threeStepsNegativeIntensity));
+     gl_FragColor = min(minValue, threeStepsNegativeIntensity);
  }
 );
 
@@ -238,7 +238,7 @@ NSString *const kGPUImageRGBErosionRadiusFourFragmentShaderString = SHADER_STRIN
      minValue = min(minValue, threeStepsNegativeIntensity);
      minValue = min(minValue, fourStepsPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = min(minValue, fourStepsNegativeIntensity));
+     gl_FragColor = min(minValue, fourStepsNegativeIntensity);
  }
 );
 #endif

@@ -19,7 +19,7 @@ NSString *const kGPUImageMotionComparisonFragmentShaderString = SHADER_STRING
      mediump float colorDistance = distance(currentImageColor, lowPassImageColor); // * 0.57735
      lowp float movementThreshold = step(0.2, colorDistance);
      
-     CHECK_GL(gl_FragColor = movementThreshold * vec4(textureCoordinate2.x, textureCoordinate2.y, 1.0, 1.0));
+     gl_FragColor = movementThreshold * vec4(textureCoordinate2.x, textureCoordinate2.y, 1.0, 1.0);
  }
 );
 #else
@@ -41,7 +41,7 @@ NSString *const kGPUImageMotionComparisonFragmentShaderString = SHADER_STRING
      float colorDistance = distance(currentImageColor, lowPassImageColor); // * 0.57735
      float movementThreshold = step(0.2, colorDistance);
      
-     CHECK_GL(gl_FragColor = movementThreshold * vec4(textureCoordinate2.x, textureCoordinate2.y, 1.0, 1.0));
+     gl_FragColor = movementThreshold * vec4(textureCoordinate2.x, textureCoordinate2.y, 1.0, 1.0);
  }
 );
 #endif

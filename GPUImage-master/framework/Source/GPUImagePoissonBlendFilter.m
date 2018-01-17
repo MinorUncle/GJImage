@@ -44,7 +44,7 @@ NSString *const kGPUImagePoissonBlendFragmentShaderString = SHADER_STRING
      
      vec3 gradColor = (meanColor + diffColor2);
      
-	 CHECK_GL(gl_FragColor = vec4(mix(centerColor.rgb, gradColor, centerColor2.a * mixturePercent), centerColor.a));
+	 gl_FragColor = vec4(mix(centerColor.rgb, gradColor, centerColor2.a * mixturePercent), centerColor.a);
  }
 );
 #else
@@ -89,7 +89,7 @@ NSString *const kGPUImagePoissonBlendFragmentShaderString = SHADER_STRING
      
      vec3 gradColor = (meanColor + diffColor2);
      
-	 CHECK_GL(gl_FragColor = vec4(mix(centerColor.rgb, gradColor, centerColor2.a * mixturePercent), centerColor.a));
+	 gl_FragColor = vec4(mix(centerColor.rgb, gradColor, centerColor2.a * mixturePercent), centerColor.a);
  }
 );
 #endif

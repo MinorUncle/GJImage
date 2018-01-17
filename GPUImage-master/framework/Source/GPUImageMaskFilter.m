@@ -21,8 +21,8 @@ NSString *const kGPUImageMaskShaderString = SHADER_STRING
 	 //Typical/ideal case, R,G, and B will be the same, and Alpha will be 1.0
 	 lowp float newAlpha = dot(textureColor2.rgb, vec3(.33333334, .33333334, .33333334)) * textureColor2.a;
 	 	 
-	 CHECK_GL(gl_FragColor = vec4(textureColor.xyz, newAlpha));
-//	 CHECK_GL(gl_FragColor = vec4(textureColor2));
+	 gl_FragColor = vec4(textureColor.xyz, newAlpha);
+//	 gl_FragColor = vec4(textureColor2);
  }
 );
 #else
@@ -46,8 +46,8 @@ NSString *const kGPUImageMaskShaderString = SHADER_STRING
 	 //Typical/ideal case, R,G, and B will be the same, and Alpha will be 1.0
 	 float newAlpha = dot(textureColor2.rgb, vec3(.33333334, .33333334, .33333334)) * textureColor2.a;
      
-	 CHECK_GL(gl_FragColor = vec4(textureColor.xyz, newAlpha));
-     //	 CHECK_GL(gl_FragColor = vec4(textureColor2));
+	 gl_FragColor = vec4(textureColor.xyz, newAlpha);
+     //	 gl_FragColor = vec4(textureColor2);
  }
 );
 #endif

@@ -20,7 +20,7 @@ NSString *const kGPUImageRGBDilationRadiusOneFragmentShaderString = SHADER_STRIN
      
      lowp vec4 maxValue = max(centerIntensity, oneStepPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = max(maxValue, oneStepNegativeIntensity));
+     gl_FragColor = max(maxValue, oneStepNegativeIntensity);
  }
 );
 
@@ -49,7 +49,7 @@ NSString *const kGPUImageRGBDilationRadiusTwoFragmentShaderString = SHADER_STRIN
      maxValue = max(maxValue, twoStepsPositiveIntensity);
      maxValue = max(maxValue, twoStepsNegativeIntensity);
      
-     CHECK_GL(gl_FragColor = max(maxValue, twoStepsNegativeIntensity));
+     gl_FragColor = max(maxValue, twoStepsNegativeIntensity);
  }
 );
 
@@ -83,7 +83,7 @@ NSString *const kGPUImageRGBDilationRadiusThreeFragmentShaderString = SHADER_STR
      maxValue = max(maxValue, twoStepsNegativeIntensity);
      maxValue = max(maxValue, threeStepsPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = max(maxValue, threeStepsNegativeIntensity));
+     gl_FragColor = max(maxValue, threeStepsNegativeIntensity);
  }
 );
 
@@ -123,7 +123,7 @@ NSString *const kGPUImageRGBDilationRadiusFourFragmentShaderString = SHADER_STRI
      maxValue = max(maxValue, threeStepsNegativeIntensity);
      maxValue = max(maxValue, fourStepsPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = max(maxValue, fourStepsNegativeIntensity));
+     gl_FragColor = max(maxValue, fourStepsNegativeIntensity);
  }
 );
 #else
@@ -143,7 +143,7 @@ NSString *const kGPUImageRGBDilationRadiusOneFragmentShaderString = SHADER_STRIN
      
      vec4 maxValue = max(centerIntensity, oneStepPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = max(maxValue, oneStepNegativeIntensity));
+     gl_FragColor = max(maxValue, oneStepNegativeIntensity);
  }
  );
 
@@ -170,7 +170,7 @@ NSString *const kGPUImageRGBDilationRadiusTwoFragmentShaderString = SHADER_STRIN
      maxValue = max(maxValue, twoStepsPositiveIntensity);
      maxValue = max(maxValue, twoStepsNegativeIntensity);
      
-     CHECK_GL(gl_FragColor = max(maxValue, twoStepsNegativeIntensity));
+     gl_FragColor = max(maxValue, twoStepsNegativeIntensity);
  }
  );
 
@@ -202,7 +202,7 @@ NSString *const kGPUImageRGBDilationRadiusThreeFragmentShaderString = SHADER_STR
      maxValue = max(maxValue, twoStepsNegativeIntensity);
      maxValue = max(maxValue, threeStepsPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = max(maxValue, threeStepsNegativeIntensity));
+     gl_FragColor = max(maxValue, threeStepsNegativeIntensity);
  }
 );
 
@@ -240,7 +240,7 @@ NSString *const kGPUImageRGBDilationRadiusFourFragmentShaderString = SHADER_STRI
      maxValue = max(maxValue, threeStepsNegativeIntensity);
      maxValue = max(maxValue, fourStepsPositiveIntensity);
      
-     CHECK_GL(gl_FragColor = max(maxValue, fourStepsNegativeIntensity));
+     gl_FragColor = max(maxValue, fourStepsNegativeIntensity);
  }
 );
 #endif

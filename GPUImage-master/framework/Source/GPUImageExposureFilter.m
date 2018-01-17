@@ -12,7 +12,7 @@ NSString *const kGPUImageExposureFragmentShaderString = SHADER_STRING
  {
      highp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      
-     CHECK_GL(gl_FragColor = vec4(textureColor.rgb * pow(2.0, exposure), textureColor.w));
+     gl_FragColor = vec4(textureColor.rgb * pow(2.0, exposure), textureColor.w);
  }
 );
 #else
@@ -27,7 +27,7 @@ NSString *const kGPUImageExposureFragmentShaderString = SHADER_STRING
  {
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      
-     CHECK_GL(gl_FragColor = vec4(textureColor.rgb * pow(2.0, exposure), textureColor.w));
+     gl_FragColor = vec4(textureColor.rgb * pow(2.0, exposure), textureColor.w);
  }
 );
 #endif

@@ -189,13 +189,13 @@ NSString *const kGPUImageLanczosFragmentShaderString = SHADER_STRING
     CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
     CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-	CHECK_GL(glActiveTexture(GL_TEXTURE2));
-	CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]);
 	
-	CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
+	glUniform1i(filterInputTextureUniform, 2);
     
     CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
-	CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
+	glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
     
     CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     
@@ -220,7 +220,7 @@ NSString *const kGPUImageLanczosFragmentShaderString = SHADER_STRING
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]));
     CHECK_GL(glVertexAttribPointer(secondFilterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]));
     
-	CHECK_GL(glUniform1i(secondFilterInputTextureUniform, 3));
+	glUniform1i(secondFilterInputTextureUniform, 3);
     
     CHECK_GL(glVertexAttribPointer(secondFilterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
     

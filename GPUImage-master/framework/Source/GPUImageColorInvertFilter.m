@@ -11,7 +11,7 @@ NSString *const kGPUImageInvertFragmentShaderString = SHADER_STRING
  {
     lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
     
-    CHECK_GL(gl_FragColor = vec4((1.0 - textureColor.rgb), textureColor.w));
+    gl_FragColor = vec4((1.0 - textureColor.rgb), textureColor.w);
  }
 );                                                                    
 #else
@@ -25,7 +25,7 @@ NSString *const kGPUImageInvertFragmentShaderString = SHADER_STRING
  {
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      
-     CHECK_GL(gl_FragColor = vec4((1.0 - textureColor.rgb), textureColor.w));
+     gl_FragColor = vec4((1.0 - textureColor.rgb), textureColor.w);
  }
  );
 #endif

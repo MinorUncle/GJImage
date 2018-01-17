@@ -27,7 +27,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinate));
+     gl_FragColor = texture2D(inputImageTexture, textureCoordinate);
  }
 );
 
@@ -41,7 +41,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinate));
+     gl_FragColor = texture2D(inputImageTexture, textureCoordinate);
  }
 );
 #endif
@@ -102,7 +102,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
         [GPUImageContext setActiveShaderProgram:filterProgram];
         
         CHECK_GL(glEnableVertexAttribArray(filterPositionAttribute));
-        CHECK_GL(glEnableVertexAttribArray(filterTextureCoordinateAttribute));    
+        CHECK_GL(glEnableVertexAttribArray(filterTextureCoordinateAttribute));
     });
     
     return self;
@@ -311,13 +311,13 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
     CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
     CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
 
-	CHECK_GL(glActiveTexture(GL_TEXTURE2));
-	CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]);
 	
-	CHECK_GL(glUniform1i(filterInputTextureUniform, 2));	
+	glUniform1i(filterInputTextureUniform, 2);	
 
     CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
-	CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
+	glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
     
     CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     

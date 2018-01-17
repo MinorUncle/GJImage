@@ -45,7 +45,7 @@ NSString *const kGPUImageColorAveragingFragmentShaderString = SHADER_STRING
      highp vec4 lowerLeftColor = texture2D(inputImageTexture, lowerLeftInputTextureCoordinate);
      highp vec4 lowerRightColor = texture2D(inputImageTexture, lowerRightInputTextureCoordinate);
      
-     CHECK_GL(gl_FragColor = 0.25 * (upperLeftColor + upperRightColor + lowerLeftColor + lowerRightColor));
+     gl_FragColor = 0.25 * (upperLeftColor + upperRightColor + lowerLeftColor + lowerRightColor);
  }
 );
 #else
@@ -67,7 +67,7 @@ NSString *const kGPUImageColorAveragingFragmentShaderString = SHADER_STRING
      vec4 lowerLeftColor = texture2D(inputImageTexture, lowerLeftInputTextureCoordinate);
      vec4 lowerRightColor = texture2D(inputImageTexture, lowerRightInputTextureCoordinate);
      
-     CHECK_GL(gl_FragColor = 0.25 * (upperLeftColor + upperRightColor + lowerLeftColor + lowerRightColor));
+     gl_FragColor = 0.25 * (upperLeftColor + upperRightColor + lowerLeftColor + lowerRightColor);
  }
 );
 #endif

@@ -17,7 +17,7 @@ NSString *const kGPUImageLineGeneratorFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     CHECK_GL(gl_FragColor = vec4(lineColor, 1.0));
+     gl_FragColor = vec4(lineColor, 1.0);
  }
 );
 #else
@@ -27,7 +27,7 @@ NSString *const kGPUImageLineGeneratorFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     CHECK_GL(gl_FragColor = vec4(lineColor, 1.0));
+     gl_FragColor = vec4(lineColor, 1.0);
  }
 );
 #endif

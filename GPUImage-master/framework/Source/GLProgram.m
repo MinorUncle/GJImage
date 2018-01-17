@@ -147,9 +147,9 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
     if (![attributes containsObject:attributeName])
     {
         [attributes addObject:attributeName];
-        glBindAttribLocation(program, 
+        CHECK_GL(glBindAttribLocation(program, 
                              (GLuint)[attributes indexOfObject:attributeName],
-                             [attributeName UTF8String]);
+                             [attributeName UTF8String]));
     }
 }
 // END:addattribute

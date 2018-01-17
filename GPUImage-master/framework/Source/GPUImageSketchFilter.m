@@ -39,7 +39,7 @@ NSString *const kGPUImageSketchFragmentShaderString = SHADER_STRING
      
      float mag = 1.0 - (length(vec2(h, v)) * edgeStrength);
      
-     CHECK_GL(gl_FragColor = vec4(vec3(mag), 1.0));
+     gl_FragColor = vec4(vec3(mag), 1.0);
  }
 );
 #else
@@ -76,7 +76,7 @@ NSString *const kGPUImageSketchFragmentShaderString = SHADER_STRING
      
      float mag = 1.0 - (length(vec2(h, v)) * edgeStrength);
      
-     CHECK_GL(gl_FragColor = vec4(vec3(mag), 1.0));
+     gl_FragColor = vec4(vec3(mag), 1.0);
  }
 );
 #endif

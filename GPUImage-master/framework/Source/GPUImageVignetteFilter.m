@@ -16,7 +16,7 @@ NSString *const kGPUImageVignetteFragmentShaderString = SHADER_STRING
      lowp vec4 sourceImageColor = texture2D(inputImageTexture, textureCoordinate);
      lowp float d = distance(textureCoordinate, vec2(vignetteCenter.x, vignetteCenter.y));
      lowp float percent = smoothstep(vignetteStart, vignetteEnd, d);
-     CHECK_GL(gl_FragColor = vec4(mix(sourceImageColor.rgb, vignetteColor, percent), sourceImageColor.a));
+     gl_FragColor = vec4(mix(sourceImageColor.rgb, vignetteColor, percent), sourceImageColor.a);
  }
 );
 #else
@@ -35,7 +35,7 @@ NSString *const kGPUImageVignetteFragmentShaderString = SHADER_STRING
      vec4 sourceImageColor = texture2D(inputImageTexture, textureCoordinate);
      float d = distance(textureCoordinate, vec2(vignetteCenter.x, vignetteCenter.y));
      float percent = smoothstep(vignetteStart, vignetteEnd, d);
-     CHECK_GL(gl_FragColor = vec4(mix(sourceImageColor.rgb, vignetteColor, percent), sourceImageColor.a));
+     gl_FragColor = vec4(mix(sourceImageColor.rgb, vignetteColor, percent), sourceImageColor.a);
  }
 );
 #endif

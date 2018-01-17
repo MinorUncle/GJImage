@@ -37,7 +37,7 @@ NSString *const kGPUImage3x3ConvolutionFragmentShaderString = SHADER_STRING
      resultColor += leftColor * convolutionMatrix[1][0] + centerColor.rgb * convolutionMatrix[1][1] + rightColor * convolutionMatrix[1][2];
      resultColor += bottomLeftColor * convolutionMatrix[2][0] + bottomColor * convolutionMatrix[2][1] + bottomRightColor * convolutionMatrix[2][2];
 
-     CHECK_GL(gl_FragColor = vec4(resultColor, centerColor.a));
+     gl_FragColor = vec4(resultColor, centerColor.a);
  }
 );                                                                         
 #else
@@ -75,7 +75,7 @@ NSString *const kGPUImage3x3ConvolutionFragmentShaderString = SHADER_STRING
      resultColor += leftColor * convolutionMatrix[1][0] + centerColor.rgb * convolutionMatrix[1][1] + rightColor * convolutionMatrix[1][2];
      resultColor += bottomLeftColor * convolutionMatrix[2][0] + bottomColor * convolutionMatrix[2][1] + bottomRightColor * convolutionMatrix[2][2];
      
-     CHECK_GL(gl_FragColor = vec4(resultColor, centerColor.a));
+     gl_FragColor = vec4(resultColor, centerColor.a);
  }
 );
 #endif

@@ -29,7 +29,7 @@ NSString *const kGPUImageHistogramGeneratorFragmentShaderString = SHADER_STRING
  {
      lowp vec3 colorChannels = texture2D(inputImageTexture, textureCoordinate).rgb;
      lowp vec4 heightTest = vec4(step(height, colorChannels), 1.0);
-     CHECK_GL(gl_FragColor = mix(backgroundColor, heightTest, heightTest.r + heightTest.g + heightTest.b));
+     gl_FragColor = mix(backgroundColor, heightTest, heightTest.r + heightTest.g + heightTest.b);
  }
 );
 #else
@@ -45,7 +45,7 @@ NSString *const kGPUImageHistogramGeneratorFragmentShaderString = SHADER_STRING
  {
      vec3 colorChannels = texture2D(inputImageTexture, textureCoordinate).rgb;
      vec4 heightTest = vec4(step(height, colorChannels), 1.0);
-     CHECK_GL(gl_FragColor = mix(backgroundColor, heightTest, heightTest.r + heightTest.g + heightTest.b));
+     gl_FragColor = mix(backgroundColor, heightTest, heightTest.r + heightTest.g + heightTest.b);
  }
 );
 #endif

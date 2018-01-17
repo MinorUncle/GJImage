@@ -35,7 +35,7 @@ NSString *const kGPUImageOverlayBlendFragmentShaderString = SHADER_STRING
          ba = overlay.a * base.a - 2.0 * (base.a - base.b) * (overlay.a - overlay.b) + overlay.b * (1.0 - base.a) + base.b * (1.0 - overlay.a);
      }
      
-     CHECK_GL(gl_FragColor = vec4(ra, ga, ba, 1.0));
+     gl_FragColor = vec4(ra, ga, ba, 1.0);
  }
 );
 #else
@@ -73,7 +73,7 @@ NSString *const kGPUImageOverlayBlendFragmentShaderString = SHADER_STRING
          ba = overlay.a * base.a - 2.0 * (base.a - base.b) * (overlay.a - overlay.b) + overlay.b * (1.0 - base.a) + base.b * (1.0 - overlay.a);
      }
      
-     CHECK_GL(gl_FragColor = vec4(ra, ga, ba, 1.0));
+     gl_FragColor = vec4(ra, ga, ba, 1.0);
  }
 );
 #endif

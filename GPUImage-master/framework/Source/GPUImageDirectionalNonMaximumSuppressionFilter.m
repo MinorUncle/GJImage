@@ -29,7 +29,7 @@ NSString *const kGPUImageDirectionalNonmaximumSuppressionFragmentShaderString = 
      float thresholdCompliance = smoothstep(lowerThreshold, upperThreshold, currentGradientAndDirection.r);
      multiplier = multiplier * thresholdCompliance;
      
-     CHECK_GL(gl_FragColor = vec4(multiplier, multiplier, multiplier, 1.0));
+     gl_FragColor = vec4(multiplier, multiplier, multiplier, 1.0);
  }
 );
 #else
@@ -57,7 +57,7 @@ NSString *const kGPUImageDirectionalNonmaximumSuppressionFragmentShaderString = 
      float thresholdCompliance = smoothstep(lowerThreshold, upperThreshold, currentGradientAndDirection.r);
      multiplier = multiplier * thresholdCompliance;
      
-     CHECK_GL(gl_FragColor = vec4(multiplier, multiplier, multiplier, 1.0));
+     gl_FragColor = vec4(multiplier, multiplier, multiplier, 1.0);
  }
 );
 #endif

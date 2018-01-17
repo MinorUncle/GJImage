@@ -21,7 +21,7 @@ NSString *const kGPUImageHazeFragmentShaderString = SHADER_STRING
 	 
 	 c = (c - d * color) / (1.0 -d);
 	 
-	 CHECK_GL(gl_FragColor = c; //consider using premultiply(c));
+	 gl_FragColor = c; //consider using premultiply(c);
  }
 );
 #else
@@ -45,7 +45,7 @@ NSString *const kGPUImageHazeFragmentShaderString = SHADER_STRING
 	 	 
 	 c = (c - d * color) / (1.0 -d);
 	 
-	 CHECK_GL(gl_FragColor = c; //consider using premultiply(c));
+	 gl_FragColor = c; //consider using premultiply(c);
  }
 );
 #endif

@@ -15,7 +15,7 @@ NSString *const kGPUImageColorMatrixFragmentShaderString = SHADER_STRING
      lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      lowp vec4 outputColor = textureColor * colorMatrix;
      
-     CHECK_GL(gl_FragColor = (intensity * outputColor) + ((1.0 - intensity) * textureColor));
+     gl_FragColor = (intensity * outputColor) + ((1.0 - intensity) * textureColor);
  }
 );
 #else
@@ -33,7 +33,7 @@ NSString *const kGPUImageColorMatrixFragmentShaderString = SHADER_STRING
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      vec4 outputColor = textureColor * colorMatrix;
      
-     CHECK_GL(gl_FragColor = (intensity * outputColor) + ((1.0 - intensity) * textureColor));
+     gl_FragColor = (intensity * outputColor) + ((1.0 - intensity) * textureColor);
  }
 );
 #endif

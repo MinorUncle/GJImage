@@ -14,7 +14,7 @@ NSString *const kGPUImageScreenBlendFragmentShaderString = SHADER_STRING
      mediump vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      mediump vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate2);
      mediump vec4 whiteColor = vec4(1.0);
-     CHECK_GL(gl_FragColor = whiteColor - ((whiteColor - textureColor2) * (whiteColor - textureColor)));
+     gl_FragColor = whiteColor - ((whiteColor - textureColor2) * (whiteColor - textureColor));
  }
 );
 #else
@@ -31,7 +31,7 @@ NSString *const kGPUImageScreenBlendFragmentShaderString = SHADER_STRING
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate2);
      vec4 whiteColor = vec4(1.0);
-     CHECK_GL(gl_FragColor = whiteColor - ((whiteColor - textureColor2) * (whiteColor - textureColor)));
+     gl_FragColor = whiteColor - ((whiteColor - textureColor2) * (whiteColor - textureColor));
  }
 );
 #endif

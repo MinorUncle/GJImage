@@ -81,11 +81,11 @@ NSString *const kGPUImageColourFASTSamplingFragmentShaderString = SHADER_STRING
      float componentLength = length(colorComparison);
      float avgX = dot(absoluteDifference, dirX) / componentLength;
      float avgY = dot(absoluteDifference, dirY) / componentLength;
-     float anCHECK_GL(gle = atan(avgY, avgX));
+     float angle = atan(avgY, avgX);
      
      vec3 normalizedColorComparison = (colorComparison + 1.0) * 0.5;
      
-     CHECK_GL(gl_FragColor = vec4(normalizedColorComparison, (angle+PI)/PITwo));
+     gl_FragColor = vec4(normalizedColorComparison, (angle+PI)/PITwo);
  }
 );
 #else
@@ -128,11 +128,11 @@ NSString *const kGPUImageColourFASTSamplingFragmentShaderString = SHADER_STRING
      float componentLength = length(colorComparison);
      float avgX = dot(absoluteDifference, dirX) / componentLength;
      float avgY = dot(absoluteDifference, dirY) / componentLength;
-     float anCHECK_GL(gle = atan(avgY, avgX));
+     float angle = atan(avgY, avgX);
      
      vec3 normalizedColorComparison = (colorComparison + 1.0) * 0.5;
      
-     CHECK_GL(gl_FragColor = vec4(normalizedColorComparison, (angle+PI)/PITwo));
+     gl_FragColor = vec4(normalizedColorComparison, (angle+PI)/PITwo);
  }
 );
 #endif

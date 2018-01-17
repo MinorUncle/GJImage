@@ -39,7 +39,7 @@ static NSString *const kGJImageYpCbCr8BiPlanarFragmentShaderString = SHADER_STRI
      yuv.yz = texture2D(SamplerU, textureCoordinate).ra - vec2(0.5, 0.5);
      
      rgb = colorConversionMatrix * yuv;
-     CHECK_GL(gl_FragColor = vec4(rgb, 1));
+     gl_FragColor = vec4(rgb, 1);
  }
  );
 
@@ -62,7 +62,7 @@ static NSString *const kGJImageYpCbCr8PlanarFragmentShaderString = SHADER_STRING
      yuv.y = texture2D(SamplerU, textureCoordinate).r - 0.5;
      yuv.z = texture2D(SamplerV, textureCoordinate).r - 0.5;
      rgb = colorConversionMatrix * yuv;
-     CHECK_GL(gl_FragColor = vec4(rgb, 1));
+     gl_FragColor = vec4(rgb, 1);
  }
  );
 
@@ -534,8 +534,8 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
         outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
         [outputFramebuffer activateFramebuffer];
         
-//        CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
-//        CHECK_GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+//        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         
         CHECK_GL(glActiveTexture(GL_TEXTURE4));

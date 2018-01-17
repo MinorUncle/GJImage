@@ -237,7 +237,7 @@ NSString *const kGPUImageKuwaharaRadius3FragmentShaderString = SHADER_STRING
      float sigma2 = s0.r + s0.g + s0.b;
      if (sigma2 < min_sigma2) {
          min_sigma2 = sigma2;
-         CHECK_GL(gl_FragColor = vec4(m0, 1.0));
+         gl_FragColor = vec4(m0, 1.0);
      }
 
      m1 /= n;
@@ -246,7 +246,7 @@ NSString *const kGPUImageKuwaharaRadius3FragmentShaderString = SHADER_STRING
      sigma2 = s1.r + s1.g + s1.b;
      if (sigma2 < min_sigma2) {
          min_sigma2 = sigma2;
-         CHECK_GL(gl_FragColor = vec4(m1, 1.0));
+         gl_FragColor = vec4(m1, 1.0);
      }
 
      m2 /= n;
@@ -255,7 +255,7 @@ NSString *const kGPUImageKuwaharaRadius3FragmentShaderString = SHADER_STRING
      sigma2 = s2.r + s2.g + s2.b;
      if (sigma2 < min_sigma2) {
          min_sigma2 = sigma2;
-         CHECK_GL(gl_FragColor = vec4(m2, 1.0));
+         gl_FragColor = vec4(m2, 1.0);
      }
 
      m3 /= n;
@@ -264,7 +264,7 @@ NSString *const kGPUImageKuwaharaRadius3FragmentShaderString = SHADER_STRING
      sigma2 = s3.r + s3.g + s3.b;
      if (sigma2 < min_sigma2) {
          min_sigma2 = sigma2;
-         CHECK_GL(gl_FragColor = vec4(m3, 1.0));
+         gl_FragColor = vec4(m3, 1.0);
      }
  }
 );
@@ -496,7 +496,7 @@ NSString *const kGPUImageKuwaharaRadius3FragmentShaderString = SHADER_STRING
      float sigma2 = s0.r + s0.g + s0.b;
      if (sigma2 < min_sigma2) {
          min_sigma2 = sigma2;
-         CHECK_GL(gl_FragColor = vec4(m0, 1.0));
+         gl_FragColor = vec4(m0, 1.0);
      }
      
      m1 /= n;
@@ -505,7 +505,7 @@ NSString *const kGPUImageKuwaharaRadius3FragmentShaderString = SHADER_STRING
      sigma2 = s1.r + s1.g + s1.b;
      if (sigma2 < min_sigma2) {
          min_sigma2 = sigma2;
-         CHECK_GL(gl_FragColor = vec4(m1, 1.0));
+         gl_FragColor = vec4(m1, 1.0);
      }
      
      m2 /= n;
@@ -514,7 +514,7 @@ NSString *const kGPUImageKuwaharaRadius3FragmentShaderString = SHADER_STRING
      sigma2 = s2.r + s2.g + s2.b;
      if (sigma2 < min_sigma2) {
          min_sigma2 = sigma2;
-         CHECK_GL(gl_FragColor = vec4(m2, 1.0));
+         gl_FragColor = vec4(m2, 1.0);
      }
      
      m3 /= n;
@@ -523,7 +523,7 @@ NSString *const kGPUImageKuwaharaRadius3FragmentShaderString = SHADER_STRING
      sigma2 = s3.r + s3.g + s3.b;
      if (sigma2 < min_sigma2) {
          min_sigma2 = sigma2;
-         CHECK_GL(gl_FragColor = vec4(m3, 1.0));
+         gl_FragColor = vec4(m3, 1.0);
      }
  }
 );

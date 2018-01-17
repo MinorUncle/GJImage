@@ -61,7 +61,7 @@ NSString *const kGPUImageSharpenFragmentShaderString = SHADER_STRING
      mediump vec3 topTextureColor = texture2D(inputImageTexture, topTextureCoordinate).rgb;
      mediump vec3 bottomTextureColor = texture2D(inputImageTexture, bottomTextureCoordinate).rgb;
 
-     CHECK_GL(gl_FragColor = vec4((textureColor * centerMultiplier - (leftTextureColor * edgeMultiplier + rightTextureColor * edgeMultiplier + topTextureColor * edgeMultiplier + bottomTextureColor * edgeMultiplier)), texture2D(inputImageTexture, bottomTextureCoordinate).w));
+     gl_FragColor = vec4((textureColor * centerMultiplier - (leftTextureColor * edgeMultiplier + rightTextureColor * edgeMultiplier + topTextureColor * edgeMultiplier + bottomTextureColor * edgeMultiplier)), texture2D(inputImageTexture, bottomTextureCoordinate).w);
  }
 );
 #else
@@ -86,7 +86,7 @@ NSString *const kGPUImageSharpenFragmentShaderString = SHADER_STRING
      vec3 topTextureColor = texture2D(inputImageTexture, topTextureCoordinate).rgb;
      vec3 bottomTextureColor = texture2D(inputImageTexture, bottomTextureCoordinate).rgb;
      
-     CHECK_GL(gl_FragColor = vec4((textureColor * centerMultiplier - (leftTextureColor * edgeMultiplier + rightTextureColor * edgeMultiplier + topTextureColor * edgeMultiplier + bottomTextureColor * edgeMultiplier)), texture2D(inputImageTexture, bottomTextureCoordinate).w));
+     gl_FragColor = vec4((textureColor * centerMultiplier - (leftTextureColor * edgeMultiplier + rightTextureColor * edgeMultiplier + topTextureColor * edgeMultiplier + bottomTextureColor * edgeMultiplier)), texture2D(inputImageTexture, bottomTextureCoordinate).w);
  }
 );
 #endif

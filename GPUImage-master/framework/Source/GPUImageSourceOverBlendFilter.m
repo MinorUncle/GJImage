@@ -14,7 +14,7 @@ NSString *const kGPUImageSourceOverBlendFragmentShaderString = SHADER_STRING
    lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
    lowp vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate);
    
-   CHECK_GL(gl_FragColor = mix(textureColor, textureColor2, textureColor2.a));
+   gl_FragColor = mix(textureColor, textureColor2, textureColor2.a);
  }
 );
 #else
@@ -31,7 +31,7 @@ NSString *const kGPUImageSourceOverBlendFragmentShaderString = SHADER_STRING
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate);
      
-     CHECK_GL(gl_FragColor = mix(textureColor, textureColor2, textureColor2.a));
+     gl_FragColor = mix(textureColor, textureColor2, textureColor2.a);
  }
  );
 #endif

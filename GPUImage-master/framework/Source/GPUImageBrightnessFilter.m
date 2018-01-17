@@ -12,7 +12,7 @@ NSString *const kGPUImageBrightnessFragmentShaderString = SHADER_STRING
  {
      lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      
-     CHECK_GL(gl_FragColor = vec4((textureColor.rgb + vec3(brightness)), textureColor.w));
+     gl_FragColor = vec4((textureColor.rgb + vec3(brightness)), textureColor.w);
  }
 );
 #else
@@ -27,7 +27,7 @@ NSString *const kGPUImageBrightnessFragmentShaderString = SHADER_STRING
  {
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
      
-     CHECK_GL(gl_FragColor = vec4((textureColor.rgb + vec3(brightness)), textureColor.w));
+     gl_FragColor = vec4((textureColor.rgb + vec3(brightness)), textureColor.w);
  }
  );
 #endif

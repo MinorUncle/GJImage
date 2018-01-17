@@ -13,7 +13,7 @@ NSString *const kGPUSolidColorFragmentShaderString = SHADER_STRING
  void main()
  {
      lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
-     CHECK_GL(gl_FragColor = vec4(color.rgb, max(textureColor.a, 1.0 - useExistingAlpha)));
+     gl_FragColor = vec4(color.rgb, max(textureColor.a, 1.0 - useExistingAlpha));
  }
  );
 #else
@@ -27,7 +27,7 @@ NSString *const kGPUSolidColorFragmentShaderString = SHADER_STRING
  void main()
  {
      vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
-     CHECK_GL(gl_FragColor = vec4(color.rgb, max(textureColor.a, 1.0 - useExistingAlpha)));
+     gl_FragColor = vec4(color.rgb, max(textureColor.a, 1.0 - useExistingAlpha));
  }
  );
 #endif

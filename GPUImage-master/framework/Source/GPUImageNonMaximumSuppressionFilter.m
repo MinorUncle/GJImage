@@ -40,7 +40,7 @@ NSString *const kGPUImageNonMaximumSuppressionFragmentShaderString = SHADER_STRI
      maxValue = max(maxValue, rightColor);
      maxValue = max(maxValue, topRightColor);
      
-     CHECK_GL(gl_FragColor = vec4((centerColor.rgb * step(maxValue, centerColor.r) * multiplier), 1.0));
+     gl_FragColor = vec4((centerColor.rgb * step(maxValue, centerColor.r) * multiplier), 1.0);
  }
 );
 #else
@@ -83,7 +83,7 @@ NSString *const kGPUImageNonMaximumSuppressionFragmentShaderString = SHADER_STRI
      maxValue = max(maxValue, rightColor);
      maxValue = max(maxValue, topRightColor);
      
-     CHECK_GL(gl_FragColor = vec4((centerColor.rgb * step(maxValue, centerColor.r) * multiplier), 1.0));
+     gl_FragColor = vec4((centerColor.rgb * step(maxValue, centerColor.r) * multiplier), 1.0);
  }
 );
 #endif

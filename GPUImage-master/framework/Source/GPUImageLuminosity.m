@@ -24,7 +24,7 @@ NSString *const kGPUImageInitialLuminosityFragmentShaderString = SHADER_STRING
      highp float lowerRightLuminance = dot(texture2D(inputImageTexture, lowerRightInputTextureCoordinate).rgb, W);
 
      highp float luminosity = 0.25 * (upperLeftLuminance + upperRightLuminance + lowerLeftLuminance + lowerRightLuminance);
-     CHECK_GL(gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0));
+     gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0);
  }
 );
 
@@ -49,7 +49,7 @@ NSString *const kGPUImageLuminosityFragmentShaderString = SHADER_STRING
      highp float lowerRightLuminance = texture2D(inputImageTexture, lowerRightInputTextureCoordinate).r;
      
      highp float luminosity = 0.25 * (upperLeftLuminance + upperRightLuminance + lowerLeftLuminance + lowerRightLuminance);
-     CHECK_GL(gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0));
+     gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0);
  }
 );
 #else
@@ -74,7 +74,7 @@ NSString *const kGPUImageInitialLuminosityFragmentShaderString = SHADER_STRING
      float lowerRightLuminance = dot(texture2D(inputImageTexture, lowerRightInputTextureCoordinate).rgb, W);
      
      float luminosity = 0.25 * (upperLeftLuminance + upperRightLuminance + lowerLeftLuminance + lowerRightLuminance);
-     CHECK_GL(gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0));
+     gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0);
  }
 );
 
@@ -97,7 +97,7 @@ NSString *const kGPUImageLuminosityFragmentShaderString = SHADER_STRING
      float lowerRightLuminance = texture2D(inputImageTexture, lowerRightInputTextureCoordinate).r;
      
      float luminosity = 0.25 * (upperLeftLuminance + upperRightLuminance + lowerLeftLuminance + lowerRightLuminance);
-     CHECK_GL(gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0));
+     gl_FragColor = vec4(luminosity, luminosity, luminosity, 1.0);
  }
 );
 #endif
@@ -246,7 +246,7 @@ NSString *const kGPUImageLuminosityFragmentShaderString = SHADER_STRING
         
 //        NSUInteger totalBytesForImage = (int)currentStageSize.width * (int)currentStageSize.height * 4;
 //        GLubyte *rawImagePixels2 = (GLubyte *)malloc(totalBytesForImage);
-//        CHECK_GL(glReadPixels(0, 0, (int)currentStageSize.width, (int)currentStageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels2));
+//        glReadPixels(0, 0, (int)currentStageSize.width, (int)currentStageSize.height, GL_RGBA, GL_UNSIGNED_BYTE, rawImagePixels2);
 //        CGDataProviderRef dataProvider = CGDataProviderCreateWithData(NULL, rawImagePixels2, totalBytesForImage, NULL);
 //        CGColorSpaceRef defaultRGBColorSpace = CGColorSpaceCreateDeviceRGB();
 //

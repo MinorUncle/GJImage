@@ -37,7 +37,7 @@ NSString *const kGPUImageLookupFragmentShaderString = SHADER_STRING
      lowp vec4 newColor2 = texture2D(inputImageTexture2, texPos2);
      
      lowp vec4 newColor = mix(newColor1, newColor2, fract(blueColor));
-     CHECK_GL(gl_FragColor = mix(textureColor, vec4(newColor.rgb, textureColor.w), intensity));
+     gl_FragColor = mix(textureColor, vec4(newColor.rgb, textureColor.w), intensity);
  }
 );
 #else
@@ -77,7 +77,7 @@ NSString *const kGPUImageLookupFragmentShaderString = SHADER_STRING
      vec4 newColor2 = texture2D(inputImageTexture2, texPos2);
      
      vec4 newColor = mix(newColor1, newColor2, fract(blueColor));
-     CHECK_GL(gl_FragColor = mix(textureColor, vec4(newColor.rgb, textureColor.w), intensity));
+     gl_FragColor = mix(textureColor, vec4(newColor.rgb, textureColor.w), intensity);
  }
 );
 #endif

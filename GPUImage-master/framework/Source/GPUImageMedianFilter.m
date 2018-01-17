@@ -96,7 +96,7 @@ NSString *const kGPUImageMedianFragmentShaderString = SHADER_STRING
                                             
      mnmx3(v[3], v[4], v[5]);
     
-     CHECK_GL(gl_FragColor = vec4(v[4], 1.0));
+     gl_FragColor = vec4(v[4], 1.0);
  }
 );
 #else
@@ -153,7 +153,7 @@ NSString *const kGPUImageMedianFragmentShaderString = SHADER_STRING
      
      mnmx3(v[3], v[4], v[5]);
      
-     CHECK_GL(gl_FragColor = vec4(v[4], 1.0));
+     gl_FragColor = vec4(v[4], 1.0);
  }
 );
 #endif

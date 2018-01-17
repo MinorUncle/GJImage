@@ -33,7 +33,7 @@ NSString *const kGPUImagePolarPixellateFragmentShaderString = SHADER_STRING
      
      mediump vec2 textureCoordinateToUse = normCoord / 2.0 + 0.5;
      
-     CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse ));
+     gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse );
      
  }
 );
@@ -68,7 +68,7 @@ NSString *const kGPUImagePolarPixellateFragmentShaderString = SHADER_STRING
      
      vec2 textureCoordinateToUse = normCoord / 2.0 + 0.5;
      
-     CHECK_GL(gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse ));
+     gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse );
      
  }
 );

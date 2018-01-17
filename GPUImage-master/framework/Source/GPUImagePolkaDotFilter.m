@@ -23,7 +23,7 @@ NSString *const kGPUImagePolkaDotFragmentShaderString = SHADER_STRING
 
      lowp vec4 inputColor = texture2D(inputImageTexture, samplePos);
      
-     CHECK_GL(gl_FragColor = vec4(inputColor.rgb * checkForPresenceWithinDot, inputColor.a));
+     gl_FragColor = vec4(inputColor.rgb * checkForPresenceWithinDot, inputColor.a);
  }
 );
 #else
@@ -49,7 +49,7 @@ NSString *const kGPUImagePolkaDotFragmentShaderString = SHADER_STRING
      
      vec4 inputColor = texture2D(inputImageTexture, samplePos);
 
-     CHECK_GL(gl_FragColor = vec4(inputColor.rgb * checkForPresenceWithinDot, inputColor.a));
+     gl_FragColor = vec4(inputColor.rgb * checkForPresenceWithinDot, inputColor.a);
  }
 );
 #endif

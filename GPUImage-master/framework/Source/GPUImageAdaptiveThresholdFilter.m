@@ -19,7 +19,7 @@ NSString *const kGPUImageAdaptiveThresholdFragmentShaderString = SHADER_STRING
      highp float localLuminance = texture2D(inputImageTexture2, textureCoordinate2).r;
      highp float thresholdResult = step(blurredInput - 0.05, localLuminance);
      
-     CHECK_GL(gl_FragColor = vec4(vec3(thresholdResult), 1.0));
+     gl_FragColor = vec4(vec3(thresholdResult), 1.0);
  }
 );
 #else
@@ -37,7 +37,7 @@ NSString *const kGPUImageAdaptiveThresholdFragmentShaderString = SHADER_STRING
      float localLuminance = texture2D(inputImageTexture2, textureCoordinate2).r;
      float thresholdResult = step(blurredInput - 0.05, localLuminance);
      
-     CHECK_GL(gl_FragColor = vec4(vec3(thresholdResult), 1.0));
+     gl_FragColor = vec4(vec3(thresholdResult), 1.0);
  }
 );
 #endif

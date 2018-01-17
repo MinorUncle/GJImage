@@ -39,7 +39,7 @@ NSString *const kGPUImageLaplacianFragmentShaderString = SHADER_STRING
      // Normalize the results to allow for negative gradients in the 0.0-1.0 colorspace
      resultColor = resultColor + 0.5;
      
-     CHECK_GL(gl_FragColor = vec4(resultColor, centerColor.a));
+     gl_FragColor = vec4(resultColor, centerColor.a);
  }
 );
 #else
@@ -80,7 +80,7 @@ NSString *const kGPUImageLaplacianFragmentShaderString = SHADER_STRING
      // Normalize the results to allow for negative gradients in the 0.0-1.0 colorspace
      resultColor = resultColor + 0.5;
 
-     CHECK_GL(gl_FragColor = vec4(resultColor, centerColor.a));
+     gl_FragColor = vec4(resultColor, centerColor.a);
  }
 );
 #endif

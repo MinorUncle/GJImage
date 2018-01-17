@@ -17,7 +17,7 @@ NSString *const kGPUImageHoughAccumulationFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     CHECK_GL(gl_FragColor = vec4(0.004, 0.004, 0.004, 1.0));
+     gl_FragColor = vec4(0.004, 0.004, 0.004, 1.0);
  }
 );
 
@@ -39,7 +39,7 @@ NSString *const kGPUImageHoughAccumulationFBOReadFragmentShaderString = SHADER_S
      
      fragmentData = fract(fragmentData);
      
-     CHECK_GL(gl_FragColor = vec4(fragmentData.rgb, 1.0));
+     gl_FragColor = vec4(fragmentData.rgb, 1.0);
  }
 );
 
@@ -50,7 +50,7 @@ NSString *const kGPUImageHoughAccumulationFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     CHECK_GL(gl_FragColor = vec4(0.004, 0.004, 0.004, 1.0));
+     gl_FragColor = vec4(0.004, 0.004, 0.004, 1.0);
  }
 );
 
@@ -60,8 +60,8 @@ NSString *const kGPUImageHoughAccumulationFBOReadFragmentShaderString = SHADER_S
  
  void main()
  {
-     //     CHECK_GL(gl_FragColor = vec4(scalingFactor, scalingFactor, scalingFactor, 1.0));
-     CHECK_GL(gl_FragColor = vec4(0.004, 0.004, 0.004, 1.0));
+     //     gl_FragColor = vec4(scalingFactor, scalingFactor, scalingFactor, 1.0);
+     gl_FragColor = vec4(0.004, 0.004, 0.004, 1.0);
  }
 );
 #endif
@@ -249,7 +249,7 @@ NSString *const kGPUImageHoughAccumulationFBOReadFragmentShaderString = SHADER_S
 
     CHECK_GL(glLineWidth(1));
 
-	CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, lineCoordinates));
+	glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, lineCoordinates);
     CHECK_GL(glDrawArrays(GL_LINES, 0, (linePairsToRender * 4)));
     
     if (![GPUImageContext deviceSupportsFramebufferReads])

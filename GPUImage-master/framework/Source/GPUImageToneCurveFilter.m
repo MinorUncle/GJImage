@@ -112,7 +112,7 @@ NSString *const kGPUImageToneCurveFragmentShaderString = SHADER_STRING
      lowp float greenCurveValue = texture2D(toneCurveTexture, vec2(textureColor.g, 0.0)).g;
      lowp float blueCurveValue = texture2D(toneCurveTexture, vec2(textureColor.b, 0.0)).b;
      
-     CHECK_GL(gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a));
+     gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a);
  }
 );
 #else
@@ -129,7 +129,7 @@ NSString *const kGPUImageToneCurveFragmentShaderString = SHADER_STRING
      float greenCurveValue = texture2D(toneCurveTexture, vec2(textureColor.g, 0.0)).g;
      float blueCurveValue = texture2D(toneCurveTexture, vec2(textureColor.b, 0.0)).b;
      
-     CHECK_GL(gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a));
+     gl_FragColor = vec4(redCurveValue, greenCurveValue, blueCurveValue, textureColor.a);
  }
 );
 #endif
@@ -546,9 +546,9 @@ NSString *const kGPUImageToneCurveFragmentShaderString = SHADER_STRING
     CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
     CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-  	CHECK_GL(glActiveTexture(GL_TEXTURE2));
-  	CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
-  	CHECK_GL(glUniform1i(filterInputTextureUniform, 2));	
+  	glActiveTexture(GL_TEXTURE2);
+  	glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]);
+  	glUniform1i(filterInputTextureUniform, 2);	
     
     CHECK_GL(glActiveTexture(GL_TEXTURE3));
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, toneCurveTexture));                

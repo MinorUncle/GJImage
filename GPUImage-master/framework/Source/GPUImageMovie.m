@@ -735,7 +735,7 @@ static CVReturn renderCallback(CVDisplayLinkRef displayLink,
 
         CHECK_GL(glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]));
         // Using BGRA extension to pull in video frame data directly
-        glTexImage2D(GL_TEXTURE_2D,
+        CHECK_GL(glTexImage2D(GL_TEXTURE_2D,
                      0,
                      self.outputTextureOptions.internalFormat,
                      bufferWidth,
@@ -743,7 +743,7 @@ static CVReturn renderCallback(CVDisplayLinkRef displayLink,
                      0,
                      self.outputTextureOptions.format,
                      self.outputTextureOptions.type,
-                     CVPixelBufferGetBaseAddress(movieFrame));
+                     CVPixelBufferGetBaseAddress(movieFrame)));
         
         for (id<GPUImageInput> currentTarget in targets)
         {

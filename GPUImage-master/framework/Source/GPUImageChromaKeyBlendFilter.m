@@ -31,7 +31,7 @@ NSString *const kGPUImageChromaKeyBlendFragmentShaderString = SHADER_STRING
      
 //     float blendValue = 1.0 - smoothstep(thresholdSensitivity - smoothing, thresholdSensitivity , abs(Cr - maskCr) + abs(Cb - maskCb));
      float blendValue = 1.0 - smoothstep(thresholdSensitivity, thresholdSensitivity + smoothing, distance(vec2(Cr, Cb), vec2(maskCr, maskCb)));
-     CHECK_GL(gl_FragColor = mix(textureColor, textureColor2, blendValue));
+     gl_FragColor = mix(textureColor, textureColor2, blendValue);
  }
 );
 #else
@@ -61,7 +61,7 @@ NSString *const kGPUImageChromaKeyBlendFragmentShaderString = SHADER_STRING
      
      //     float blendValue = 1.0 - smoothstep(thresholdSensitivity - smoothing, thresholdSensitivity , abs(Cr - maskCr) + abs(Cb - maskCb));
      float blendValue = 1.0 - smoothstep(thresholdSensitivity, thresholdSensitivity + smoothing, distance(vec2(Cr, Cb), vec2(maskCr, maskCb)));
-     CHECK_GL(gl_FragColor = mix(textureColor, textureColor2, blendValue));
+     gl_FragColor = mix(textureColor, textureColor2, blendValue);
  }
 );
 #endif

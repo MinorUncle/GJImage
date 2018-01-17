@@ -27,7 +27,7 @@ NSString *const kGPUImageHalftoneFragmentShaderString = SHADER_STRING
     
      lowp float checkForPresenceWithinDot = 1.0 - step(distanceFromSamplePoint, (fractionalWidthOfPixel * 0.5) * dotScaling);
      
-     CHECK_GL(gl_FragColor = vec4(vec3(checkForPresenceWithinDot), 1.0));
+     gl_FragColor = vec4(vec3(checkForPresenceWithinDot), 1.0);
  }
 );
 #else
@@ -57,7 +57,7 @@ NSString *const kGPUImageHalftoneFragmentShaderString = SHADER_STRING
      
      float checkForPresenceWithinDot = 1.0 - step(distanceFromSamplePoint, (fractionalWidthOfPixel * 0.5) * dotScaling);
      
-     CHECK_GL(gl_FragColor = vec4(vec3(checkForPresenceWithinDot), 1.0));
+     gl_FragColor = vec4(vec3(checkForPresenceWithinDot), 1.0);
  }
 );
 #endif

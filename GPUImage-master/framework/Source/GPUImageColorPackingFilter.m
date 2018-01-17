@@ -47,7 +47,7 @@ NSString *const kGPUImageColorPackingFragmentShaderString = SHADER_STRING
      float lowerLeftIntensity = texture2D(inputImageTexture, lowerLeftInputTextureCoordinate).r;
      float lowerRightIntensity = texture2D(inputImageTexture, lowerRightInputTextureCoordinate).r;
      
-     CHECK_GL(gl_FragColor = vec4(upperLeftIntensity, upperRightIntensity, lowerLeftIntensity, lowerRightIntensity));
+     gl_FragColor = vec4(upperLeftIntensity, upperRightIntensity, lowerLeftIntensity, lowerRightIntensity);
  }
 );
 #else
@@ -71,7 +71,7 @@ NSString *const kGPUImageColorPackingFragmentShaderString = SHADER_STRING
      float lowerLeftIntensity = texture2D(inputImageTexture, lowerLeftInputTextureCoordinate).r;
      float lowerRightIntensity = texture2D(inputImageTexture, lowerRightInputTextureCoordinate).r;
      
-     CHECK_GL(gl_FragColor = vec4(upperLeftIntensity, upperRightIntensity, lowerLeftIntensity, lowerRightIntensity));
+     gl_FragColor = vec4(upperLeftIntensity, upperRightIntensity, lowerLeftIntensity, lowerRightIntensity);
  }
 );
 #endif
