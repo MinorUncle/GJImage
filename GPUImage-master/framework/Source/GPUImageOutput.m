@@ -19,7 +19,7 @@ int checkGLError(void)
             default:                                                            break;
         }
         printf("ERROR, GL ERROR 0x%04X %s ",e,errorString);
-        assert(0);
+//        assert(0);
     }
     return e;
 }
