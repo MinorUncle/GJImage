@@ -249,7 +249,7 @@ NSString *const kGPUImageHoughAccumulationFBOReadFragmentShaderString = SHADER_S
 
     CHECK_GL(glLineWidth(1));
 
-	glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, lineCoordinates);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, lineCoordinates));
     CHECK_GL(glDrawArrays(GL_LINES, 0, (linePairsToRender * 4)));
     
     if (![GPUImageContext deviceSupportsFramebufferReads])

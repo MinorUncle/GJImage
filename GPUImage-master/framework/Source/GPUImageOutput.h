@@ -33,8 +33,8 @@ void runAsynchronouslyOnContextQueue(GPUImageContext *context, void (^block)(voi
 void reportAvailableMemoryForGPUImage(NSString *tag);
 
 int  checkGLError(void);
-//查找字符   ^( *)gl(.*?\));
-//替换字符   $1CHECK_GL\(gl$2);
+//查找字符   ^( *)(\t*)gl(.[^=]*?\));
+//替换字符   $1$2CHECK_GL\(gl$3);
 #define ENABLE_GL_CHECK true
 
 #if ENABLE_GL_CHECK

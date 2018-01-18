@@ -301,7 +301,7 @@ NSString *const kGPUImageHistogramAccumulationFragmentShaderString = SHADER_STRI
     CHECK_GL(glBlendFunc(GL_ONE, GL_ONE));
     CHECK_GL(glEnable(GL_BLEND));
     
-	glVertexAttribPointer(filterPositionAttribute, 4, GL_UNSIGNED_BYTE, 0, ((unsigned int)_downsamplingFactor - 1) * 4, vertexSamplingCoordinates);
+    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 4, GL_UNSIGNED_BYTE, 0, ((unsigned int)_downsamplingFactor - 1) * 4, vertexSamplingCoordinates));
     CHECK_GL(glDrawArrays(GL_POINTS, 0, inputTextureSize.width * inputTextureSize.height / (CGFloat)_downsamplingFactor));
 
     if (histogramType == kGPUImageHistogramRGB)

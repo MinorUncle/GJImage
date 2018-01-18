@@ -679,14 +679,14 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
     
     const GLfloat *textureCoordinates = [GPUImageFilter textureCoordinatesForRotation:inputRotation];
     
-	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, [inputFramebufferToUse texture]);
-	glUniform1i(colorSwizzlingInputTextureUniform, 4);
+    CHECK_GL(glActiveTexture(GL_TEXTURE4));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, [inputFramebufferToUse texture]));
+    CHECK_GL(glUniform1i(colorSwizzlingInputTextureUniform, 4));
     
 //    NSLog(@"Movie writer framebuffer: %@", inputFramebufferToUse);
     
     CHECK_GL(glVertexAttribPointer(colorSwizzlingPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices));
-	glVertexAttribPointer(colorSwizzlingTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+    CHECK_GL(glVertexAttribPointer(colorSwizzlingTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
     
     CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     CHECK_GL(glFinish());

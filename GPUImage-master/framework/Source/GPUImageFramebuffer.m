@@ -116,7 +116,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
 
 - (void)generateTexture;
 {
-    CHECK_GL(glActiveTexture(GL_TEXTURE1));
+//    CHECK_GL(glActiveTexture(GL_TEXTURE1));
     CHECK_GL(glGenTextures(1, &_texture));
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, _texture));
     CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _textureOptions.minFilter));

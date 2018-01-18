@@ -105,9 +105,9 @@ NSString *const kGPUImageFourInputTextureVertexShaderString = SHADER_STRING
     CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
     CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]);
-	glUniform1i(filterInputTextureUniform, 2);
+    CHECK_GL(glActiveTexture(GL_TEXTURE2));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
+    CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
     
     CHECK_GL(glActiveTexture(GL_TEXTURE3));
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, [secondInputFramebuffer texture]));
@@ -122,7 +122,7 @@ NSString *const kGPUImageFourInputTextureVertexShaderString = SHADER_STRING
     CHECK_GL(glUniform1i(filterInputTextureUniform4, 5));
 
     CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
-	glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates);
+    CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
     CHECK_GL(glVertexAttribPointer(filterSecondTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation2]));
     CHECK_GL(glVertexAttribPointer(filterThirdTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation3]));
     CHECK_GL(glVertexAttribPointer(filterFourthTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation4]));

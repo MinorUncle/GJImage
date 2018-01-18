@@ -1105,18 +1105,18 @@ static NSString* getCapturePresetWithSize(CGSize size) {
         1.0f,  1.0f,
     };
     
-	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, luminanceTexture);
-	glUniform1i(yuvConversionLuminanceTextureUniform, 4);
+    CHECK_GL(glActiveTexture(GL_TEXTURE4));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, luminanceTexture));
+    CHECK_GL(glUniform1i(yuvConversionLuminanceTextureUniform, 4));
 
     CHECK_GL(glActiveTexture(GL_TEXTURE5));
-	glBindTexture(GL_TEXTURE_2D, chrominanceTexture);
-	glUniform1i(yuvConversionChrominanceTextureUniform, 5);
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, chrominanceTexture));
+    CHECK_GL(glUniform1i(yuvConversionChrominanceTextureUniform, 5));
     
     CHECK_GL(glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion));
 
     CHECK_GL(glVertexAttribPointer(yuvConversionPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices));
-	glVertexAttribPointer(yuvConversionTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageFilter textureCoordinatesForRotation:kGPUImageNoRotation]);
+    CHECK_GL(glVertexAttribPointer(yuvConversionTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageFilter textureCoordinatesForRotation:kGPUImageNoRotation]));
     
     CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
 }
