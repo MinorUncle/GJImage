@@ -140,17 +140,17 @@
     CHECK_GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
     CHECK_GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
     
-    CHECK_GL(glActiveTexture(GL_TEXTURE2));
+    CHECK_GL(glActiveTexture(GL_TEXTURE1));
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
-    CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
+    CHECK_GL(glUniform1i(filterInputTextureUniform, 1));
     CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, vertices));
     CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, textureCoordinates));
     CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     
     
-    CHECK_GL(glActiveTexture(GL_TEXTURE2));
+    CHECK_GL(glActiveTexture(GL_TEXTURE1));
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, frame.texture));
-    CHECK_GL(glUniform1i(filterInputTextureUniform, 2));
+    CHECK_GL(glUniform1i(filterInputTextureUniform, 1));
     
     CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, secondTexturePosition));
     CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:kGPUImageNoRotation]));

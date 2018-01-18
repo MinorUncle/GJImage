@@ -407,17 +407,17 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
     CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-    CHECK_GL(glActiveTexture(GL_TEXTURE0));
-    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
-    CHECK_GL(glUniform1i(YTextureUniform, 0));
-    
     CHECK_GL(glActiveTexture(GL_TEXTURE1));
-    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
     CHECK_GL(glUniform1i(YTextureUniform, 1));
     
     CHECK_GL(glActiveTexture(GL_TEXTURE2));
-    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
     CHECK_GL(glUniform1i(YTextureUniform, 2));
+    
+    CHECK_GL(glActiveTexture(GL_TEXTURE3));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]));
+    CHECK_GL(glUniform1i(YTextureUniform, 3));
     
     
     static const GLfloat imageVertices[] = {
@@ -477,13 +477,13 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
     CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
     
-    CHECK_GL(glActiveTexture(GL_TEXTURE0));
-    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
-    CHECK_GL(glUniform1i(YTextureUniform, 0));
-    
     CHECK_GL(glActiveTexture(GL_TEXTURE1));
-    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
     CHECK_GL(glUniform1i(YTextureUniform, 1));
+    
+    CHECK_GL(glActiveTexture(GL_TEXTURE2));
+    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
+    CHECK_GL(glUniform1i(YTextureUniform, 2));
     
 //    glActiveTexture(GL_TEXTURE2);
 //    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]);
@@ -594,7 +594,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         CVPixelBufferLockBaseAddress(imageBuffer, 0);
         CVReturn err;
         // Y-plane
-        CHECK_GL(glActiveTexture(GL_TEXTURE4));
+//        CHECK_GL(glActiveTexture(GL_TEXTURE4));
 //        if ([GPUImageContext deviceSupportsRedTextures])
 //        {
 //            err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RED_EXT, size.width, size.height, GL_RED_EXT, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
@@ -614,6 +614,8 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         
         err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE_ALPHA, size.width/2, size.height/2, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, 1, &chrominanceTextureRef);
+        glFlush();
+        CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
         if (err)
         {
             NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
@@ -640,13 +642,13 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
             1.0f,  1.0f,
         };
         
-        CHECK_GL(glActiveTexture(GL_TEXTURE4));
+        CHECK_GL(glActiveTexture(GL_TEXTURE1));
         CHECK_GL(glBindTexture(GL_TEXTURE_2D, luminanceTexture));
-        CHECK_GL(glUniform1i(YTextureUniform, 4));
+        CHECK_GL(glUniform1i(YTextureUniform, 1));
         
-        CHECK_GL(glActiveTexture(GL_TEXTURE5));
+        CHECK_GL(glActiveTexture(GL_TEXTURE2));
         CHECK_GL(glBindTexture(GL_TEXTURE_2D, chrominanceTexture));
-        CHECK_GL(glUniform1i(UTextureUniform, 5));
+        CHECK_GL(glUniform1i(UTextureUniform, 2));
         
         CHECK_GL(glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion));
         if (isFullYUVRange) {
@@ -674,7 +676,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         
         [outputFramebuffer unlock];
         outputFramebuffer = nil;
-        CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+
         CFRelease(luminanceTextureRef);
         CFRelease(chrominanceTextureRef);
         CVPixelBufferRelease(imageBuffer);

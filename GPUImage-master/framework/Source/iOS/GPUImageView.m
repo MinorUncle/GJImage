@@ -388,9 +388,9 @@
         CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
         CHECK_GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
         
-        CHECK_GL(glActiveTexture(GL_TEXTURE4));
+        CHECK_GL(glActiveTexture(GL_TEXTURE1));
         CHECK_GL(glBindTexture(GL_TEXTURE_2D, [inputFramebufferForDisplay texture]));
-        CHECK_GL(glUniform1i(displayInputTextureUniform, 4));
+        CHECK_GL(glUniform1i(displayInputTextureUniform, 1));
         
         CHECK_GL(glVertexAttribPointer(displayPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices));
         CHECK_GL(glVertexAttribPointer(displayTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageView textureCoordinatesForRotation:inputRotation]));
