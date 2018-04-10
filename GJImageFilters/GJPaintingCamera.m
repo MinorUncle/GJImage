@@ -396,18 +396,18 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 -(void) addTriangleStripPointsForPrevious:(GVertex)previous next:(GVertex)next thickness:(CGFloat)penThickness {
     CGFloat offset = MIN(TIP_OFFSET_RATE_MAX, (1 - penThickness/STROKE_WIDTH_MAX))*penThickness;
     CGFloat toTravel = penThickness / 2.0 + offset ;
-    if (next.x > previous.x) {
-        toTravel*=-1;
-    }
+//    if (next.x > previous.x) {
+//        toTravel*=-1;
+//    }
     for(int i = 0;i<2 ;i++) {
         GVertex p = perpendicular( previous, next);
         GVertex p1 = next;
         GVertex ref = GLKVector2Add(p1, p);
         
         CGFloat distance = GLKVector2Distance(p1, ref);
-        if (distance < 0.000001) {
-            return;
-        }
+//        if (distance < 0.000001) {
+//            return;
+//        }
         CGFloat difX = p1.x - ref.x;
         CGFloat difY = p1.y - ref.y;
         CGFloat ratio = -1.0 * (toTravel / distance);
