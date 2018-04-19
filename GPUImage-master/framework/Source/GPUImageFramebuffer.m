@@ -311,7 +311,7 @@ void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * base
 //    return;
     GPUImageFramebuffer *framebuffer = (__bridge_transfer GPUImageFramebuffer*)releaseRefCon;
 
-    [framebuffer unlockAfterReading];
+//    [framebuffer unlockAfterReading];
     [framebuffer unlock];
     [[GPUImageContext sharedFramebufferCache] removeFramebufferFromActiveImageCaptureList:framebuffer];
 
@@ -392,7 +392,7 @@ void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * base
         [GPUImageContext useImageProcessingContext];
         
         GLubyte *rawImagePixels;
-//        CHECK_GL(glFinish());
+//        CHECK_GL(glFlush());
 
         if ([GPUImageContext supportsFastTextureUpload])
         {
@@ -414,12 +414,12 @@ void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * base
             CFDictionarySetValue(attrs, kCVPixelBufferIOSurfacePropertiesKey, empty);
             
             CVReturn result = CVPixelBufferCreateWithBytes(NULL, _size.width, _size.height, kCVPixelFormatType_32BGRA, rawImagePixels, bytePerRow, newPixelBufferReleaseBytesCallback, (__bridge_retained void*)self, attrs, &newPixelbuffer);
+            [self unlockAfterReading];
 
             if (result == kCVReturnSuccess) {
                 [[GPUImageContext sharedFramebufferCache] addFramebufferToActiveImageCaptureList:self]; // In case the framebuffer is swapped out on the filter, need to have a strong reference to it somewhere for it to hang on while the image is in existence
 
             }else{
-                [self unlockAfterReading];
                 [self unlock];
                 assert(0);
             }
