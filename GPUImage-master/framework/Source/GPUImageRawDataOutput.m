@@ -128,7 +128,7 @@
         1.0f, 1.0f,
     };
     
-//    CHECK_GL(glActiveTexture(GL_TEXTURE4));
+    CHECK_GL(glActiveTexture(GL_TEXTURE4));
 	CHECK_GL(glBindTexture(GL_TEXTURE_2D, [firstInputFramebuffer texture]));
 	CHECK_GL(glUniform1i(dataInputTextureUniform, 4));	
     
