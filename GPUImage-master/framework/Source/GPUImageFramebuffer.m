@@ -22,7 +22,7 @@
 
 void dataProviderReleaseCallback (void *info, const void *data, size_t size);
 void dataProviderUnlockCallback (void *info, const void *data, size_t size);
-
+void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * baseAddress );
 @implementation GPUImageFramebuffer
 
 @synthesize size = _size;
@@ -301,9 +301,20 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
 {
     GPUImageFramebuffer *framebuffer = (__bridge_transfer GPUImageFramebuffer*)info;
     
-    [framebuffer restoreRenderTarget];
+    [framebuffer unlockAfterReading];
     [framebuffer unlock];
     [[GPUImageContext sharedFramebufferCache] removeFramebufferFromActiveImageCaptureList:framebuffer];
+}
+
+void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * baseAddress ){
+//    free((void*)baseAddress);
+//    return;
+    GPUImageFramebuffer *framebuffer = (__bridge_transfer GPUImageFramebuffer*)releaseRefCon;
+
+    [framebuffer unlockAfterReading];
+    [framebuffer unlock];
+    [[GPUImageContext sharedFramebufferCache] removeFramebufferFromActiveImageCaptureList:framebuffer];
+
 }
 
 - (CGImageRef)newCGImageFromFramebufferContents;
@@ -330,7 +341,6 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
             NSUInteger paddedBytesForImage = paddedWidthOfImage * (int)_size.height * 4;
             
             CHECK_GL(glFinish());
-            CFRetain(renderTarget); // I need to retain the pixel buffer here and release in the data source callback to prevent its bytes from being prematurely deallocated during a photo write operation
             [self lockForReading];
             rawImagePixels = (GLubyte *)CVPixelBufferGetBaseAddress(renderTarget);
             dataProvider = CGDataProviderCreateWithData((__bridge_retained void*)self, rawImagePixels, paddedBytesForImage, dataProviderUnlockCallback);
@@ -370,11 +380,87 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
     return cgImageFromBytes;
 }
 
+
+- (CVPixelBufferRef)newPixelBufferFromFramebufferContents;
+{
+    // a CGImage can only be created from a 'normal' color texture
+    NSAssert(self.textureOptions.internalFormat == GL_RGBA, @"For conversion to a CGImage the output texture format for this filter must be GL_RGBA.");
+    NSAssert(self.textureOptions.type == GL_UNSIGNED_BYTE, @"For conversion to a CGImage the type of the output texture of this filter must be GL_UNSIGNED_BYTE.");
+    
+    __block CVPixelBufferRef newPixelbuffer;
+    runSynchronouslyOnVideoProcessingQueue(^{
+        [GPUImageContext useImageProcessingContext];
+        
+        GLubyte *rawImagePixels;
+//        CHECK_GL(glFinish());
+
+        if ([GPUImageContext supportsFastTextureUpload])
+        {
+#if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
+            [self lock];
+            [self lockForReading];
+            rawImagePixels = (GLubyte *)CVPixelBufferGetBaseAddress(renderTarget);
+            if (rawImagePixels == NULL) {
+                [self unlockAfterReading];
+                [self unlock];
+                return ;
+            }
+            size_t bytePerRow = CVPixelBufferGetBytesPerRow(renderTarget);
+            
+            CFDictionaryRef empty; // empty value for attr value.
+            CFMutableDictionaryRef attrs;
+            empty = CFDictionaryCreate(kCFAllocatorDefault, NULL, NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks); // our empty IOSurface properties dictionary
+            attrs = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+            CFDictionarySetValue(attrs, kCVPixelBufferIOSurfacePropertiesKey, empty);
+            
+            CVReturn result = CVPixelBufferCreateWithBytes(NULL, _size.width, _size.height, kCVPixelFormatType_32BGRA, rawImagePixels, bytePerRow, newPixelBufferReleaseBytesCallback, (__bridge_retained void*)self, attrs, &newPixelbuffer);
+
+            if (result == kCVReturnSuccess) {
+                [[GPUImageContext sharedFramebufferCache] addFramebufferToActiveImageCaptureList:self]; // In case the framebuffer is swapped out on the filter, need to have a strong reference to it somewhere for it to hang on while the image is in existence
+
+            }else{
+                [self unlockAfterReading];
+                [self unlock];
+                assert(0);
+            }
+#else
+            assert(0);
+
+            [self lockForReading];
+            rawImagePixels = (GLubyte *)CVPixelBufferGetBaseAddress(renderTarget);
+            
+            NSUInteger totalBytesForImage = CVPixelBufferGetDataSize(renderTarget);
+            
+            GLubyte*  newRawImagePixels = (GLubyte *)malloc(totalBytesForImage);
+            memcpy(newRawImagePixels, rawImagePixels, totalBytesForImage);
+
+//            CHECK_GL(glReadPixels(0, 0, (int)_size.width, (int)_size.height, GL_RGBA, GL_UNSIGNED_BYTE, newRawImagePixels));
+
+            size_t bytePerRow = CVPixelBufferGetBytesPerRow(renderTarget);
+            [self unlockAfterReading];
+            
+            CVReturn result = CVPixelBufferCreateWithBytes(NULL, _size.width, _size.height, kCVPixelFormatType_32BGRA, newRawImagePixels, bytePerRow, newPixelBufferReleaseBytesCallback, (__bridge_retained void*)self, NULL, &newPixelbuffer);
+            assert(result == kCVReturnSuccess);
+
+
+#endif
+        }
+        else
+        {
+            assert(0);
+
+
+        }
+        
+    });
+    
+    return newPixelbuffer;
+}
+
 - (void)restoreRenderTarget;
 {
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
     [self unlockAfterReading];
-    CFRelease(renderTarget);
 #else
 #endif
 }
@@ -389,6 +475,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
     {
         if (readLockCount == 0)
         {
+            CFRetain(renderTarget);
             CVPixelBufferLockBaseAddress(renderTarget, 0);
         }
         readLockCount++;
@@ -406,6 +493,7 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size)
         if (readLockCount == 0)
         {
             CVPixelBufferUnlockBaseAddress(renderTarget, 0);
+            CFRelease(renderTarget);
         }
     }
 #endif

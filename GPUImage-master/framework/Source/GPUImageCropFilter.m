@@ -1,5 +1,5 @@
 #import "GPUImageCropFilter.h"
-
+#import <AVFoundation/AVUtilities.h>
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
 NSString *const kGPUImageCropFragmentShaderString =  SHADER_STRING
 (
@@ -78,19 +78,19 @@ NSString *const kGPUImageCropFragmentShaderString =  SHADER_STRING
         return;
     }
     
-//    if (overrideInputSize)
-//    {
-//        if (CGSizeEqualToSize(forcedMaximumSize, CGSizeZero))
-//        {
-//            return;
-//        }
-//        else
-//        {
-//            CGRect insetRect = AVMakeRectWithAspectRatioInsideRect(newSize, CGRectMake(0.0, 0.0, forcedMaximumSize.width, forcedMaximumSize.height));
-//            inputTextureSize = insetRect.size;
-//            return;
-//        }
-//    }
+    if (overrideInputSize)
+    {
+        if (CGSizeEqualToSize(forcedMaximumSize, CGSizeZero))
+        {
+            return;
+        }
+        else
+        {
+            CGRect insetRect = AVMakeRectWithAspectRatioInsideRect(newSize, CGRectMake(0.0, 0.0, forcedMaximumSize.width, forcedMaximumSize.height));
+            inputTextureSize = insetRect.size;
+            return;
+        }
+    }
     
     CGSize rotatedSize = [self rotatedSize:newSize forIndex:textureIndex];
     originallySuppliedInputSize = rotatedSize;
