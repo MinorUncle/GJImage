@@ -113,12 +113,13 @@ extern "C" {
     GVoid GJ_LogSetCallback(GJ_LogCallback *cb);
     GVoid GJ_LogSetOutput(FILE *file);
     
-    GVoid GJ_Log(const GVoid* logClass, GJ_LogLevel level,const char *pre,const char *format, ...);
+    GVoid GJ_Log(const GVoid* logClass, GJ_LogLevel level,const char *pre,const char *format, ...) __attribute__((format(printf, 4, 5)));
     GVoid GJ_LogHex(GJ_LogLevel level, const GUInt8 *data, GUInt32 len);
     GVoid GJ_LogHexString(GJ_LogLevel level, const GUInt8 *data, GUInt32 len);
     
     //所有等级都会打印，但是大于GJ_LOGDEBUG模式会产生中断
-    GVoid GJ_LogAssert(GInt32 isTrue,const char *pre,const char *format, ...);
+    GVoid GJ_LogAssert(GInt32 isTrue,const char *pre,const char *format, ...); __attribute__((format(printf, 3, 4)));
+    
     GBool GJ_LogCheckResult(GResult result,const char *pre,const char *format, ...);
     GBool GJ_LogCheckBool(GBool result,const char *pre,const char *format, ...);
 
@@ -131,10 +132,17 @@ extern "C" {
 
 #define GJAssert(isTrue, format, ...) GJ_LogAssert(isTrue,__func__,format,##__VA_ARGS__)
     
+    //错误时会产生error信息
+#define GJDebuging(isTrue, format, ...) GJ_LogAssert(!(isTrue),__func__,format,##__VA_ARGS__)
+    //打印跟踪信息
+#define GJDebug(format, ...)     GJ_Log((GNULL),(GJ_LOGDEBUG),__func__,format,##__VA_ARGS__)
+
+
 #ifdef GJ_DEBUG
     
 #define GJLOG(dclass,level,format, ...) GJ_Log((dclass),(level),__func__,format,##__VA_ARGS__)
     
+
 #ifdef GJ_DEBUG_FREQUENTLY
     
 #define GJLOGFREQ(format, ...) GJ_Log(DEFAULT_LOG,GJ_LOGALL,__func__,format,##__VA_ARGS__)

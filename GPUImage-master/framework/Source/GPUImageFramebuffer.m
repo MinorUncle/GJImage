@@ -407,13 +407,13 @@ void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * base
             }
             size_t bytePerRow = CVPixelBufferGetBytesPerRow(renderTarget);
             
-            CFDictionaryRef empty; // empty value for attr value.
-            CFMutableDictionaryRef attrs;
-            empty = CFDictionaryCreate(kCFAllocatorDefault, NULL, NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks); // our empty IOSurface properties dictionary
-            attrs = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-            CFDictionarySetValue(attrs, kCVPixelBufferIOSurfacePropertiesKey, empty);
+//            CFDictionaryRef empty; // empty value for attr value.
+//            CFMutableDictionaryRef attrs;
+//            empty = CFDictionaryCreate(kCFAllocatorDefault, NULL, NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks); // our empty IOSurface properties dictionary
+//            attrs = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+//            CFDictionarySetValue(attrs, kCVPixelBufferIOSurfacePropertiesKey, empty);
             
-            CVReturn result = CVPixelBufferCreateWithBytes(NULL, _size.width, _size.height, kCVPixelFormatType_32BGRA, rawImagePixels, bytePerRow, newPixelBufferReleaseBytesCallback, (__bridge_retained void*)self, attrs, &newPixelbuffer);
+            CVReturn result = CVPixelBufferCreateWithBytes(NULL, _size.width, _size.height, kCVPixelFormatType_32BGRA, rawImagePixels, bytePerRow, newPixelBufferReleaseBytesCallback, (__bridge_retained void*)self, NULL, &newPixelbuffer);
             [self unlockAfterReading];
 
             if (result == kCVReturnSuccess) {
