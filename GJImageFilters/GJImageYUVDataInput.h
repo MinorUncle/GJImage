@@ -22,7 +22,7 @@ typedef enum {
 typedef enum {
     GJPixelTypeUByte = GL_UNSIGNED_BYTE,
     GJPixelTypeFloat = GL_FLOAT
-} GJPixelType;
+} GJPixelByteType;
 
 @interface GJImageYUVDataInput : GPUImageOutput
 {
@@ -38,12 +38,12 @@ typedef enum {
 /** Input data pixel format
  */
 @property (readwrite, nonatomic) GJYUVPixelFormat pixelFormat;
-@property (readwrite, nonatomic) GJPixelType   pixelType;
+@property (readwrite, nonatomic) GJPixelByteType   pixelType;
 
 // 420p
-- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes U:(GLubyte*)Ubytes V:(GLubyte*)Vbytes type:(GJPixelType)pixelType Timestamp:(CMTime)frameTime;
+- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes U:(GLubyte*)Ubytes V:(GLubyte*)Vbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime;
 // 420sp
-- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes CrBr:(GLubyte*)CrBrbytes type:(GJPixelType)pixelType Timestamp:(CMTime)frameTime;
+- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes CrBr:(GLubyte*)CrBrbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime;
 
 
 -(void)updateDataWithImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)frameTime;

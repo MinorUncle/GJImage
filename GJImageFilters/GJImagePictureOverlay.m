@@ -7,16 +7,7 @@
 //
 
 #import "GJImagePictureOverlay.h"
-@implementation GJOverlayAttribute
 
-+(instancetype)overlayAttributeWithImage:(UIImage*)image frame:(CGRect)frame rotate:(CGFloat)rotate{
-    GJOverlayAttribute* attribute = [[GJOverlayAttribute alloc]init];
-    attribute.frame = frame;
-    attribute.rotate = rotate;
-    attribute.image = image;
-    return attribute;
-}
-@end
 @interface GJImagePictureOverlay(){
     CGRect _frame;
     CGRect _currentFrame;

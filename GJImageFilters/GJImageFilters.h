@@ -16,4 +16,9 @@
 #import "GJImagePixelImageInput.h"
 #import "GJImageARCapture.h"
 #import "GJImageTrackImage.h"
+#import "GJPaintingCamera.h"
+#import "GJImageUICapture.h"
+#import "ARCSoft/ARCSoftDefine.h"
+
+
 #endif

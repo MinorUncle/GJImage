@@ -377,7 +377,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         case kGPUImageRotate180: return rotate180TextureCoordinates;
     }
 }
-- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes U:(GLubyte*)Ubytes V:(GLubyte*)Vbytes type:(GJPixelType)pixelType Timestamp:(CMTime)frameTime
+- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes U:(GLubyte*)Ubytes V:(GLubyte*)Vbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime
 {
 #ifdef DEBUG
     if (_pixelFormat != GJPixelFormatYV12 && _pixelFormat != GJPixelFormatI420) {
@@ -446,7 +446,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     });
 }
 
-- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes CrBr:(GLubyte*)CrBrbytes type:(GJPixelType)pixelType Timestamp:(CMTime)frameTime
+- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes CrBr:(GLubyte*)CrBrbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime
 {
 #ifdef DEBUG
     if (_pixelFormat != GJPixelFormatNV21 && _pixelFormat != GJPixelFormatNV12) {
@@ -745,19 +745,19 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
 //    
 //    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     
-    runAsynchronouslyOnVideoProcessingQueue(^{
-        
-        for (id<GPUImageInput> currentTarget in targets)
-        {
-            NSInteger indexOfObject = [targets indexOfObject:currentTarget];
-            NSInteger textureIndexOfTarget = [[targetTextureIndices objectAtIndex:indexOfObject] integerValue];
-            
-            [self setInputFramebufferForTarget:currentTarget atIndex:textureIndexOfTarget];
-            [currentTarget setInputSize:outputFramebuffer.size atIndex:textureIndexOfTarget];
-            [currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndexOfTarget];
-        }
-        dispatch_semaphore_signal(dataUpdateSemaphore);
-    });
+//    runAsynchronouslyOnVideoProcessingQueue(^{
+//        
+//        for (id<GPUImageInput> currentTarget in targets)
+//        {
+//            NSInteger indexOfObject = [targets indexOfObject:currentTarget];
+//            NSInteger textureIndexOfTarget = [[targetTextureIndices objectAtIndex:indexOfObject] integerValue];
+//            
+//            [self setInputFramebufferForTarget:currentTarget atIndex:textureIndexOfTarget];
+//            [currentTarget setInputSize:outputFramebuffer.size atIndex:textureIndexOfTarget];
+//            [currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndexOfTarget];
+//        }
+//        dispatch_semaphore_signal(dataUpdateSemaphore);
+//    });
 }
 
 

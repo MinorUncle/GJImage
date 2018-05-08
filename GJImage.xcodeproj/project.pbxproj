@@ -23,12 +23,29 @@
 		046EDBCD1E6D1D5500D9D8FC /* GJImageYUVDataInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */; };
 		04A081491E6E9A11000E2B64 /* GJImageYUVDataInput.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 046EDBCB1E6D1D5500D9D8FC /* GJImageYUVDataInput.h */; };
 		04A0815A1E6EAD22000E2B64 /* GJImageFramebuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */; };
+		6A01287020A13977000D9856 /* libarcsoft_spotlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A01286F20A13977000D9856 /* libarcsoft_spotlight.a */; };
 		6A0388F71FEFE0D3005AC7CE /* GJPaintingCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0388F61FEFE0D3005AC7CE /* GJPaintingCamera.m */; };
 		6A0E87001E84EA7F002A2A2D /* GJImagePixelImageInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E86FF1E84EA7F002A2A2D /* GJImagePixelImageInput.m */; };
 		6A3488761F4545C1008223AA /* GJImagePictureOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */; };
+		6A44B13D209C30EC00A26220 /* ARCSoftFaceHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A44B13C209C30EC00A26220 /* ARCSoftFaceHandle.m */; };
 		6AA649041FC2CAB500AA3CAC /* GJImageTrackImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AA649031FC2CAB500AA3CAC /* GJImageTrackImage.m */; };
 		6AA6490B1FC2CDE000AA3CAC /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AA6490A1FC2CDDA00AA3CAC /* CoreMotion.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		6AB685A11FE8DFD1009B7032 /* GJImageUICapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AB685A01FE8DFD1009B7032 /* GJImageUICapture.m */; };
+		6AD5EF6F209C3E0300BEB01C /* ARCSoftFaceSticker.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AD5EF6E209C3E0300BEB01C /* ARCSoftFaceSticker.m */; };
+		6AD5EF9A209FE9B800BEB01C /* GJImageUICapture.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6AB6859F1FE8DFD1009B7032 /* GJImageUICapture.h */; };
+		6AD5EF9B209FE9B800BEB01C /* GJImagePixelImageInput.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A0E86FE1E84EA7F002A2A2D /* GJImagePixelImageInput.h */; };
+		6AD5EF9C209FE9B800BEB01C /* GJImageTrackImage.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6AA649021FC2CAB500AA3CAC /* GJImageTrackImage.h */; };
+		6AD5EF9D209FE9B800BEB01C /* GJImagePictureOverlay.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A3488741F4545C1008223AA /* GJImagePictureOverlay.h */; };
+		6AD5EF9E209FE9B800BEB01C /* GJImageFramebuffer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 04A081581E6EAD22000E2B64 /* GJImageFramebuffer.h */; };
+		6AD5EFA2209FEB8D00BEB01C /* ARCSoftFaceHandle.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A44B13B209C30EC00A26220 /* ARCSoftFaceHandle.h */; };
+		6AD5EFA3209FEB8D00BEB01C /* ARCSoftFaceSticker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6AD5EF6D209C3E0200BEB01C /* ARCSoftFaceSticker.h */; };
+		6AD5EFA5209FEC3B00BEB01C /* arcsoft_spotlight_common.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A44B133209C309800A26220 /* arcsoft_spotlight_common.h */; };
+		6AD5EFA6209FED0A00BEB01C /* amcomdef.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A44B130209C309800A26220 /* amcomdef.h */; };
+		6AD5EFA7209FED0A00BEB01C /* asvloffscreen.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A44B135209C309800A26220 /* asvloffscreen.h */; };
+		6AD5EFA8209FED0A00BEB01C /* merror.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A44B136209C309800A26220 /* merror.h */; };
+		6AD5EFA9209FEDB700BEB01C /* GJPaintingCamera.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A0388F11FEFE0D3005AC7CE /* GJPaintingCamera.h */; };
+		6AD5EFBF20A049FD00BEB01C /* GJOverlayAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AD5EFBE20A049FD00BEB01C /* GJOverlayAttribute.m */; };
+		6AD5EFC220A04B2800BEB01C /* GJOverlayAttribute.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6AD5EFBD20A049FD00BEB01C /* GJOverlayAttribute.h */; };
 		6AF7ECE21FE7ABBB00605E6E /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AF7ECDD1FE7ABB300605E6E /* IOSurface.framework */; };
 		6AF9DD841FA96A6C00F6B4F7 /* GJImageARCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */; };
 		6AF9DD8B1FA96DDE00F6B4F7 /* SCNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9DD8A1FA96DDE00F6B4F7 /* SCNViewController.m */; };
@@ -66,6 +83,19 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				6AD5EFC220A04B2800BEB01C /* GJOverlayAttribute.h in CopyFiles */,
+				6AD5EFA9209FEDB700BEB01C /* GJPaintingCamera.h in CopyFiles */,
+				6AD5EFA6209FED0A00BEB01C /* amcomdef.h in CopyFiles */,
+				6AD5EFA7209FED0A00BEB01C /* asvloffscreen.h in CopyFiles */,
+				6AD5EFA8209FED0A00BEB01C /* merror.h in CopyFiles */,
+				6AD5EFA5209FEC3B00BEB01C /* arcsoft_spotlight_common.h in CopyFiles */,
+				6AD5EFA2209FEB8D00BEB01C /* ARCSoftFaceHandle.h in CopyFiles */,
+				6AD5EFA3209FEB8D00BEB01C /* ARCSoftFaceSticker.h in CopyFiles */,
+				6AD5EF9A209FE9B800BEB01C /* GJImageUICapture.h in CopyFiles */,
+				6AD5EF9B209FE9B800BEB01C /* GJImagePixelImageInput.h in CopyFiles */,
+				6AD5EF9C209FE9B800BEB01C /* GJImageTrackImage.h in CopyFiles */,
+				6AD5EF9D209FE9B800BEB01C /* GJImagePictureOverlay.h in CopyFiles */,
+				6AD5EF9E209FE9B800BEB01C /* GJImageFramebuffer.h in CopyFiles */,
 				6AF9DD8C1FA96FF000F6B4F7 /* GJImageARCapture.h in CopyFiles */,
 				04A081491E6E9A11000E2B64 /* GJImageYUVDataInput.h in CopyFiles */,
 				041701CE1E5EE2CC00D5B5D9 /* GJImageBeautifyFilter.h in CopyFiles */,
@@ -98,12 +128,22 @@
 		046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageYUVDataInput.m; sourceTree = "<group>"; };
 		04A081581E6EAD22000E2B64 /* GJImageFramebuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageFramebuffer.h; sourceTree = "<group>"; };
 		04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageFramebuffer.m; sourceTree = "<group>"; };
+		6A01286F20A13977000D9856 /* libarcsoft_spotlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarcsoft_spotlight.a; path = GJImageFilters/ARCSoft/lib/libarcsoft_spotlight.a; sourceTree = "<group>"; };
 		6A0388F11FEFE0D3005AC7CE /* GJPaintingCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJPaintingCamera.h; sourceTree = "<group>"; };
 		6A0388F61FEFE0D3005AC7CE /* GJPaintingCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJPaintingCamera.m; sourceTree = "<group>"; };
 		6A0E86FE1E84EA7F002A2A2D /* GJImagePixelImageInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImagePixelImageInput.h; sourceTree = "<group>"; };
 		6A0E86FF1E84EA7F002A2A2D /* GJImagePixelImageInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImagePixelImageInput.m; sourceTree = "<group>"; };
 		6A3488741F4545C1008223AA /* GJImagePictureOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImagePictureOverlay.h; sourceTree = "<group>"; };
 		6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImagePictureOverlay.m; sourceTree = "<group>"; };
+		6A44B130209C309800A26220 /* amcomdef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amcomdef.h; sourceTree = "<group>"; };
+		6A44B131209C309800A26220 /* arcsoft_spotlight_2dsticker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arcsoft_spotlight_2dsticker.h; sourceTree = "<group>"; };
+		6A44B132209C309800A26220 /* arcsoft_spotlight_beauty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arcsoft_spotlight_beauty.h; sourceTree = "<group>"; };
+		6A44B133209C309800A26220 /* arcsoft_spotlight_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arcsoft_spotlight_common.h; sourceTree = "<group>"; };
+		6A44B134209C309800A26220 /* arcsoft_spotlight_face_alignment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arcsoft_spotlight_face_alignment.h; sourceTree = "<group>"; };
+		6A44B135209C309800A26220 /* asvloffscreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asvloffscreen.h; sourceTree = "<group>"; };
+		6A44B136209C309800A26220 /* merror.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = merror.h; sourceTree = "<group>"; };
+		6A44B13B209C30EC00A26220 /* ARCSoftFaceHandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ARCSoftFaceHandle.h; sourceTree = "<group>"; };
+		6A44B13C209C30EC00A26220 /* ARCSoftFaceHandle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ARCSoftFaceHandle.m; sourceTree = "<group>"; };
 		6A9699C51EA073490078E8BF /* GJImageStickerInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageStickerInput.h; sourceTree = "<group>"; };
 		6A9699C61EA073490078E8BF /* GJImageStickerInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageStickerInput.m; sourceTree = "<group>"; };
 		6AA649021FC2CAB500AA3CAC /* GJImageTrackImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GJImageTrackImage.h; sourceTree = "<group>"; };
@@ -111,6 +151,11 @@
 		6AA6490A1FC2CDDA00AA3CAC /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		6AB6859F1FE8DFD1009B7032 /* GJImageUICapture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GJImageUICapture.h; sourceTree = "<group>"; };
 		6AB685A01FE8DFD1009B7032 /* GJImageUICapture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GJImageUICapture.m; sourceTree = "<group>"; };
+		6AD5EF6D209C3E0200BEB01C /* ARCSoftFaceSticker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ARCSoftFaceSticker.h; sourceTree = "<group>"; };
+		6AD5EF6E209C3E0300BEB01C /* ARCSoftFaceSticker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ARCSoftFaceSticker.m; sourceTree = "<group>"; };
+		6AD5EF99209FE5A600BEB01C /* GJImageDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GJImageDefine.h; sourceTree = "<group>"; };
+		6AD5EFBD20A049FD00BEB01C /* GJOverlayAttribute.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GJOverlayAttribute.h; sourceTree = "<group>"; };
+		6AD5EFBE20A049FD00BEB01C /* GJOverlayAttribute.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GJOverlayAttribute.m; sourceTree = "<group>"; };
 		6AF7ECDD1FE7ABB300605E6E /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageARCapture.h; sourceTree = "<group>"; };
 		6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageARCapture.m; sourceTree = "<group>"; };
@@ -134,6 +179,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6A01287020A13977000D9856 /* libarcsoft_spotlight.a in Frameworks */,
 				6AA6490B1FC2CDE000AA3CAC /* CoreMotion.framework in Frameworks */,
 				0417FECD1E5EC92A00D5B5D9 /* libGPUImage.a in Frameworks */,
 			);
@@ -199,9 +245,11 @@
 		0417FCBE1E5EC74E00D5B5D9 /* GJImageFilters */ = {
 			isa = PBXGroup;
 			children = (
+				6A44B12D209C309800A26220 /* ARCSoft */,
 				6AF9DD881FA96DDE00F6B4F7 /* ARScene */,
 				6AF9DD851FA96B3D00F6B4F7 /* GJLog.h */,
 				0417FCBF1E5EC74E00D5B5D9 /* GJImageFilters.h */,
+				6AD5EF99209FE5A600BEB01C /* GJImageDefine.h */,
 				6AF9DD871FA96C6600F6B4F7 /* GJPlatformHeader.h */,
 				6A0388F11FEFE0D3005AC7CE /* GJPaintingCamera.h */,
 				6A0388F61FEFE0D3005AC7CE /* GJPaintingCamera.m */,
@@ -220,6 +268,8 @@
 				6AA649021FC2CAB500AA3CAC /* GJImageTrackImage.h */,
 				6AA649031FC2CAB500AA3CAC /* GJImageTrackImage.m */,
 				6A3488741F4545C1008223AA /* GJImagePictureOverlay.h */,
+				6AD5EFBD20A049FD00BEB01C /* GJOverlayAttribute.h */,
+				6AD5EFBE20A049FD00BEB01C /* GJOverlayAttribute.m */,
 				6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */,
 				6A9699C51EA073490078E8BF /* GJImageStickerInput.h */,
 				6A9699C61EA073490078E8BF /* GJImageStickerInput.m */,
@@ -229,9 +279,44 @@
 			path = GJImageFilters;
 			sourceTree = "<group>";
 		};
+		6A44B12D209C309800A26220 /* ARCSoft */ = {
+			isa = PBXGroup;
+			children = (
+				6A44B12E209C309800A26220 /* include */,
+				6A44B13B209C30EC00A26220 /* ARCSoftFaceHandle.h */,
+				6A44B13C209C30EC00A26220 /* ARCSoftFaceHandle.m */,
+				6AD5EF6D209C3E0200BEB01C /* ARCSoftFaceSticker.h */,
+				6AD5EF6E209C3E0300BEB01C /* ARCSoftFaceSticker.m */,
+			);
+			path = ARCSoft;
+			sourceTree = "<group>";
+		};
+		6A44B12E209C309800A26220 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				6A44B12F209C309800A26220 /* arcsoft */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		6A44B12F209C309800A26220 /* arcsoft */ = {
+			isa = PBXGroup;
+			children = (
+				6A44B130209C309800A26220 /* amcomdef.h */,
+				6A44B131209C309800A26220 /* arcsoft_spotlight_2dsticker.h */,
+				6A44B132209C309800A26220 /* arcsoft_spotlight_beauty.h */,
+				6A44B133209C309800A26220 /* arcsoft_spotlight_common.h */,
+				6A44B134209C309800A26220 /* arcsoft_spotlight_face_alignment.h */,
+				6A44B135209C309800A26220 /* asvloffscreen.h */,
+				6A44B136209C309800A26220 /* merror.h */,
+			);
+			path = arcsoft;
+			sourceTree = "<group>";
+		};
 		6AA649091FC2CDDA00AA3CAC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6A01286F20A13977000D9856 /* libarcsoft_spotlight.a */,
 				6AF7ECDD1FE7ABB300605E6E /* IOSurface.framework */,
 				6AA6490A1FC2CDDA00AA3CAC /* CoreMotion.framework */,
 			);
@@ -391,8 +476,11 @@
 				6A0E87001E84EA7F002A2A2D /* GJImagePixelImageInput.m in Sources */,
 				046EDBCD1E6D1D5500D9D8FC /* GJImageYUVDataInput.m in Sources */,
 				6AB685A11FE8DFD1009B7032 /* GJImageUICapture.m in Sources */,
+				6A44B13D209C30EC00A26220 /* ARCSoftFaceHandle.m in Sources */,
+				6AD5EFBF20A049FD00BEB01C /* GJOverlayAttribute.m in Sources */,
 				6AA649041FC2CAB500AA3CAC /* GJImageTrackImage.m in Sources */,
 				0417FEF61E5ED78A00D5B5D9 /* GJImageView.m in Sources */,
+				6AD5EF6F209C3E0300BEB01C /* ARCSoftFaceSticker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -515,11 +603,13 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = K7MDP8Y272;
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = GJImage/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = GJ.GJImage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"";
 			};
 			name = Debug;
 		};
@@ -529,11 +619,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = K7MDP8Y272;
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = GJImage/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = GJ.GJImage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"";
 			};
 			name = Release;
 		};
@@ -542,6 +634,10 @@
 			buildSettings = {
 				DEVELOPMENT_TEAM = 86ZQX2T4JN;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GJImageFilters/ARCSoft/lib",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -553,6 +649,10 @@
 			buildSettings = {
 				DEVELOPMENT_TEAM = 86ZQX2T4JN;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GJImageFilters/ARCSoft/lib",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
