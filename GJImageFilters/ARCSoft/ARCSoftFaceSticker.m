@@ -128,7 +128,6 @@
 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         
-                NSLog(@"2dStickerFilter inputID:%d outputID:%d",firstInputFramebuffer.texture,outputFramebuffer.texture);
         [firstInputFramebuffer unlock];
     }
     

@@ -70,8 +70,6 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
 
 @interface GJImagePixelImageInput()
 {
-    
-    
     GLuint                  _textureYUV[3];
     GPUImageRotationMode inputRotation;
     GLfloat backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha;
@@ -204,6 +202,14 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     CVPixelBufferRetain(imageBuffer);
     runAsynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
+        OSType type = CVPixelBufferGetPixelFormatType(imageBuffer);
+#ifdef DEBUG
+        
+        if (_imageFormat != type) {
+            printf("格式与初始化格式不同");
+            assert(0);
+        }
+#endif
         switch (_imageFormat) {
             case GJPixelImageFormat_YpCbCr8Planar_Full:
                 [self updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
@@ -270,14 +276,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
 }
 
 -(void)updateDataWith420YpCbCr8PlanarImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)frameTime{
-    OSType type = CVPixelBufferGetPixelFormatType(imageBuffer);
-#ifdef DEBUG
-    
-    if (_imageFormat != type) {
-        printf("格式与初始化格式不同");
-        assert(0);
-    }
-#endif
+
     
     CGSize size = CVImageBufferGetEncodedSize(imageBuffer);
     
@@ -489,7 +488,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     {
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
         NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
-        assert(0);
+//        assert(0);
         return;
     }
     luminanceTexture = CVOpenGLESTextureGetName(luminanceTextureRef);

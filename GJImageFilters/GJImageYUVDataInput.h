@@ -26,25 +26,22 @@ typedef enum {
 
 @interface GJImageYUVDataInput : GPUImageOutput
 {
-    CGSize uploadedImageSize;
     
     dispatch_semaphore_t dataUpdateSemaphore;
 }
 
 // Initialization and teardown
 
-- (id)initPixelFormat:(GJYUVPixelFormat)pixelFormat;
+- (id)initWithImageSize:(CGSize)size pixelFormat:(GJYUVPixelFormat)pixelFormat;
 
 /** Input data pixel format
  */
 @property (readwrite, nonatomic) GJYUVPixelFormat pixelFormat;
-@property (readwrite, nonatomic) GJPixelByteType   pixelType;
+@property (readwrite, nonatomic) CGSize   pixelSize;
 
 // 420p
-- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes U:(GLubyte*)Ubytes V:(GLubyte*)Vbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime;
+- (void)updateDataWithY:(GLubyte *)Ybytes U:(GLubyte*)Ubytes V:(GLubyte*)Vbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime;
 // 420sp
-- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes CrBr:(GLubyte*)CrBrbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime;
+- (void)updateDataWithY:(GLubyte *)Ybytes CrBr:(GLubyte*)CrBrbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime;
 
-
--(void)updateDataWithImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)frameTime;
 @end

@@ -19,4 +19,6 @@ typedef enum {
 @property(assign,nonatomic,readonly)GJYUVPixelImageFormat imageFormat;
 - (instancetype)initWithFormat:(GJYUVPixelImageFormat)format;
 -(void)updateDataWithImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)frameTime;
+
+
 @end

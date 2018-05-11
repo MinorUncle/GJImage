@@ -77,6 +77,7 @@
         if (_updateBlock) {
             UIImage* beforeImage = attribute.image;
             _updateBlock(currentIndex,attribute,&finsh);
+            assert(attribute.image != nil);
             if (attribute.image != beforeImage) {//如果图片更改了，则更新图片
                 _frameCache[@(currentIndex)] = nil;
             }

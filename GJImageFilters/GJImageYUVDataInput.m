@@ -43,7 +43,7 @@ enum TextureType
     TEXY = 0,
     TEXU,
     TEXV,
-    TEXC
+    TEXCOUNT,
 };
 
 
@@ -51,8 +51,11 @@ enum TextureType
 
 static NSString *const kGJImageYUV420PFragmentShaderString = GJSHADER_STRING
 (
+    precision highp float;
+
     varying highp vec2 textureCoordinate;
- 
+    uniform mediump mat3 colorConversionMatrix;
+
     uniform sampler2D SamplerY;
     uniform sampler2D SamplerU;
     uniform sampler2D SamplerV;
@@ -63,30 +66,10 @@ static NSString *const kGJImageYUV420PFragmentShaderString = GJSHADER_STRING
         yuv.x = texture2D(SamplerY, textureCoordinate).r - (16.0/255.0);
         yuv.y = texture2D(SamplerU, textureCoordinate).r - 0.5;
         yuv.z = texture2D(SamplerV, textureCoordinate).r - 0.5;
-        rgb = mat3( 1,       1,         1,
-                   0,       -0.39465,  2.03211,
-                   1.13983, -0.58060,  0) * yuv;
+        rgb = colorConversionMatrix * yuv;
         gl_FragColor = vec4(rgb, 1);
     }
 );
-
-//varying highp vec2 textureCoordinate;
-//
-//uniform sampler2D luminanceTexture;
-//uniform sampler2D chrominanceTexture;
-//uniform mediump mat3 colorConversionMatrix;
-//
-//void main()
-//{
-//    mediump vec3 yuv;
-//    lowp vec3 rgb;
-//
-//    yuv.x = texture2D(luminanceTexture, textureCoordinate).r - (16.0/255.0);
-//    yuv.yz = texture2D(chrominanceTexture, textureCoordinate).ra - vec2(0.5, 0.5);
-//    rgb = colorConversionMatrix * yuv;
-//
-//    gl_FragColor = vec4(rgb, 1);
-//}
 
 static NSString *const kGJImageYV12FragmentShaderString = GJSHADER_STRING
 (
@@ -95,18 +78,19 @@ static NSString *const kGJImageYV12FragmentShaderString = GJSHADER_STRING
     uniform sampler2D SamplerY;
     uniform sampler2D SamplerU;
     uniform mediump mat3 colorConversionMatrix;
-    uniform mediump float fullVar;
+    uniform mediump float isFullRange;
     void main(void)
     {
      mediump vec3 yuv;
      lowp vec3 rgb;
-     yuv.x = texture2D(SamplerY, textureCoordinate).r - fullVar;
+     yuv.x = texture2D(SamplerY, textureCoordinate).r - isFullRange;
      yuv.yz = texture2D(SamplerU, textureCoordinate).ra - vec2(0.5, 0.5);
 
      rgb = colorConversionMatrix * yuv;
      gl_FragColor = vec4(rgb, 1);
     }
 );
+
 static NSString *const kGJImageNV12FragmentShaderString = GJSHADER_STRING
 (
  varying highp vec2 textureCoordinate;
@@ -114,12 +98,12 @@ static NSString *const kGJImageNV12FragmentShaderString = GJSHADER_STRING
  uniform sampler2D SamplerY;
  uniform sampler2D SamplerU;
  uniform mediump mat3 colorConversionMatrix;
- uniform mediump float fullVar;
+ uniform mediump float isFullRange;
  void main(void)
  {
      mediump vec3 yuv;
      lowp vec3 rgb;
-     yuv.x = texture2D(SamplerY, textureCoordinate).r - fullVar;
+     yuv.x = texture2D(SamplerY, textureCoordinate).r - isFullRange;
      yuv.yz = texture2D(SamplerU, textureCoordinate).ra - vec2(0.5, 0.5);
      
      rgb = colorConversionMatrix * yuv;
@@ -141,13 +125,15 @@ static NSString *const kGJImageNV21FragmentShaderString = GJSHADER_STRING
      yuv.x = texture2D(SamplerY, textureCoordinate).r;
      yuv.y = texture2D(SamplerU, textureCoordinate).r - 0.5;
      yuv.z = texture2D(SamplerV, textureCoordinate).r - 0.5;
-     rgb = mat3( 1,       1,         1,
-                0,       -0.39465,  2.03211,
-                1.13983, -0.58060,  0) * yuv;
+     rgb   =    colorConversionMatrix * yuv;
      gl_FragColor = vec4(rgb, 1);
     }
 );
 
+
+//rgb = mat3( 1,       1,         1,
+//           0,       -0.39465,  2.03211,
+//           1.13983, -0.58060,  0) * yuv;
 //void main(void)
 //{
 //    mediump vec3 yuv;
@@ -184,13 +170,14 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     dispatch_semaphore_t imageCaptureSemaphore;
     GLProgram *filterProgram;
     GLint filterPositionAttribute, filterTextureCoordinateAttribute;
-    GLint YTextureUniform,UTextureUniform,VTextureUniform,yuvConversionMatrixUniform;
+    GLint yuvConversionMatrixUniform;
+    GLint _textureUniform[TEXV+1];
     CGSize outputSize;
     
     GLfloat *_preferredConversion;
     
     BOOL isFullYUVRange;
-    GLint fullVar;
+    GLint isFullRange;
     GLuint luminanceTexture, chrominanceTexture;
 
 }
@@ -200,7 +187,6 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
 @implementation GJImageYUVDataInput
 
 @synthesize pixelFormat = _pixelFormat;
-@synthesize pixelType = _pixelType;
 
 #pragma mark -
 #pragma mark Initialization and teardown
@@ -216,7 +202,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     backgroundColorAlpha = 0.0;
     imageCaptureSemaphore = dispatch_semaphore_create(0);
     dispatch_semaphore_signal(imageCaptureSemaphore);
-    
+    _preferredConversion = kColorConversion709Default;
     runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
         NSString* vs;
@@ -258,14 +244,39 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         
         filterPositionAttribute = [filterProgram attributeIndex:@"position"];
         filterTextureCoordinateAttribute = [filterProgram attributeIndex:@"inputTextureCoordinate"];
-        YTextureUniform = [filterProgram uniformIndex:@"SamplerY"];
-        UTextureUniform = [filterProgram uniformIndex:@"SamplerU"];
-        fullVar = [filterProgram uniformIndex:@"fullVar"];
+        _textureUniform[TEXY] = [filterProgram uniformIndex:@"SamplerY"];
+        _textureUniform[TEXU]  = [filterProgram uniformIndex:@"SamplerU"];
+        isFullRange = [filterProgram uniformIndex:@"isFullRange"];
         yuvConversionMatrixUniform = [filterProgram uniformIndex:@"colorConversionMatrix"];
-        if(_pixelFormat == GJPixelFormatNV12 || _pixelFormat == GJPixelFormatNV21){
-            VTextureUniform = [filterProgram uniformIndex:@"SamplerV"];
+    
+
+        int textureCount = 2;
+        if(_pixelFormat == GJPixelFormatI420 || _pixelFormat == GJPixelFormatYV12){
+            _textureUniform[TEXV] = [filterProgram uniformIndex:@"SamplerV"];
+            textureCount = 3;
         }
+//        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
         [GPUImageContext setActiveShaderProgram:filterProgram];
+
+        CHECK_GL(glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion));
+        glGenTextures(textureCount, _textureYUV);
+        for (int i = 0; i < textureCount; ++i) {
+            CHECK_GL(glActiveTexture(GL_TEXTURE0 + i));
+            CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[i]));
+            CHECK_GL(glUniform1i(_textureUniform[i], i));
+
+            if (i == 0) {
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, _pixelSize.width, _pixelSize.height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, NULL);
+            }else{
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, _pixelSize.width/2, _pixelSize.height/2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, NULL);
+            }
+            CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+            CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+            CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+            CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+        }
+        
         
         CHECK_GL(glEnableVertexAttribArray(filterPositionAttribute));
         CHECK_GL(glEnableVertexAttribArray(filterTextureCoordinateAttribute));
@@ -278,13 +289,13 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     
     // Override this, calling back to this super method, in order to add new attributes to your vertex shader
 }
-- (id)initPixelFormat:(GJYUVPixelFormat)pixelFormat
+- (id)initWithImageSize:(CGSize)size pixelFormat:(GJYUVPixelFormat)pixelFormat;
 {
     if (!(self = [super init]))
     {
         return nil;
     }
-    
+    _pixelSize = size;
     dataUpdateSemaphore = dispatch_semaphore_create(1);
     self.pixelFormat = pixelFormat;
     [self setupProgram];
@@ -300,6 +311,11 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         dispatch_release(dataUpdateSemaphore);
     }
 #endif
+    for (int i = 0 ; i<3; i++) {
+        if (_textureYUV[i] != 0) {
+            glDeleteTextures(1,&_textureYUV[i]);
+        }
+    }
 }
 
 #pragma mark -
@@ -377,7 +393,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         case kGPUImageRotate180: return rotate180TextureCoordinates;
     }
 }
-- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes U:(GLubyte*)Ubytes V:(GLubyte*)Vbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime
+- (void)updateDataWithY:(GLubyte *)Ybytes U:(GLubyte*)Ubytes V:(GLubyte*)Vbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime
 {
 #ifdef DEBUG
     if (_pixelFormat != GJPixelFormatYV12 && _pixelFormat != GJPixelFormatI420) {
@@ -389,50 +405,42 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     {
         return;
     }
-    
-    [GPUImageContext setActiveShaderProgram:filterProgram];
-    
-    outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:outputSize textureOptions:self.outputTextureOptions onlyTexture:NO];
-    [outputFramebuffer activateFramebuffer];
-    
-    GLsizei w  = uploadedImageSize.width;
-    GLsizei h = uploadedImageSize.height;
-    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
-    CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RED_EXT, _pixelType, Ybytes));
-    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
-    CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_RED_EXT, _pixelType, Ubytes));
-    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]));
-    CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_RED_EXT, _pixelType, Vbytes));
-
-    CHECK_GL(glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha));
-    CHECK_GL(glClear(GL_COLOR_BUFFER_BIT));
-    
-    CHECK_GL(glActiveTexture(GL_TEXTURE1));
-    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
-    CHECK_GL(glUniform1i(YTextureUniform, 1));
-    
-    CHECK_GL(glActiveTexture(GL_TEXTURE2));
-    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
-    CHECK_GL(glUniform1i(YTextureUniform, 2));
-    
-    CHECK_GL(glActiveTexture(GL_TEXTURE3));
-    CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]));
-    CHECK_GL(glUniform1i(YTextureUniform, 3));
-    
-    
-    static const GLfloat imageVertices[] = {
-        -1.0f, -1.0f,
-        1.0f, -1.0f,
-        -1.0f,  1.0f,
-        1.0f,  1.0f,
-    };
-    CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices));
-    CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation]));
-    
-    CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
-    
     runAsynchronouslyOnVideoProcessingQueue(^{
-                
+        [GPUImageContext useImageProcessingContext];
+        [GPUImageContext setActiveShaderProgram:filterProgram];
+        
+        outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:CGSizeEqualToSize(outputSize, CGSizeZero)?_pixelSize:outputSize textureOptions:self.outputTextureOptions onlyTexture:NO];
+        [outputFramebuffer activateFramebuffer];
+        
+        GLsizei w  = _pixelSize.width;
+        GLsizei h = _pixelSize.height;
+        
+
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
+//        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_LUMINANCE, pixelType, Ybytes));
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, w, h, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, Ybytes);
+
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
+//        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_LUMINANCE, pixelType, Ubytes));
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, w/2, h/2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, Ubytes);
+
+
+        CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]));
+//        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_LUMINANCE, pixelType,Vbytes  ));
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, w/2, h/2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, Vbytes);
+        
+        static const GLfloat imageVertices[] = {
+            -1.0f, -1.0f,
+            1.0f, -1.0f,
+            -1.0f,  1.0f,
+            1.0f,  1.0f,
+        };
+        CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices));
+        CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation]));
+        
+        CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
+    
+    
         for (id<GPUImageInput> currentTarget in targets)
         {
             NSInteger indexOfObject = [targets indexOfObject:currentTarget];
@@ -442,11 +450,12 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
             [currentTarget setInputSize:outputFramebuffer.size atIndex:textureIndexOfTarget];
             [currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndexOfTarget];
         }
+        [outputFramebuffer unlock];
         dispatch_semaphore_signal(dataUpdateSemaphore);
     });
 }
 
-- (void)updateDataWithImageSize:(CGSize)imageSize Y:(GLubyte *)Ybytes CrBr:(GLubyte*)CrBrbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime
+- (void)updateDataWithY:(GLubyte *)Ybytes CrBr:(GLubyte*)CrBrbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime
 {
 #ifdef DEBUG
     if (_pixelFormat != GJPixelFormatNV21 && _pixelFormat != GJPixelFormatNV12) {
@@ -465,8 +474,8 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:outputSize textureOptions:self.outputTextureOptions onlyTexture:NO];
     [outputFramebuffer activateFramebuffer];
     
-    GLsizei w  = uploadedImageSize.width;
-    GLsizei h = uploadedImageSize.height;
+    GLsizei w  = _pixelSize.width;
+    GLsizei h = _pixelSize.height;
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
     CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RED_EXT, pixelType, Ybytes));
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
@@ -479,11 +488,11 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     
     CHECK_GL(glActiveTexture(GL_TEXTURE1));
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
-    CHECK_GL(glUniform1i(YTextureUniform, 1));
+    CHECK_GL(glUniform1i(_textureUniform[TEXY], 1));
     
     CHECK_GL(glActiveTexture(GL_TEXTURE2));
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
-    CHECK_GL(glUniform1i(YTextureUniform, 2));
+    CHECK_GL(glUniform1i(_textureUniform[TEXV], 2));
     
 //    glActiveTexture(GL_TEXTURE2);
 //    glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]);
@@ -516,255 +525,10 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     });
 }
 
--(void)updateDataWithImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)frameTime
-{
-    OSType type = CVPixelBufferGetPixelFormatType(imageBuffer);
-#ifdef DEBUG
-    switch (_pixelFormat) {
-        case GJPixelFormatI420:
-            if (type != kCVPixelFormatType_420YpCbCr8Planar && type != kCVPixelFormatType_420YpCbCr8PlanarFullRange){
-                printf("格式与初始化格式不同");
-                assert(0);
-            }
-            break;
-        case GJPixelFormatNV12:
-            if (type != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange && type != kCVPixelFormatType_420YpCbCr8BiPlanarFullRange){
-                printf("格式与初始化格式不同");
-                assert(0);
-            }
-            break;
-        default:
-            printf("格式与初始化格式不同");
-            assert(0);
-            break;
-    }
-#endif
-    if (dispatch_semaphore_wait(dataUpdateSemaphore, DISPATCH_TIME_NOW) != 0)
-    {
-        return;
-    }
-    
-    CGSize size = CVImageBufferGetEncodedSize(imageBuffer);
-    if(type == kCVPixelFormatType_420YpCbCr8PlanarFullRange || type == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange){
-        isFullYUVRange = YES;
-    }else{
-        isFullYUVRange = NO;
-    }
-    
-    
-    CFTypeRef colorAttachments = CVBufferGetAttachment(imageBuffer, kCVImageBufferYCbCrMatrixKey, NULL);
-    if (colorAttachments != NULL)
-    {
-        if(CFStringCompare(colorAttachments, kCVImageBufferYCbCrMatrix_ITU_R_601_4, 0) == kCFCompareEqualTo)
-        {
-            if (isFullYUVRange)
-            {
-                _preferredConversion = kColorConversion601FullRange;
-            }
-            else
-            {
-                _preferredConversion = kColorConversion601;
-            }
-        }
-        else
-        {
-            _preferredConversion = kColorConversion709;
-        }
-    }
-    else
-    {
-        if (isFullYUVRange)
-        {
-            _preferredConversion = kColorConversion601FullRange;
-        }
-        else
-        {
-            _preferredConversion = kColorConversion601;
-        }
-    }
-    CVPixelBufferRetain(imageBuffer);
-    runAsynchronouslyOnVideoProcessingQueue(^{
-
-    
-        [GPUImageContext useImageProcessingContext];
-        
-        CVOpenGLESTextureRef luminanceTextureRef = NULL;
-        CVOpenGLESTextureRef chrominanceTextureRef = NULL;
-
-        CVPixelBufferLockBaseAddress(imageBuffer, 0);
-        CVReturn err;
-        // Y-plane
-//        CHECK_GL(glActiveTexture(GL_TEXTURE4));
-//        if ([GPUImageContext deviceSupportsRedTextures])
-//        {
-//            err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_RED_EXT, size.width, size.height, GL_RED_EXT, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
-//        }
-//        else
-//        {
-            err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE, size.width, size.height, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0, &luminanceTextureRef);
-//        }
-        if (err)
-        {
-            NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
-        }
-        
-        luminanceTexture = CVOpenGLESTextureGetName(luminanceTextureRef);
-        CHECK_GL(glBindTexture(GL_TEXTURE_2D, luminanceTexture));
-        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-        
-        err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE_ALPHA, size.width/2, size.height/2, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, 1, &chrominanceTextureRef);
-        glFlush();
-        CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-        if (err)
-        {
-            NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
-        }
-        chrominanceTexture = CVOpenGLESTextureGetName(chrominanceTextureRef);
-        CHECK_GL(glBindTexture(GL_TEXTURE_2D, chrominanceTexture));
-        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-        CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-        dispatch_semaphore_signal(dataUpdateSemaphore);
-
-        
-        [GPUImageContext setActiveShaderProgram:filterProgram];
-        
-        outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
-        [outputFramebuffer activateFramebuffer];
-        
-        CHECK_GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
-        CHECK_GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-        
-        static const GLfloat squareVertices[] = {
-            -1.0f, -1.0f,
-            1.0f, -1.0f,
-            -1.0f,  1.0f,
-            1.0f,  1.0f,
-        };
-        
-        CHECK_GL(glActiveTexture(GL_TEXTURE1));
-        CHECK_GL(glBindTexture(GL_TEXTURE_2D, luminanceTexture));
-        CHECK_GL(glUniform1i(YTextureUniform, 1));
-        
-        CHECK_GL(glActiveTexture(GL_TEXTURE2));
-        CHECK_GL(glBindTexture(GL_TEXTURE_2D, chrominanceTexture));
-        CHECK_GL(glUniform1i(UTextureUniform, 2));
-        
-        CHECK_GL(glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion));
-        if (isFullYUVRange) {
-            CHECK_GL(glUniform1f(fullVar, 0.0));
-        }else{
-            CHECK_GL(glUniform1f(fullVar, 16.0/255.0));
-        }
-        
-        CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices));
-        CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation]));
-        
-        CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
-        
-
-        
-        for (id<GPUImageInput> currentTarget in targets)
-        {
-            NSInteger indexOfObject = [targets indexOfObject:currentTarget];
-            NSInteger textureIndexOfTarget = [[targetTextureIndices objectAtIndex:indexOfObject] integerValue];
-            
-            [self setInputFramebufferForTarget:currentTarget atIndex:textureIndexOfTarget];
-            [currentTarget setInputSize:outputFramebuffer.size atIndex:textureIndexOfTarget];
-            [currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndexOfTarget];
-        }
-        
-        [outputFramebuffer unlock];
-        outputFramebuffer = nil;
-
-        CFRelease(luminanceTextureRef);
-        CFRelease(chrominanceTextureRef);
-        CVPixelBufferRelease(imageBuffer);
-    });
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    return;
-    /////----------------------------
-//    CVOpenGLESTextureCacheRef coreVideoTextureCache = [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache];
-//    
-//    CVOpenGLESTextureRef yTexture,uvTexture;
-//    glActiveTexture(GL_TEXTURE0);
-//    CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage (kCFAllocatorDefault, coreVideoTextureCache, imageBuffer,
-//                                                                 NULL, // texture attributes
-//                                                                 GL_TEXTURE_2D,
-//                                                                 GL_RED_EXT, // opengl format
-//                                                                 (int)size.width,
-//                                                                 (int)size.height,
-//                                                                 GL_RED_EXT, // native iOS format
-//                                                                 GL_UNSIGNED_BYTE,
-//                                                                 0,
-//                                                                 &yTexture);
-//
-//    NSAssert(err == kCVReturnSuccess,@"纹理1创建失败");
-//    
-//    glActiveTexture(GL_TEXTURE1);
-//    err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-//                                                       coreVideoTextureCache,
-//                                                       imageBuffer,
-//                                                       NULL,
-//                                                       GL_TEXTURE_2D,
-//                                                       GL_RG_EXT,
-//                                                       (int)size.width / 2,
-//                                                       (int)size.width / 2,
-//                                                       GL_RG_EXT,
-//                                                       GL_UNSIGNED_BYTE,
-//                                                       1,
-//                                                       &uvTexture);
-//    NSAssert(err == kCVReturnSuccess,@"纹理2创建失败");
-//    
-//    [GPUImageContext setActiveShaderProgram:filterProgram];
-//    
-//    outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:outputSize textureOptions:self.outputTextureOptions onlyTexture:NO];
-//    [outputFramebuffer activateFramebuffer];
-//    
-//    glClearColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha);
-//    glClear(GL_COLOR_BUFFER_BIT);
-//    
-//    static const GLfloat imageVertices[] = {
-//        -1.0f, -1.0f,
-//        1.0f, -1.0f,
-//        -1.0f,  1.0f,
-//        1.0f,  1.0f,
-//    };
-//    glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, imageVertices);
-//    glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [[self class] textureCoordinatesForRotation:inputRotation]);
-//    
-//    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    
-//    runAsynchronouslyOnVideoProcessingQueue(^{
-//        
-//        for (id<GPUImageInput> currentTarget in targets)
-//        {
-//            NSInteger indexOfObject = [targets indexOfObject:currentTarget];
-//            NSInteger textureIndexOfTarget = [[targetTextureIndices objectAtIndex:indexOfObject] integerValue];
-//            
-//            [self setInputFramebufferForTarget:currentTarget atIndex:textureIndexOfTarget];
-//            [currentTarget setInputSize:outputFramebuffer.size atIndex:textureIndexOfTarget];
-//            [currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndexOfTarget];
-//        }
-//        dispatch_semaphore_signal(dataUpdateSemaphore);
-//    });
-}
 
 
 -(void)forceProcessingAtSize:(CGSize)frameSize{
-    if (CGSizeEqualToSize(frameSize, CGSizeZero)) {
-        outputSize = uploadedImageSize;
-    }else{
+    if (!CGSizeEqualToSize(frameSize, CGSizeZero)) {
         outputSize = frameSize;
     }
 }

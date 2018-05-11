@@ -177,7 +177,7 @@ static NSString* getCapturePresetWithSize(CGSize size) {
         [videoOutput setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
     }
     
-    runSynchronouslyOnVideoProcessingQueue(^{
+    runAsynchronouslyOnVideoProcessingQueue(^{
         
         if (captureAsYUV)
         {
