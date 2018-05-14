@@ -259,7 +259,6 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
 
         [GPUImageContext setActiveShaderProgram:filterProgram];
 
-        CHECK_GL(glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion));
         glGenTextures(textureCount, _textureYUV);
         for (int i = 0; i < textureCount; ++i) {
             CHECK_GL(glActiveTexture(GL_TEXTURE0 + i));
@@ -276,7 +275,8 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
             CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
             CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         }
-        
+        CHECK_GL(glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion));
+
         
         CHECK_GL(glEnableVertexAttribArray(filterPositionAttribute));
         CHECK_GL(glEnableVertexAttribArray(filterTextureCoordinateAttribute));
@@ -395,6 +395,18 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
 }
 - (void)updateDataWithY:(GLubyte *)Ybytes U:(GLubyte*)Ubytes V:(GLubyte*)Vbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime
 {
+//    static BOOL save;
+////    if (save == NO) {
+////        save = YES;
+////
+////        NSMutableData * saveData = [[NSMutableData alloc]initWithCapacity:_pixelSize.height*_pixelSize.width*1.5];
+////        [saveData appendBytes:Ybytes length:_pixelSize.width*_pixelSize.height];
+////        [saveData appendBytes:Ubytes length:0.25*_pixelSize.width*_pixelSize.height];
+////        [saveData appendBytes:Vbytes length:0.25*_pixelSize.width*_pixelSize.height];
+////        NSString *path = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0];
+////        path = [path stringByAppendingPathComponent:@"test.yuv"];
+////        [saveData writeToFile:path atomically:YES];
+////    }
 #ifdef DEBUG
     if (_pixelFormat != GJPixelFormatYV12 && _pixelFormat != GJPixelFormatI420) {
         printf("格式与初始化格式不同");
@@ -415,19 +427,23 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         GLsizei w  = _pixelSize.width;
         GLsizei h = _pixelSize.height;
         
-
+        CHECK_GL(glActiveTexture(GL_TEXTURE0 + TEXY));
         CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXY]));
-//        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_LUMINANCE, pixelType, Ybytes));
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, w, h, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, Ybytes);
+        CHECK_GL(glUniform1i(_textureUniform[TEXY], TEXY));
+        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_LUMINANCE, pixelType, Ybytes));
+//        CHECK_GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, w, h, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, Ybytes));
 
+        CHECK_GL(glActiveTexture(GL_TEXTURE0 + TEXU));
         CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXU]));
-//        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_LUMINANCE, pixelType, Ubytes));
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, w/2, h/2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, Ubytes);
+        CHECK_GL(glUniform1i(_textureUniform[TEXU], TEXU));
+        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_LUMINANCE, pixelType, Ubytes));
+//        CHECK_GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, w/2, h/2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, Ubytes));
 
-
+        CHECK_GL(glActiveTexture(GL_TEXTURE0 + TEXV));
         CHECK_GL(glBindTexture(GL_TEXTURE_2D, _textureYUV[TEXV]));
-//        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_LUMINANCE, pixelType,Vbytes  ));
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, w/2, h/2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, Vbytes);
+        CHECK_GL(glUniform1i(_textureUniform[TEXV], TEXV));
+        CHECK_GL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w/2, h/2, GL_LUMINANCE, pixelType,Vbytes  ));
+//        CHECK_GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, w/2, h/2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, Vbytes));
         
         static const GLfloat imageVertices[] = {
             -1.0f, -1.0f,
