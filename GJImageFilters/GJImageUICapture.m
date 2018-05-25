@@ -34,11 +34,18 @@
 }
 
 - (void)startCameraCapture{
+    
+    if (![NSThread isMainThread]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self startCameraCapture];
+        });
+        return;
+    }
     _isRunning = YES;
     self.fpsTimer = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateWithTimestamp)];
     self.fpsTimer.frameInterval = 60/_frameRate;
     [self.fpsTimer addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-
+    
 }
 
 /** Stop camera capturing

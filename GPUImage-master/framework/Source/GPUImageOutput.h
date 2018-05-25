@@ -37,6 +37,9 @@ int  checkGLError(void);
 //替换字符   $1$2CHECK_GL\(gl$3);
 #define ENABLE_GL_CHECK false
 
+#ifdef DEBUG
+#define ENABLE_GL_CHECK false
+#endif
 #if ENABLE_GL_CHECK
 #define CHECK_GL(glFunc) \
 glFunc; \

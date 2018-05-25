@@ -146,7 +146,7 @@
     // The frame buffer needs to be trashed and re-created when the view size changes.
     if (!CGSizeEqualToSize(self.bounds.size, boundsSizeAtFrameBufferEpoch) &&
         !CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
-        runSynchronouslyOnVideoProcessingQueue(^{
+        runAsynchronouslyOnVideoProcessingQueue(^{
             [self destroyDisplayFramebuffer];
             [self createDisplayFramebuffer];
         });
@@ -157,8 +157,22 @@
 
 - (void)dealloc
 {
-    runSynchronouslyOnVideoProcessingQueue(^{
-        [self destroyDisplayFramebuffer];
+
+    GLuint displayRenderbufferTem = displayRenderbuffer;
+    GLuint displayFramebufferTem = displayFramebuffer;
+
+    runAsynchronouslyOnVideoProcessingQueue(^{
+        [GPUImageContext useImageProcessingContext];
+        
+        if (displayFramebufferTem)
+        {
+            CHECK_GL(glDeleteFramebuffers(1, &displayFramebufferTem));
+        }
+        
+        if (displayRenderbufferTem)
+        {
+            CHECK_GL(glDeleteRenderbuffers(1, &displayRenderbufferTem));
+        }
     });
 }
 

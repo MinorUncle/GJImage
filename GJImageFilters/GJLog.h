@@ -111,7 +111,7 @@ extern "C" {
     GVoid GJ_LogSetLevel(GJ_LogLevel lvl);
     
     GVoid GJ_LogSetCallback(GJ_LogCallback *cb);
-    GVoid GJ_LogSetOutput(FILE *file);
+    GVoid GJ_LogSetOutput(char *file);
     
     GVoid GJ_Log(const GVoid* logClass, GJ_LogLevel level,const char *pre,const char *format, ...) __attribute__((format(printf, 4, 5)));
     GVoid GJ_LogHex(GJ_LogLevel level, const GUInt8 *data, GUInt32 len);

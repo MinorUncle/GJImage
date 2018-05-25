@@ -211,6 +211,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     GVertexGroupCluster* lineCluster;
     uint8_t* bufferMemory;
     BOOL needClear;
+    dispatch_queue_t _uiCaptureQueue;
 }
 @property(retain,nonatomic)CADisplayLink* fpsTimer;
 
@@ -241,6 +242,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
     if ((self = [super init])) {
         _captureSize = CGSizeZero;
         _paintingView = [[GJImageView alloc]init];
+        _uiCaptureQueue = dispatch_queue_create("runloop.Painting", DISPATCH_QUEUE_SERIAL);
 
         
         UITapGestureRecognizer* doubleTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleTapEvent:)];
@@ -618,30 +620,41 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 
 - (void)startCameraCapture{
     
+    if (_isRunning) {
+        return;
+    }
     _isRunning = YES;
     self.fpsTimer = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateWithTimestamp)];
     self.fpsTimer.frameInterval = 60/_frameRate;
-    [self.fpsTimer addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    dispatch_async(_uiCaptureQueue, ^{
+        NSRunLoop *theRL = [NSRunLoop currentRunLoop];
+        [self.fpsTimer addToRunLoop:theRL forMode:NSDefaultRunLoopMode];
+        while (_isRunning ){
+            [theRL runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+        }
+    });
+
 }
 
 /** Stop camera capturing
  */
 - (void)stopCameraCapture{
     _isRunning = NO;
-    [self.fpsTimer invalidate];
+    dispatch_async(_uiCaptureQueue, ^{//要放在_uiCaptureQueue线程中，否则fpstime不触发，runloop不退出。
+        [self.fpsTimer invalidate];
+        self.fpsTimer = nil;
+    });
 }
 
 /** Pause camera capturing
  */
 - (void)pauseCameraCapture{
-    _isRunning = NO;
     [self.fpsTimer setPaused:YES];
 }
 
 /** Resume camera capturing
  */
 - (void)resumeCameraCapture{
-    _isRunning = YES;
     [self.fpsTimer setPaused:NO];
 }
 
