@@ -7,36 +7,39 @@
 //
 
 #import "GJImageYUVDataInput.h"
-
+#import "GPUImageColorConversion.h"
 
 
 // Color Conversion Constants (YUV to RGB) including adjustment from 16-235/16-240 (video range)
 
 // BT.601, which is the standard for SDTV.
-GLfloat kColorConversion601Default[] = {
-    1.164,  1.164, 1.164,
-    0.0, -0.392, 2.017,
-    1.596, -0.813,   0.0,
-};
+//GLfloat kColorConversion601Default[] = {
+//    1.164,  1.164, 1.164,
+//    0.0, -0.392, 2.017,
+//    1.596, -0.813,   0.0,
+//};
+//
+//// BT.601 full range (ref: http://www.equasys.de/colorconversion.html)
+//GLfloat kColorConversion601FullRangeDefault[] = {
+//    1.0,    1.0,    1.0,
+//    0.0,    -0.343, 1.765,
+//    1.4,    -0.711, 0.0,
+//};
+//
+//// BT.709, which is the standard for HDTV.
+//GLfloat kColorConversion709Default[] = {
+//    1.164,  1.164, 1.164,
+//    0.0, -0.213, 2.112,
+//    1.793, -0.533,   0.0,
+//};
 
-// BT.601 full range (ref: http://www.equasys.de/colorconversion.html)
-GLfloat kColorConversion601FullRangeDefault[] = {
-    1.0,    1.0,    1.0,
-    0.0,    -0.343, 1.765,
-    1.4,    -0.711, 0.0,
-};
+//extern GLfloat kColorConversion601Default[];
+//extern GLfloat kColorConversion601FullRangeDefault[];
+//extern GLfloat kColorConversion709Default[];
 
-// BT.709, which is the standard for HDTV.
-GLfloat kColorConversion709Default[] = {
-    1.164,  1.164, 1.164,
-    0.0, -0.213, 2.112,
-    1.793, -0.533,   0.0,
-};
-
-
-GLfloat *kColorConversion601 = kColorConversion601Default;
-GLfloat *kColorConversion601FullRange = kColorConversion601FullRangeDefault;
-GLfloat *kColorConversion709 = kColorConversion709Default;
+//GLfloat *kColorConversion601 = kColorConversion601Default;
+//GLfloat *kColorConversion601FullRange = kColorConversion601FullRangeDefault;
+//GLfloat *kColorConversion709 = kColorConversion709Default;
 
 enum TextureType
 {
@@ -202,7 +205,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     backgroundColorAlpha = 0.0;
     imageCaptureSemaphore = dispatch_semaphore_create(0);
     dispatch_semaphore_signal(imageCaptureSemaphore);
-    _preferredConversion = kColorConversion709Default;
+    _preferredConversion = kColorConversion709;
     runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
         NSString* vs;

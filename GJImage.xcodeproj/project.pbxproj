@@ -15,7 +15,6 @@
 		0417FC6C1E5EB0E200D5B5D9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0417FC6A1E5EB0E200D5B5D9 /* Main.storyboard */; };
 		0417FC6E1E5EB0E200D5B5D9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0417FC6D1E5EB0E200D5B5D9 /* Assets.xcassets */; };
 		0417FC711E5EB0E200D5B5D9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0417FC6F1E5EB0E200D5B5D9 /* LaunchScreen.storyboard */; };
-		0417FCB81E5EC72400D5B5D9 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0417FCB51E5EC70600D5B5D9 /* GPUImage.framework */; };
 		0417FCC21E5EC74E00D5B5D9 /* GJImageFilters.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0417FCBF1E5EC74E00D5B5D9 /* GJImageFilters.h */; };
 		0417FECD1E5EC92A00D5B5D9 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0417FCB31E5EC70600D5B5D9 /* libGPUImage.a */; settings = {ATTRIBUTES = (Required, ); }; };
 		0417FED01E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0417FECF1E5ECAD000D5B5D9 /* GJImageBeautifyFilter.m */; };
@@ -25,6 +24,7 @@
 		04A0815A1E6EAD22000E2B64 /* GJImageFramebuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */; };
 		6A01287020A13977000D9856 /* libarcsoft_spotlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A01286F20A13977000D9856 /* libarcsoft_spotlight.a */; };
 		6A0388F71FEFE0D3005AC7CE /* GJPaintingCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0388F61FEFE0D3005AC7CE /* GJPaintingCamera.m */; };
+		6A04022120CA5D5E0098A86C /* libGJImageFilters.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0417FCBD1E5EC74E00D5B5D9 /* libGJImageFilters.a */; };
 		6A0E87001E84EA7F002A2A2D /* GJImagePixelImageInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E86FF1E84EA7F002A2A2D /* GJImagePixelImageInput.m */; };
 		6A3488761F4545C1008223AA /* GJImagePictureOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */; };
 		6A44B13D209C30EC00A26220 /* ARCSoftFaceHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A44B13C209C30EC00A26220 /* ARCSoftFaceHandle.m */; };
@@ -46,7 +46,6 @@
 		6AD5EFA9209FEDB700BEB01C /* GJPaintingCamera.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A0388F11FEFE0D3005AC7CE /* GJPaintingCamera.h */; };
 		6AD5EFBF20A049FD00BEB01C /* GJOverlayAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AD5EFBE20A049FD00BEB01C /* GJOverlayAttribute.m */; };
 		6AD5EFC220A04B2800BEB01C /* GJOverlayAttribute.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6AD5EFBD20A049FD00BEB01C /* GJOverlayAttribute.h */; };
-		6AF7ECE21FE7ABBB00605E6E /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AF7ECDD1FE7ABB300605E6E /* IOSurface.framework */; };
 		6AF9DD841FA96A6C00F6B4F7 /* GJImageARCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */; };
 		6AF9DD8B1FA96DDE00F6B4F7 /* SCNViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9DD8A1FA96DDE00F6B4F7 /* SCNViewController.m */; };
 		6AF9DD8C1FA96FF000F6B4F7 /* GJImageARCapture.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */; };
@@ -170,8 +169,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6AF7ECE21FE7ABBB00605E6E /* IOSurface.framework in Frameworks */,
-				0417FCB81E5EC72400D5B5D9 /* GPUImage.framework in Frameworks */,
+				6A04022120CA5D5E0098A86C /* libGJImageFilters.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,9 +265,9 @@
 				046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */,
 				6AA649021FC2CAB500AA3CAC /* GJImageTrackImage.h */,
 				6AA649031FC2CAB500AA3CAC /* GJImageTrackImage.m */,
-				6A3488741F4545C1008223AA /* GJImagePictureOverlay.h */,
 				6AD5EFBD20A049FD00BEB01C /* GJOverlayAttribute.h */,
 				6AD5EFBE20A049FD00BEB01C /* GJOverlayAttribute.m */,
+				6A3488741F4545C1008223AA /* GJImagePictureOverlay.h */,
 				6A3488751F4545C1008223AA /* GJImagePictureOverlay.m */,
 				6A9699C51EA073490078E8BF /* GJImageStickerInput.h */,
 				6A9699C61EA073490078E8BF /* GJImageStickerInput.m */,
@@ -609,7 +607,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = GJ.GJImage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\" \"$(SRCROOT)/GPUImage-master/framework/Source/iOS\"";
 			};
 			name = Debug;
 		};
@@ -625,7 +623,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = GJ.GJImage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\" \"$(SRCROOT)/GPUImage-master/framework/Source/iOS\"";
 			};
 			name = Release;
 		};
@@ -641,6 +639,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"";
 			};
 			name = Debug;
 		};
@@ -656,6 +655,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"";
 			};
 			name = Release;
 		};
