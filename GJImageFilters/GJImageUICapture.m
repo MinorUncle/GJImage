@@ -98,7 +98,7 @@
 }
 - (void)updateWithTimestamp;
 {
-    CMTime frameTime = CMTimeMake(CACurrentMediaTime()*1000, 1000);
+    CMTime frameTime = CMTimeMake(getCurrentTime(), 1000);
     [GPUImageContext useImageProcessingContext];
     outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:_captureSize onlyTexture:NO];
     CVPixelBufferLockBaseAddress(outputFramebuffer.pixelBuffer, 0);

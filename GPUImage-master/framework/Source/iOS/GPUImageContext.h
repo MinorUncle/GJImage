@@ -1,7 +1,8 @@
 #import "GLProgram.h"
 #import "GPUImageFramebuffer.h"
 #import "GPUImageFramebufferCache.h"
-
+#import <sys/time.h>
+extern long getCurrentTime();
 
 #define GJSTRINGIZE(x) #x
 #define GJSTRINGIZE2(x) GJSTRINGIZE(x)

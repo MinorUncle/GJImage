@@ -124,9 +124,9 @@ typedef struct _GVertexGroupCluster{
     GLint groupCount;
 }GVertexGroupCluster;
 void groupClusterCreate(GVertexGroupCluster** cluster){
-    *cluster = (GVertexGroupCluster*)malloc(sizeof(GVertexGroupCluster));
-    GVertexGroupCluster* lineCluster = *cluster;
-    lineCluster->groupCount = 0;
+    *cluster = (GVertexGroupCluster*)calloc(1,sizeof(GVertexGroupCluster));
+//    GVertexGroupCluster* lineCluster = *cluster;
+//    lineCluster->groupCount = 0;
 }
 
 GVertexGroup* groupClusterGetLastGroup(GVertexGroupCluster* cluster){
@@ -693,7 +693,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 
             [self setInputFramebufferForTarget:currentTarget atIndex:textureIndexOfTarget];
             [currentTarget setInputSize:outputFramebuffer.size atIndex:textureIndexOfTarget];
-            CMTime frameTime = CMTimeMake(CACurrentMediaTime()*1000,1000);
+            CMTime frameTime = CMTimeMake(getCurrentTime(),1000);
             [currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndexOfTarget];
         }
         
