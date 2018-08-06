@@ -47,10 +47,14 @@
 - (void)setupFilterForSize:(CGSize)filterFrameSize;
 {
     if(!CGSizeEqualToSize(_filterFrameSize, filterFrameSize)){
-        ASLST2D_Uninitialize(_h2DEngine);
-        MRESULT mRet = ASLST2D_Initialize(_h2DEngine,filterFrameSize.width,filterFrameSize.height, MFalse, 0, MNull, MNull,MNull,MNull);
-        GJAssert(mRet == MOK, "ASLST2D_Initialize error：%d",mRet);
-        [self updateTemplatePath:_templatePath];
+        runAsynchronouslyOnVideoProcessingQueue(^{
+            _filterFrameSize = filterFrameSize;
+            ASLST2D_Uninitialize(_h2DEngine);
+            MRESULT mRet = ASLST2D_Initialize(_h2DEngine,filterFrameSize.width,filterFrameSize.height, MFalse, 0, MNull, MNull,MNull,MNull);
+            GJAssert(mRet == MOK, "ASLST2D_Initialize error：%ld",mRet);
+            [self updateTemplatePath:_templatePath];
+
+        });
     }
     _filterFrameSize = filterFrameSize;
     // This is where you can override to provide some custom setup, if your filter has a size-dependent element
@@ -58,11 +62,11 @@
 
 - (BOOL)updateTemplatePath:(NSString*)templatePath{
     runAsynchronouslyOnVideoProcessingQueue(^{
-        if (templatePath) {
+        if (templatePath && _filterFrameSize.width > 0) {
             MRESULT mRet = MOK;
             if (_h2DEngine) {
                 mRet = ASLST2D_SetStickerTemplate(_h2DEngine,[templatePath UTF8String]);
-                GJAssert(mRet == MOK, "ASLST2D_SetStickerTemplate:%d",mRet);
+                GJAssert(mRet == MOK, "ASLST2D_SetStickerTemplate:%ld",mRet);
             }
         }
         _templatePath = templatePath;

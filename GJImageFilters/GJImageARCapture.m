@@ -126,8 +126,10 @@ static const void *kMetalLayerBufferKey = &kMetalLayerBufferKey;
 //            [wkSelf.scene.scene setNeedsLayout];
 //            [wkSelf.scene.scene setNeedsDisplay];
             [wkSelf.scene.scene layoutIfNeeded];
-            [wkSelf.input updateDataFromBytes:(GLubyte*)[layer.freshImageBuffer longValue] size:wkSelf.captureSize];
-            [wkSelf.input processDataForTimestamp:kCMTimeZero];
+            runAsynchronouslyOnVideoProcessingQueue(^{
+                [wkSelf.input updateDataFromBytes:(GLubyte*)[layer.freshImageBuffer longValue] size:wkSelf.captureSize];
+                [wkSelf.input processDataForTimestamp:kCMTimeZero];
+            });
             
 //            UIImage* image = [wkSelf.scene.scene snapshot];
 //            [wkSelf updateImage:image];
@@ -164,6 +166,7 @@ CGSize getSizeWithCapturePreset(NSString* capturePreset) {
 
 -(void)setCaptureSessionPreset:(NSString *)captureSessionPreset{
     _captureSessionPreset = captureSessionPreset;
+    assert(0);
     CGSize size = getSizeWithCapturePreset(captureSessionPreset);
     if (_outputImageOrientation == UIInterfaceOrientationPortrait ||
         _outputImageOrientation == UIInterfaceOrientationPortraitUpsideDown) {
@@ -176,9 +179,9 @@ CGSize getSizeWithCapturePreset(NSString* capturePreset) {
 
 -(void)setOutputImageOrientation:(UIInterfaceOrientation)outputImageOrientation{
     NSAssert(outputImageOrientation == UIInterfaceOrientationPortrait, @"暂时只支持竖屏");
-
+//sd/
     _outputImageOrientation = outputImageOrientation;
-    CGSize size = getSizeWithCapturePreset(_captureSessionPreset);
+    CGSize size = _captureSize;
     if (_outputImageOrientation == UIInterfaceOrientationPortrait ||
         _outputImageOrientation == UIInterfaceOrientationPortraitUpsideDown) {
         size.height += size.width;

@@ -26,6 +26,7 @@
  包含人脸识别和美颜，把人脸识别和美颜放在一起是因为它们都是在原始数据上处理，而且人脸识别会根据美颜的类别打开。
  */
 @interface ARCSoftFaceHandle : NSObject <GPUImageVideoCameraDelegate>
+@property(nonatomic,copy,readonly)NSString* dataPath;
 @property(nonatomic,assign,readonly)LPASLFA_FACE_STATUS faceStatus;
 @property(nonatomic,assign,readonly)LPASLFA_FACE_INFORMATION faceInformation;
 

@@ -1028,7 +1028,7 @@
 }
 
 - (ARWorldTrackingConfiguration *)arSessionConfiguration
-{
+API_AVAILABLE(ios(11.0)){
     if (_arSessionConfiguration != nil) {
         return _arSessionConfiguration;
     }
@@ -1044,7 +1044,7 @@
 }
 
 - (ARSession *)arSession
-{
+API_AVAILABLE(ios(11.0)){
     if(_arSession != nil)
     {
         return _arSession;
@@ -1054,7 +1054,7 @@
     return _arSession;
 }
 
-- (ARSCNView *)arLeftView {
+- (ARSCNView *)arLeftView  API_AVAILABLE(ios(11.0)){
     
     if (!_arLeftView) {
         
@@ -1066,7 +1066,7 @@
     return _arLeftView;
 }
 
-- (ARSCNView *)arRightView {
+- (ARSCNView *)arRightView  API_AVAILABLE(ios(11.0)){
     
     if (!_arRightView) {
         _arRightView = [[ARSCNView alloc] initWithFrame:CGRectMake(

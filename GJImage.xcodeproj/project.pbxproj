@@ -158,8 +158,6 @@
 		6AF7ECDD1FE7ABB300605E6E /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageARCapture.h; sourceTree = "<group>"; };
 		6AF9DD831FA96A6C00F6B4F7 /* GJImageARCapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageARCapture.m; sourceTree = "<group>"; };
-		6AF9DD851FA96B3D00F6B4F7 /* GJLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJLog.h; sourceTree = "<group>"; };
-		6AF9DD871FA96C6600F6B4F7 /* GJPlatformHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GJPlatformHeader.h; sourceTree = "<group>"; };
 		6AF9DD891FA96DDE00F6B4F7 /* SCNViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCNViewController.h; sourceTree = "<group>"; };
 		6AF9DD8A1FA96DDE00F6B4F7 /* SCNViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCNViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -245,10 +243,8 @@
 			children = (
 				6A44B12D209C309800A26220 /* ARCSoft */,
 				6AF9DD881FA96DDE00F6B4F7 /* ARScene */,
-				6AF9DD851FA96B3D00F6B4F7 /* GJLog.h */,
 				0417FCBF1E5EC74E00D5B5D9 /* GJImageFilters.h */,
 				6AD5EF99209FE5A600BEB01C /* GJImageDefine.h */,
-				6AF9DD871FA96C6600F6B4F7 /* GJPlatformHeader.h */,
 				6A0388F11FEFE0D3005AC7CE /* GJPaintingCamera.h */,
 				6A0388F61FEFE0D3005AC7CE /* GJPaintingCamera.m */,
 				6AF9DD7E1FA96A6C00F6B4F7 /* GJImageARCapture.h */,
@@ -639,7 +635,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\" \"$(SRCROOT)/../GJQueue/Class\" \"$(SRCROOT)/../GJLiveEngine/GJLiveEngine/CrossPlatform/PlatformBridge\"";
 			};
 			name = Debug;
 		};
@@ -655,7 +651,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\" \"$(SRCROOT)/../GJQueue/Class\" \"$(SRCROOT)/../GJLiveEngine/GJLiveEngine/CrossPlatform/PlatformBridge\"";
 			};
 			name = Release;
 		};

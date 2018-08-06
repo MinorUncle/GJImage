@@ -2,7 +2,7 @@
 #import "GPUImageFramebuffer.h"
 #import "GPUImageFramebufferCache.h"
 #import <sys/time.h>
-extern long getCurrentTime();
+extern long getCurrentTime(void);
 
 #define GJSTRINGIZE(x) #x
 #define GJSTRINGIZE2(x) GJSTRINGIZE(x)
