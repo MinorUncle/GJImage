@@ -30,21 +30,25 @@
         _hAEngine = ASLFA_CreateEngine();
         if (_hAEngine == nil) {
             GJAssert(0, "%s",path.UTF8String);
+            self = nil;
             break;
         }
         if (ASLFA_Initialize(_hAEngine, path.UTF8String , ASLFA_MAX_FACE_NUM, MNull, MNull) != 0) {
             GJAssert(0, "%s",path.UTF8String);
+            self = nil;
             break;
         }
         
         _hBEngine = ASLFB_CreateEngine();
         if (_hBEngine == MNull) {
             GJAssert(0, "%s",path.UTF8String);
+            self = nil;
             break;
         }
         
         if(ASLFB_Initialize(_hBEngine, MNull, MNull)){
             GJAssert(0, "%s",path.UTF8String);
+            self = nil;
             break;
         }
         

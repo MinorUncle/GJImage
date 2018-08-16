@@ -44,14 +44,14 @@
     }
 }
 
--(void)setInputFramebuffer:(GPUImageFramebuffer *)newInputFramebuffer atIndex:(NSInteger)textureIndex{
-    [super setInputFramebuffer:newInputFramebuffer atIndex:textureIndex];
-    if (freshFramebuffer) {
-        [freshFramebuffer unlock];
-    }
-    freshFramebuffer = newInputFramebuffer;
-    [freshFramebuffer lock];
-}
+//-(void)setInputFramebuffer:(GPUImageFramebuffer *)newInputFramebuffer atIndex:(NSInteger)textureIndex{
+//    [super setInputFramebuffer:newInputFramebuffer atIndex:textureIndex];
+//    if (freshFramebuffer) {
+//        [freshFramebuffer unlock];
+//    }
+//    freshFramebuffer = newInputFramebuffer;
+//    [freshFramebuffer lock];
+//}
 -(UIImage*)captureFreshImage{
     __block UIImage* image;
     runSynchronouslyOnVideoProcessingQueue(^{

@@ -36,7 +36,7 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
         
         attributes = [[NSMutableArray alloc] init];
         uniforms = [[NSMutableArray alloc] init];
-        program = CHECK_GL(glCreateProgram());
+        program = (glCreateProgram());
         
         if (![self compileShader:&vertShader 
                             type:GL_VERTEX_SHADER 
@@ -107,7 +107,7 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
         return NO;
     }
     
-    *shader = CHECK_GL(glCreateShader(type));
+    *shader = (glCreateShader(type));
     CHECK_GL(glShaderSource(*shader, 1, &source, NULL));
     CHECK_GL(glCompileShader(*shader));
     
@@ -160,7 +160,7 @@ typedef void (*GLLogFunction) (GLuint program, GLsizei bufsize, GLsizei* length,
 }
 - (GLuint)uniformIndex:(NSString *)uniformName
 {
-    return CHECK_GL(glGetUniformLocation(program, [uniformName UTF8String]));
+    return (glGetUniformLocation(program, [uniformName UTF8String]));
 }
 // END:indexmethods
 #pragma mark -

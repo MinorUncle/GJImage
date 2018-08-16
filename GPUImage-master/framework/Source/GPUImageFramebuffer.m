@@ -193,7 +193,7 @@ void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * base
         }
         
         #ifndef NS_BLOCK_ASSERTIONS
-        GLenum status = CHECK_GL(glCheckFramebufferStatus(GL_FRAMEBUFFER));
+        GLenum status = (glCheckFramebufferStatus(GL_FRAMEBUFFER));
         NSAssert(status == GL_FRAMEBUFFER_COMPLETE, @"Incomplete filter FBO: %d", status);
         #endif
         

@@ -9,7 +9,7 @@
 #import "GPUImagePicture.h"
 #import "GPUImageVideoCamera.h"
 @class ARSCNView;
-typedef void(^ARUpdateBlock)();
+typedef void(^ARUpdateBlock)(void);
 
 
 

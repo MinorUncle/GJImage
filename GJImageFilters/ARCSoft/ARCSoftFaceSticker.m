@@ -51,9 +51,12 @@
             _filterFrameSize = filterFrameSize;
             ASLST2D_Uninitialize(_h2DEngine);
             MRESULT mRet = ASLST2D_Initialize(_h2DEngine,filterFrameSize.width,filterFrameSize.height, MFalse, 0, MNull, MNull,MNull,MNull);
-            GJAssert(mRet == MOK, "ASLST2D_Initialize error：%ld",mRet);
-            [self updateTemplatePath:_templatePath];
-
+            if (mRet == MOK) {
+                [self updateTemplatePath:_templatePath];
+            }else{
+                GJLOG(GNULL, GJ_LOGERROR, "ASLST2D_Initialize error：%ld",mRet);
+                _templatePath = nil;
+            }
         });
     }
     _filterFrameSize = filterFrameSize;
@@ -61,20 +64,33 @@
 }
 
 - (BOOL)updateTemplatePath:(NSString*)templatePath{
-    runAsynchronouslyOnVideoProcessingQueue(^{
+    __block BOOL ret = YES;
+    runSynchronouslyOnVideoProcessingQueue(^{
+        _templatePath = templatePath;
         if (templatePath && _filterFrameSize.width > 0) {
             MRESULT mRet = MOK;
             if (_h2DEngine) {
                 mRet = ASLST2D_SetStickerTemplate(_h2DEngine,[templatePath UTF8String]);
-                GJAssert(mRet == MOK, "ASLST2D_SetStickerTemplate:%ld",mRet);
+                if (mRet != MOK) {
+                    GJLOG(GNULL, GJ_LOGERROR, "ASLST2D_SetStickerTemplate error：%ld",mRet);
+                    _templatePath = nil;
+                    ret = NO;
+                }
             }
         }
-        _templatePath = templatePath;
     });
 
-    return NO;
+    return ret;
 }
+-(void)dealloc{
+    MHandle tmp = _h2DEngine;
+    runAsynchronouslyOnVideoProcessingQueue(^{
+        ASLST2D_Uninitialize(tmp);
+        ASLST2D_DestroyEngine(tmp);
+    });
+ 
 
+}
 -(void)renderToTextureWithVertices:(const GLfloat *)vertices textureCoordinates:(const GLfloat *)textureCoordinates{
     if (self.preventRendering)
     {

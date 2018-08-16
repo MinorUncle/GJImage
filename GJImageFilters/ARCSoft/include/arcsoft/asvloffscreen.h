@@ -167,7 +167,7 @@ typedef struct __tag_ASVL_VERSION
 	    const MChar *BuildDate;      	// latest build Date
 	    const MChar *CopyRight;      	// copyright 
 }ASVL_VERSION;
-const ASVL_VERSION *ASVL_GetVersion();
+    const ASVL_VERSION *ASVL_GetVersion(void);
 
 #ifdef __cplusplus
 }

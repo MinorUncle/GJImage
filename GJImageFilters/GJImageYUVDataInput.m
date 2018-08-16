@@ -210,16 +210,16 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         [GPUImageContext useImageProcessingContext];
         NSString* vs;
         switch (_pixelFormat) {
-            case GJPixelFormatI420:
+            case kGJPixelFormatI420:
                 vs = kGJImageYUV420PFragmentShaderString;
                 break;
-            case GJPixelFormatYV12:
+            case kGJPixelFormatYV12:
                 vs = kGJImageYUV420PFragmentShaderString;
                 break;
-            case GJPixelFormatNV12:
+            case kGJPixelFormatNV12:
                 vs = kGJImageNV12FragmentShaderString;
                 break;
-            case GJPixelFormatNV21:
+            case kGJPixelFormatNV21:
                 vs = kGJImageNV21FragmentShaderString;
                 break;
                 
@@ -254,7 +254,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
     
 
         int textureCount = 2;
-        if(_pixelFormat == GJPixelFormatI420 || _pixelFormat == GJPixelFormatYV12){
+        if(_pixelFormat == kGJPixelFormatI420 || _pixelFormat == kGJPixelFormatYV12){
             _textureUniform[TEXV] = [filterProgram uniformIndex:@"SamplerV"];
             textureCount = 3;
         }
@@ -411,7 +411,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
 ////        [saveData writeToFile:path atomically:YES];
 ////    }
 #ifdef DEBUG
-    if (_pixelFormat != GJPixelFormatYV12 && _pixelFormat != GJPixelFormatI420) {
+    if (_pixelFormat != kGJPixelFormatYV12 && _pixelFormat != kGJPixelFormatI420) {
         printf("格式与初始化格式不同");
         assert(0);
     }
@@ -477,7 +477,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
 - (void)updateDataWithY:(GLubyte *)Ybytes CrBr:(GLubyte*)CrBrbytes type:(GJPixelByteType)pixelType Timestamp:(CMTime)frameTime
 {
 #ifdef DEBUG
-    if (_pixelFormat != GJPixelFormatNV21 && _pixelFormat != GJPixelFormatNV12) {
+    if (_pixelFormat != kGJPixelFormatNV21 && _pixelFormat != kGJPixelFormatNV12) {
         printf("格式与初始化格式不同");
         assert(0);
     }

@@ -7,22 +7,12 @@
 //
 
 #import "GPUImageOutput.h"
+#import "GJImageDefine.h"
 // The bytes passed into this input are not copied or retained, but you are free to deallocate them after they are used by this filter.
 // The bytes are uploaded and stored within a texture, so nothing is kept locally.
 // The default format for input bytes is GPUPixelFormatBGRA, unless specified with pixelFormat:
 // The default type for input bytes is GPUPixelTypeUByte, unless specified with pixelType:
 
-typedef enum {
-    GJPixelFormatI420,//yyyyyyyyuuvv
-    GJPixelFormatYV12,//yyyyyyyyvvuu
-    GJPixelFormatNV12,//yyyyyyyyuvuv
-    GJPixelFormatNV21,//yyyyyyyyvuvu
-} GJYUVPixelFormat;
-
-typedef enum {
-    GJPixelTypeUByte = GL_UNSIGNED_BYTE,
-    GJPixelTypeFloat = GL_FLOAT
-} GJPixelByteType;
 
 @interface GJImageYUVDataInput : GPUImageOutput
 {

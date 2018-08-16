@@ -22,6 +22,7 @@
 		046EDBCD1E6D1D5500D9D8FC /* GJImageYUVDataInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */; };
 		04A081491E6E9A11000E2B64 /* GJImageYUVDataInput.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 046EDBCB1E6D1D5500D9D8FC /* GJImageYUVDataInput.h */; };
 		04A0815A1E6EAD22000E2B64 /* GJImageFramebuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */; };
+		27BD9C2B211AE730006300A6 /* GJImageYUVDataOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BD9C2A211AE730006300A6 /* GJImageYUVDataOutput.m */; };
 		6A01287020A13977000D9856 /* libarcsoft_spotlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A01286F20A13977000D9856 /* libarcsoft_spotlight.a */; };
 		6A0388F71FEFE0D3005AC7CE /* GJPaintingCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0388F61FEFE0D3005AC7CE /* GJPaintingCamera.m */; };
 		6A04022120CA5D5E0098A86C /* libGJImageFilters.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0417FCBD1E5EC74E00D5B5D9 /* libGJImageFilters.a */; };
@@ -127,6 +128,8 @@
 		046EDBCC1E6D1D5500D9D8FC /* GJImageYUVDataInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageYUVDataInput.m; sourceTree = "<group>"; };
 		04A081581E6EAD22000E2B64 /* GJImageFramebuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJImageFramebuffer.h; sourceTree = "<group>"; };
 		04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJImageFramebuffer.m; sourceTree = "<group>"; };
+		27BD9C29211AE730006300A6 /* GJImageYUVDataOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GJImageYUVDataOutput.h; sourceTree = "<group>"; };
+		27BD9C2A211AE730006300A6 /* GJImageYUVDataOutput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GJImageYUVDataOutput.m; sourceTree = "<group>"; };
 		6A01286F20A13977000D9856 /* libarcsoft_spotlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarcsoft_spotlight.a; path = GJImageFilters/ARCSoft/lib/libarcsoft_spotlight.a; sourceTree = "<group>"; };
 		6A0388F11FEFE0D3005AC7CE /* GJPaintingCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJPaintingCamera.h; sourceTree = "<group>"; };
 		6A0388F61FEFE0D3005AC7CE /* GJPaintingCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJPaintingCamera.m; sourceTree = "<group>"; };
@@ -269,6 +272,8 @@
 				6A9699C61EA073490078E8BF /* GJImageStickerInput.m */,
 				04A081581E6EAD22000E2B64 /* GJImageFramebuffer.h */,
 				04A081591E6EAD22000E2B64 /* GJImageFramebuffer.m */,
+				27BD9C29211AE730006300A6 /* GJImageYUVDataOutput.h */,
+				27BD9C2A211AE730006300A6 /* GJImageYUVDataOutput.m */,
 			);
 			path = GJImageFilters;
 			sourceTree = "<group>";
@@ -472,6 +477,7 @@
 				6AB685A11FE8DFD1009B7032 /* GJImageUICapture.m in Sources */,
 				6A44B13D209C30EC00A26220 /* ARCSoftFaceHandle.m in Sources */,
 				6AD5EFBF20A049FD00BEB01C /* GJOverlayAttribute.m in Sources */,
+				27BD9C2B211AE730006300A6 /* GJImageYUVDataOutput.m in Sources */,
 				6AA649041FC2CAB500AA3CAC /* GJImageTrackImage.m in Sources */,
 				0417FEF61E5ED78A00D5B5D9 /* GJImageView.m in Sources */,
 				6AD5EF6F209C3E0300BEB01C /* ARCSoftFaceSticker.m in Sources */,

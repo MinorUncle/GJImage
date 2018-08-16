@@ -13,4 +13,11 @@ typedef enum {
     GJPixelTypeFloat = GL_FLOAT
 } GJPixelByteType;
 
+typedef enum {
+    kGJPixelFormatI420,//yyyyyyyyuuvv
+    kGJPixelFormatYV12,//yyyyyyyyvvuu
+    kGJPixelFormatNV12,//yyyyyyyyuvuv
+    kGJPixelFormatNV21,//yyyyyyyyvuvu
+} GJYUVPixelFormat;
+
 #endif /* GJImageDefine_h */

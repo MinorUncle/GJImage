@@ -35,16 +35,16 @@ void reportAvailableMemoryForGPUImage(NSString *tag);
 int  checkGLError(void);
 //查找字符   ^( *)(\t*)gl(.[^=]*?\));
 //替换字符   $1$2CHECK_GL\(gl$3);
-#define ENABLE_GL_CHECK false
+//#define ENABLE_GL_CHECK false
 
-#ifndef DEBUG
-#define ENABLE_GL_CHECK false
+#ifdef DEBUG
+#define ENABLE_GL_CHECK true
 #endif
 
 #if ENABLE_GL_CHECK
 #define CHECK_GL(glFunc) \
 glFunc; \
-checkGLError();
+//checkGLError();
 #else
 #define CHECK_GL(glFunc)  glFunc;
 #endif
