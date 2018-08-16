@@ -199,8 +199,8 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     // Override this, calling back to this super method, in order to add new attributes to your vertex shader
 }
 -(void)updateDataWithImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)time{
-    CVPixelBufferRetain(imageBuffer);
-    runAsynchronouslyOnVideoProcessingQueue(^{
+
+    runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
         OSType type = CVPixelBufferGetPixelFormatType(imageBuffer);
 #ifdef DEBUG
@@ -233,7 +233,6 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
                 NSLog(@"格式不支持");
                 break;
         }
-        CVPixelBufferRelease(imageBuffer);
     });
 }
 -(void)updateDataWith32BGRAImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)frameTime{
@@ -427,6 +426,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
 
 -(void)updateDataWith420YpCbCr8BiPlanarImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)frameTime{
     OSType type = CVPixelBufferGetPixelFormatType(imageBuffer);
+
 #ifdef DEBUG
     
     if (_imageFormat != type) {
@@ -493,24 +493,25 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     }
     luminanceTexture = CVOpenGLESTextureGetName(luminanceTextureRef);
     err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault, [[GPUImageContext sharedImageProcessingContext] coreVideoTextureCache], imageBuffer, NULL, GL_TEXTURE_2D, GL_LUMINANCE_ALPHA, size.width/2, size.height/2, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, 1, &chrominanceTextureRef);
-    glFlush();
     CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
     
     if (err)
     {
         NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
-        assert(0);
         CFRelease(luminanceTextureRef);
         return;
     }
     chrominanceTexture = CVOpenGLESTextureGetName(chrominanceTextureRef);
 
     [GPUImageContext setActiveShaderProgram:filterProgram];
-    outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
+    outputFramebuffer =  [[GPUImageFramebuffer alloc] initWithSize:size  textureOptions:self.outputTextureOptions onlyTexture:NO];
+    [outputFramebuffer disableReferenceCounting];
+//    outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:YES];
+    
     [outputFramebuffer activateFramebuffer];
     
-//        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     CHECK_GL(glActiveTexture(GL_TEXTURE4));
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, luminanceTexture));
@@ -525,7 +526,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
     
     CHECK_GL(glUniformMatrix3fv(yuvConversionMatrixUniform, 1, GL_FALSE, _preferredConversion));
-    
+
     static const GLfloat squareVertices[] = {
         -1.0f, -1.0f,
         1.0f, -1.0f,
@@ -534,14 +535,15 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     };
     CHECK_GL(glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, 0, 0, squareVertices));
     CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageFilter textureCoordinatesForRotation:inputRotation]));
-    
+
     CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
-    
+//    glFlush();
+
     for (id<GPUImageInput> currentTarget in targets)
     {
         NSInteger indexOfObject = [targets indexOfObject:currentTarget];
         NSInteger textureIndexOfTarget = [[targetTextureIndices objectAtIndex:indexOfObject] integerValue];
-        
+
         [self setInputFramebufferForTarget:currentTarget atIndex:textureIndexOfTarget];
         [currentTarget setInputSize:outputFramebuffer.size atIndex:textureIndexOfTarget];
         [currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndexOfTarget];
