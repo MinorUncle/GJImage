@@ -75,7 +75,7 @@
 }
 
 -(void)setCaptureSize:(CGSize)captureSize{
-//    GJLOG(GNULL, GJ_LOGDEBUG, "UICapture can't set capture size");
+//    GJLOG( GJ_LOGDEBUG, "UICapture can't set capture size");
 };
 
 - (AVCaptureDevicePosition)cameraPosition{

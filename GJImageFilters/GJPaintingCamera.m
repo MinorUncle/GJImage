@@ -664,7 +664,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 }
 
 -(void)setCaptureSize:(CGSize)captureSize{
-    GJLOG(GNULL, GJ_LOGFORBID, "UICapture can't set capture size");
+    GJLOG( GJ_LOGFORBID, "UICapture can't set capture size");
 //    GJAssert(0, "set painting camera size WITH painting view frame");
 };
 

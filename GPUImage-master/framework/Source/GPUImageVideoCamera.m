@@ -244,10 +244,12 @@ static NSString* getCapturePresetWithSize(CGSize size) {
 	_captureSessionPreset = sessionPreset;
     if ([_captureSession canSetSessionPreset:_captureSessionPreset]){
         [_captureSession setSessionPreset:_captureSessionPreset];
-    }else{
-        NSLog(@"setSessionPreset error");
-        return nil;
     }
+//    else{
+//        NSLog(@"setSessionPreset error");
+//        [_captureSession commitConfiguration];
+//        return nil;
+//    }
 
 // This will let you get 60 FPS video from the 720p preset on an iPhone 4S, but only that device and that preset
 //    AVCaptureConnection *conn = [videoOutput connectionWithMediaType:AVMediaTypeVideo];

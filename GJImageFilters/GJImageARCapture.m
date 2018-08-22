@@ -238,7 +238,7 @@ CGSize getSizeWithCapturePreset(NSString* capturePreset) {
 }
 
 -(void)setZoomFactor:(CGFloat)zoomFactor{
-    GJLOG(GNULL, GJ_LOGWARNING, "不支持 zoomFactor");
+    GJLOG( GJ_LOGWARNING, "不支持 zoomFactor");
 }
 
 -(BOOL)isFrontFacingCameraPresent{

@@ -54,7 +54,7 @@
             if (mRet == MOK) {
                 [self updateTemplatePath:_templatePath];
             }else{
-                GJLOG(GNULL, GJ_LOGERROR, "ASLST2D_Initialize error：%ld",mRet);
+                GJLOG( GJ_LOGERROR, "ASLST2D_Initialize error：%ld",mRet);
                 _templatePath = nil;
             }
         });
@@ -72,7 +72,7 @@
             if (_h2DEngine) {
                 mRet = ASLST2D_SetStickerTemplate(_h2DEngine,[templatePath UTF8String]);
                 if (mRet != MOK) {
-                    GJLOG(GNULL, GJ_LOGERROR, "ASLST2D_SetStickerTemplate error：%ld",mRet);
+                    GJLOG( GJ_LOGERROR, "ASLST2D_SetStickerTemplate error：%ld",mRet);
                     _templatePath = nil;
                     ret = NO;
                 }
