@@ -8,7 +8,7 @@
 
 #import "GJImageARCapture.h"
 #import <ARKit/ARKit.h>
-#import "GJLog.h"
+//#import "GJLog.h"
 #import <objc/runtime.h>
 #import "GPUImageRawDataInput.h"
 static const void *kMetalLayerBufferKey = &kMetalLayerBufferKey;
@@ -106,7 +106,7 @@ static const void *kMetalLayerBufferKey = &kMetalLayerBufferKey;
 
         });
     }else{
-        GJAssert(0, "setScene error");
+        NSAssert(0, @"setScene error");
     }
     
 //    CAMetalLayer* metalLayer = (CAMetalLayer*)scene.scene.layer;
@@ -192,7 +192,7 @@ CGSize getSizeWithCapturePreset(NSString* capturePreset) {
 }
 
 -(void)setCaptureSize:(CGSize)captureSize{
-    GJAssert(captureSize.height*captureSize.width < 1920*1080, "captureSize 太大，不支持该大小");
+    NSAssert(captureSize.height*captureSize.width < 1920*1080, @"captureSize 太大，不支持该大小");
     if (!CGSizeEqualToSize(_captureSize, captureSize)) {
         _captureSize = captureSize;
         if ([NSThread currentThread].isMainThread) {
@@ -238,7 +238,7 @@ CGSize getSizeWithCapturePreset(NSString* capturePreset) {
 }
 
 -(void)setZoomFactor:(CGFloat)zoomFactor{
-    GJLOG( GJ_LOGWARNING, "不支持 zoomFactor");
+    NSLog(@"不支持 zoomFactor");
 }
 
 -(BOOL)isFrontFacingCameraPresent{

@@ -10,7 +10,7 @@
 #ifdef ARCSoft
 
 #include "arcsoft_spotlight_2dsticker.h"
-#import "GJLog.h"
+//#import "GJLog.h"
 @interface ARCSoftFaceSticker(){
     MHandle _h2DEngine;//动画引擎
     CGSize _filterFrameSize;
@@ -22,7 +22,7 @@
     do{
         _h2DEngine = ASLST2D_CreateEngine();
         if (_h2DEngine == nil) {
-            GJAssert(0, "");
+            assert(0);
             break;
         }
         self = [super init];
@@ -54,7 +54,7 @@
             if (mRet == MOK) {
                 [self updateTemplatePath:_templatePath];
             }else{
-                GJLOG( GJ_LOGERROR, "ASLST2D_Initialize error：%ld",mRet);
+                NSLog(@"ASLST2D_Initialize error：%ld",mRet);
                 _templatePath = nil;
             }
         });
@@ -72,7 +72,7 @@
             if (_h2DEngine) {
                 mRet = ASLST2D_SetStickerTemplate(_h2DEngine,[templatePath UTF8String]);
                 if (mRet != MOK) {
-                    GJLOG( GJ_LOGERROR, "ASLST2D_SetStickerTemplate error：%ld",mRet);
+                    NSLog(@"ASLST2D_SetStickerTemplate error：%ld",mRet);
                     _templatePath = nil;
                     ret = NO;
                 }

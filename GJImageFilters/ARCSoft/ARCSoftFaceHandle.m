@@ -12,7 +12,7 @@
 
 #import "arcsoft_spotlight_face_alignment.h"
 #import "arcsoft_spotlight_beauty.h"
-#import "GJLog.h"
+//#import "GJLog.h"
 @interface ARCSoftFaceHandle()
 {
     NSString* _trackDataPath;
@@ -29,25 +29,25 @@
         _dataPath = path;
         _hAEngine = ASLFA_CreateEngine();
         if (_hAEngine == nil) {
-            GJAssert(0, "%s",path.UTF8String);
+            NSAssert(0, @"%@",path);
             self = nil;
             break;
         }
         if (ASLFA_Initialize(_hAEngine, path.UTF8String , ASLFA_MAX_FACE_NUM, MNull, MNull) != 0) {
-            GJAssert(0, "%s",path.UTF8String);
+            NSAssert(0, @"%@",path);
             self = nil;
             break;
         }
         
         _hBEngine = ASLFB_CreateEngine();
         if (_hBEngine == MNull) {
-            GJAssert(0, "%s",path.UTF8String);
+            NSAssert(0, @"%@",path);
             self = nil;
             break;
         }
         
         if(ASLFB_Initialize(_hBEngine, MNull, MNull)){
-            GJAssert(0, "%s",path.UTF8String);
+            NSAssert(0, @"%s",path.UTF8String);
             self = nil;
             break;
         }
@@ -123,7 +123,7 @@
     if (_faceSlender > 0 || _eyesEnlargement > 0 || _skinRuddy > 0 || _skinSoftn > 0 || _skinBright > 0) {
         MRESULT mRet = ASLFB_Process(_hBEngine, &_offScreenIn, _faceInformation,MNull);
         if (mRet != MOK) {
-            GJLOG(NULL, GJ_LOGERROR, "ASLFB_Process error:%ld",mRet);
+            NSLog(@"ASLFB_Process error:%ld",mRet);
         }
     }
 

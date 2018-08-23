@@ -7,6 +7,16 @@
 
 extern dispatch_queue_attr_t GPUImageDefaultQueueAttribute(void);
 
+long getCurrentTime(){
+#ifdef CA_TIME
+    return CACurrentMediaTime() * 1000;
+#else
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+#endif
+}
+
 @interface GPUImageContext()
 {
     NSMutableDictionary *shaderProgramCache;
