@@ -424,7 +424,9 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
         [GPUImageContext useImageProcessingContext];
         [GPUImageContext setActiveShaderProgram:filterProgram];
         
-        outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:CGSizeEqualToSize(outputSize, CGSizeZero)?_pixelSize:outputSize textureOptions:self.outputTextureOptions onlyTexture:NO];
+        outputFramebuffer =  [[GPUImageFramebuffer alloc] initWithSize:_pixelSize  textureOptions:self.outputTextureOptions onlyTexture:NO];
+
+//        outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:CGSizeEqualToSize(outputSize, CGSizeZero)?_pixelSize:outputSize textureOptions:self.outputTextureOptions onlyTexture:YES];
         [outputFramebuffer activateFramebuffer];
         
         GLsizei w  = _pixelSize.width;
@@ -469,7 +471,7 @@ static NSString *const kGJImageVertexShaderString = GJSHADER_STRING
             [currentTarget setInputSize:outputFramebuffer.size atIndex:textureIndexOfTarget];
             [currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndexOfTarget];
         }
-        [outputFramebuffer unlock];
+//        [outputFramebuffer unlock];
         dispatch_semaphore_signal(dataUpdateSemaphore);
     });
 }
