@@ -641,7 +641,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\" \"$(SRCROOT)/../GJQueue/Class\" \"$(SRCROOT)/../GJLiveEngine/GJLiveEngine/CrossPlatform/PlatformBridge\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"";
 			};
 			name = Debug;
 		};
@@ -657,7 +657,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\" \"$(SRCROOT)/../GJQueue/Class\" \"$(SRCROOT)/../GJLiveEngine/GJLiveEngine/CrossPlatform/PlatformBridge\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"";
 			};
 			name = Release;
 		};

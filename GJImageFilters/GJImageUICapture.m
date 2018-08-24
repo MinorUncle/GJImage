@@ -7,7 +7,7 @@
 //
 
 #import "GJImageUICapture.h"
-#import "GJLog.h"
+//#import "GJLog.h"
 @interface GJImageUICapture()
 {
     UIView* _captureView;
