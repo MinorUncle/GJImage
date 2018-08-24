@@ -2,6 +2,7 @@
 #import "GPUImageMovieWriter.h"
 #import "GPUImageFilter.h"
 
+
 void setColorConversion601( GLfloat conversionMatrix[9] )
 {
     kColorConversion601 = conversionMatrix;
@@ -98,7 +99,7 @@ static NSString* getCapturePresetWithSize(CGSize size) {
     
     _zoomFactor = 1.0f;
 
-    cameraProcessingQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,0);
+    cameraProcessingQueue = dispatch_queue_create("Loop.GJVideoCapture", DISPATCH_QUEUE_SERIAL);
 	audioProcessingQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,0);
 
     frameRenderingSemaphore = dispatch_semaphore_create(1);
@@ -286,8 +287,9 @@ static NSString* getCapturePresetWithSize(CGSize size) {
 {
     [_inputCamera removeObserver:self forKeyPath:@"activeVideoMaxFrameDuration"];
     [_inputCamera removeObserver:self forKeyPath:@"activeVideoMinFrameDuration"];
-    
-    [self stopCameraCapture];
+//    if ([_captureSession isRunning]) {
+//        [self stopCameraCapture];
+//    }
     [videoOutput setSampleBufferDelegate:nil queue:dispatch_get_main_queue()];
     [audioOutput setSampleBufferDelegate:nil queue:dispatch_get_main_queue()];
     
@@ -386,19 +388,25 @@ static NSString* getCapturePresetWithSize(CGSize size) {
 
 - (void)startCameraCapture;
 {
-    if (![_captureSession isRunning])
-	{
-        startingCaptureTime = [NSDate date];
-		[_captureSession startRunning];
-	};
+    dispatch_async(cameraProcessingQueue, ^{
+        if (![_captureSession isRunning])
+        {
+            startingCaptureTime = [NSDate date];
+            [_captureSession startRunning];
+        };
+    });
 }
 
 - (void)stopCameraCapture;
 {
-    if ([_captureSession isRunning])
-    {
-        [_captureSession stopRunning];
-    }
+    
+    dispatch_async(cameraProcessingQueue, ^{
+        if ([self.captureSession isRunning])
+        {
+            [self.captureSession stopRunning];
+        }
+
+    });
 }
 
 - (void)pauseCameraCapture;

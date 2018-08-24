@@ -123,7 +123,7 @@
     if (_faceSlender > 0 || _eyesEnlargement > 0 || _skinRuddy > 0 || _skinSoftn > 0 || _skinBright > 0) {
         MRESULT mRet = ASLFB_Process(_hBEngine, &_offScreenIn, _faceInformation,MNull);
         if (mRet != MOK) {
-            GJLOG(NULL, GJ_LOGERROR, "ASLFB_Process error:%ld",mRet);
+            GJLOG( GJ_LOGERROR, "ASLFB_Process error:%ld",mRet);
         }
     }
 
@@ -137,6 +137,9 @@
     
     ASLFB_Uninitialize(_hBEngine);
     ASLFB_DestroyEngine(_hBEngine);
+    
+    free(_faceStatus);
+    free(_faceInformation);
 }
 @end
 
