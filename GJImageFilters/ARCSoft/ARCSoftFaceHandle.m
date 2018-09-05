@@ -29,25 +29,25 @@
         _dataPath = path;
         _hAEngine = ASLFA_CreateEngine();
         if (_hAEngine == nil) {
-            NSAssert(0, @"%@",path);
+            NSLog( @"ASLFA_CreateEngine error ,bundleID error.");
             self = nil;
             break;
         }
         if (ASLFA_Initialize(_hAEngine, path.UTF8String , ASLFA_MAX_FACE_NUM, MNull, MNull) != 0) {
-            NSAssert(0, @"%@",path);
+            NSLog( @"initWithDataPath error:%@",path);
             self = nil;
             break;
         }
         
         _hBEngine = ASLFB_CreateEngine();
         if (_hBEngine == MNull) {
-            NSAssert(0, @"%@",path);
+            NSLog(@"ASLFB_CreateEngine error ,bundleID error");
             self = nil;
             break;
         }
         
         if(ASLFB_Initialize(_hBEngine, MNull, MNull)){
-            NSAssert(0, @"%s",path.UTF8String);
+            NSLog( @"ASLFB_Initialize,bundleID error");
             self = nil;
             break;
         }
