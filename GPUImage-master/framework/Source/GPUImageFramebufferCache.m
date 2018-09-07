@@ -12,6 +12,7 @@
 //    NSCache *framebufferCache;
     NSMutableDictionary *framebufferCache;
     NSMutableDictionary *framebufferTypeCounts;
+    NSMutableArray*   textureCache;
     NSMutableArray *activeImageCaptureList; // Where framebuffers that may be lost by a filter, but which are still needed for a UIImage, etc., are stored
     id memoryWarningObserver;
 
@@ -50,6 +51,7 @@
     framebufferCache = [[NSMutableDictionary alloc] init];
     framebufferTypeCounts = [[NSMutableDictionary alloc] init];
     activeImageCaptureList = [[NSMutableArray alloc] init];
+    textureCache = [NSMutableArray array];
     framebufferCacheQueue = dispatch_queue_create("com.sunsetlakesoftware.GPUImage.framebufferCacheQueue", GPUImageDefaultQueueAttribute());
     
     return self;
@@ -91,6 +93,8 @@
         {
             // Nothing in the cache, create a new framebuffer to use
             framebufferFromCache = [[GPUImageFramebuffer alloc] initWithSize:framebufferSize textureOptions:textureOptions onlyTexture:onlyTexture];
+            assert(![textureCache containsObject:@(framebufferFromCache.texture)]);
+            framebufferFromCache.bufferCache = self;
         }
         else
         {
@@ -116,11 +120,14 @@
             if (framebufferFromCache == nil)
             {
                 framebufferFromCache = [[GPUImageFramebuffer alloc] initWithSize:framebufferSize textureOptions:textureOptions onlyTexture:onlyTexture];
+                framebufferFromCache.bufferCache = self;
             }
+            assert(![textureCache containsObject:@(framebufferFromCache.texture)]);
         }
     });
 
     [framebufferFromCache lock];
+    [textureCache addObject:@(framebufferFromCache.texture)];
     return framebufferFromCache;
 }
 
@@ -155,6 +162,10 @@
 //        [framebufferCache setObject:framebuffer forKey:textureHash cost:round(framebufferSize.width * framebufferSize.height * 4.0)];
         [framebufferCache setObject:framebuffer forKey:textureHash];
         [framebufferTypeCounts setObject:[NSNumber numberWithInteger:(numberOfMatchingTextures + 1)] forKey:lookupHash];
+        
+        assert([textureCache containsObject:@(framebuffer.texture)]);
+        [textureCache removeObject:@(framebuffer.texture)];
+
     });
 }
 
