@@ -86,7 +86,6 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     GLint fullVar;
     
     GLint _sourceRgbFormat;
-    GPUImageFramebufferCache* _framebufferCache;
     
 }
 @end
@@ -96,7 +95,6 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     self = [super init];
     if (self) {
         _imageFormat = format;
-        _framebufferCache = [[GPUImageFramebufferCache alloc]init];
         if(![self setupProgram])return nil;
         
     }
@@ -513,7 +511,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     [GPUImageContext setActiveShaderProgram:filterProgram];
 //    outputFramebuffer =  [[GPUImageFramebuffer alloc] initWithSize:size  textureOptions:self.outputTextureOptions onlyTexture:NO];
 //    [outputFramebuffer disableReferenceCounting];
-    outputFramebuffer = [_framebufferCache fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
+    outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
     
     [outputFramebuffer activateFramebuffer];
     

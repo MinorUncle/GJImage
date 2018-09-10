@@ -294,11 +294,7 @@ void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * base
     framebufferReferenceCount--;
     if (framebufferReferenceCount < 1)
     {
-        if (_bufferCache) {
-            [_bufferCache returnFramebufferToCache:self];
-        }else{
-            [[GPUImageContext sharedFramebufferCache] returnFramebufferToCache:self];
-        }
+        [[GPUImageContext sharedFramebufferCache] returnFramebufferToCache:self];
     }
 }
 
