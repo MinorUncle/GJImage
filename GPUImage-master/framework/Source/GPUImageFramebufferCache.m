@@ -149,8 +149,9 @@
 //
         assert([textureCache containsObject:@(framebuffer.texture)]);
         [textureCache removeObject:@(framebuffer.texture)];
-        assert([EAGLContext currentContext] == [GPUImageContext sharedImageProcessingContext].context);
-        glFlush();
+        [GPUImageContext useImageProcessingContext];
+//        assert([EAGLContext currentContext] == [GPUImageContext sharedImageProcessingContext].context);
+//        glFlush();
 
     });
 }
