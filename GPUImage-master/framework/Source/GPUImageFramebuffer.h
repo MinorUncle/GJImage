@@ -11,9 +11,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <CoreMedia/CoreMedia.h>
-#import "GPUImageFramebufferCache.h"
-@class GPUImageFramebufferCache;
-
 
 typedef struct GPUTextureOptions {
     GLenum minFilter;

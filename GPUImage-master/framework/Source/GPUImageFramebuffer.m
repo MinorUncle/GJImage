@@ -19,8 +19,6 @@
 - (void)destroyFramebuffer;
 
 @end
-NSMutableArray* useTextureCache;
-NSMutableArray* useFrameBufferCache;
 
 void dataProviderReleaseCallback (void *info, const void *data, size_t size);
 void dataProviderUnlockCallback (void *info, const void *data, size_t size);
@@ -126,11 +124,6 @@ void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * base
     // This is necessary for non-power-of-two textures
     CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _textureOptions.wrapS));
     CHECK_GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _textureOptions.wrapT));
-    if (useTextureCache == nil) {
-        useTextureCache = [NSMutableArray array];
-    }
-    assert(![useTextureCache containsObject:@(_texture)]);
-    [useTextureCache addObject:@(_texture)];
     // TODO: Handle mipmaps
 }
 
@@ -141,11 +134,6 @@ void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * base
     
         CHECK_GL(glGenFramebuffers(1, &framebuffer));
         CHECK_GL(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer));
-        if (useFrameBufferCache == nil) {
-            useFrameBufferCache = [NSMutableArray array];
-        }
-        assert(![useFrameBufferCache containsObject:@(framebuffer)]);
-        [useFrameBufferCache addObject:@(framebuffer)];
         // By default, all framebuffers on iOS 5.0+ devices are backed by texture caches, using one shared cache
         if ([GPUImageContext supportsFastTextureUpload])
         {
@@ -188,11 +176,6 @@ void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * base
             _texture = CVOpenGLESTextureGetName(renderTexture);
             CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _textureOptions.wrapS));
             CHECK_GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _textureOptions.wrapT));
-            if (useTextureCache == nil) {
-                useTextureCache = [NSMutableArray array];
-            }
-            assert(![useTextureCache containsObject:@(_texture)]);
-            [useTextureCache addObject:@(_texture)];
 
             
             CHECK_GL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, CVOpenGLESTextureGetName(renderTexture), 0));
@@ -224,16 +207,9 @@ void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * base
         
         if (framebuffer)
         {
-            assert([useFrameBufferCache containsObject:@(framebuffer)]);
-            [useFrameBufferCache removeObject:@(framebuffer)];
-
             CHECK_GL(glDeleteFramebuffers(1, &framebuffer));
             framebuffer = 0;
         }
-        
-        assert([useTextureCache containsObject:@(_texture)]);
-        [useTextureCache removeObject:@(_texture)];
-
         
         if ([GPUImageContext supportsFastTextureUpload] && (!_missingFramebuffer))
         {

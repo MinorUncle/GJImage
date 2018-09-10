@@ -8,7 +8,6 @@
 #import "GPUImageFilter.h"
 #import "GJImagePixelImageInput.h"
 #import "GPUImageColorConversion.h"
-#import "GPUImageFramebufferCache.h"
 #import "GJImageFramebuffer.h"
 static NSString *const kGJImagePixelImageInputVertexShaderString = SHADER_STRING
 (
@@ -96,7 +95,6 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     if (self) {
         _imageFormat = format;
         if(![self setupProgram])return nil;
-        
     }
     return self;
 }
