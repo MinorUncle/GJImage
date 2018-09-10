@@ -49,6 +49,11 @@ void runOnMainQueueWithoutDeadlocking(void (^block)(void))
 
 void runSynchronouslyOnVideoProcessingQueue(void (^block)(void))
 {
+    void(^videoProcessBlock)() = ^() {
+        [GPUImageContext useImageProcessingContext];
+        block();
+    };
+
     dispatch_queue_t videoProcessingQueue = [GPUImageContext sharedContextQueue];
 #if !OS_OBJECT_USE_OBJC
 #pragma clang diagnostic push
@@ -59,17 +64,22 @@ void runSynchronouslyOnVideoProcessingQueue(void (^block)(void))
 	if (dispatch_get_specific([GPUImageContext contextKey]))
 #endif
 	{
-		block();
+		videoProcessBlock();
 	}else
 	{
-		dispatch_sync(videoProcessingQueue, block);
+		dispatch_sync(videoProcessingQueue, videoProcessBlock);
 	}
 }
 
 void runAsynchronouslyOnVideoProcessingQueue(void (^block)(void))
 {
-    dispatch_queue_t videoProcessingQueue = [GPUImageContext sharedContextQueue];
     
+    
+    dispatch_queue_t videoProcessingQueue = [GPUImageContext sharedContextQueue];
+    void(^videoProcessBlock)() = ^() {
+        [GPUImageContext useImageProcessingContext];
+        block();
+    };
 #if !OS_OBJECT_USE_OBJC
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -79,10 +89,10 @@ void runAsynchronouslyOnVideoProcessingQueue(void (^block)(void))
     if (dispatch_get_specific([GPUImageContext contextKey]))
 #endif
 	{
-		block();
+		videoProcessBlock();
 	}else
 	{
-		dispatch_async(videoProcessingQueue, block);
+		dispatch_async(videoProcessingQueue, videoProcessBlock);
 	}
 }
 

@@ -8,6 +8,7 @@
 #import "GPUImageFilter.h"
 #import "GJImagePixelImageInput.h"
 #import "GPUImageColorConversion.h"
+#import "GPUImageFramebufferCache.h"
 #import "GJImageFramebuffer.h"
 static NSString *const kGJImagePixelImageInputVertexShaderString = SHADER_STRING
 (
@@ -95,6 +96,7 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     if (self) {
         _imageFormat = format;
         if(![self setupProgram])return nil;
+        
     }
     return self;
 }
@@ -201,38 +203,41 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
 -(void)updateDataWithImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)time{
 
     runSynchronouslyOnVideoProcessingQueue(^{
-        [GPUImageContext useImageProcessingContext];
-        OSType type = CVPixelBufferGetPixelFormatType(imageBuffer);
-#ifdef DEBUG
-        
-        if (_imageFormat != type) {
-            printf("格式与初始化格式不同");
-            assert(0);
-        }
-#endif
-        switch (_imageFormat) {
-            case GJPixelImageFormat_YpCbCr8Planar_Full:
-                [self updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
-                break;
-            case GJPixelImageFormat_YpCbCr8Planar:
-                [self updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
-                break;
-            case GJPixelImageFormat_YpCbCr8BiPlanar_Full:
-                [self updateDataWith420YpCbCr8BiPlanarImageBuffer:imageBuffer timestamp:time];
-                break;
-            case GJPixelImageFormat_YpCbCr8BiPlanar:
-                [self updateDataWith420YpCbCr8BiPlanarImageBuffer:imageBuffer timestamp:time];
-                break;
-            case GJPixelImageFormat_32BGRA:
-                [self updateDataWith32BGRAImageBuffer:imageBuffer timestamp:time];
-                break;
-            case GJPixelImageFormat_32RGBA:
-                [self updateDataWith32BGRAImageBuffer:imageBuffer timestamp:time];
-                break;
-            default:
-                NSLog(@"格式不支持");
-                break;
-        }
+        @autoreleasepool
+        {
+            [GPUImageContext useImageProcessingContext];
+            OSType type = CVPixelBufferGetPixelFormatType(imageBuffer);
+    #ifdef DEBUG
+            
+            if (_imageFormat != type) {
+                printf("格式与初始化格式不同");
+                assert(0);
+            }
+    #endif
+            switch (_imageFormat) {
+                case GJPixelImageFormat_YpCbCr8Planar_Full:
+                    [self updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
+                    break;
+                case GJPixelImageFormat_YpCbCr8Planar:
+                    [self updateDataWith420YpCbCr8PlanarImageBuffer:imageBuffer timestamp:time];
+                    break;
+                case GJPixelImageFormat_YpCbCr8BiPlanar_Full:
+                    [self updateDataWith420YpCbCr8BiPlanarImageBuffer:imageBuffer timestamp:time];
+                    break;
+                case GJPixelImageFormat_YpCbCr8BiPlanar:
+                    [self updateDataWith420YpCbCr8BiPlanarImageBuffer:imageBuffer timestamp:time];
+                    break;
+                case GJPixelImageFormat_32BGRA:
+                    [self updateDataWith32BGRAImageBuffer:imageBuffer timestamp:time];
+                    break;
+                case GJPixelImageFormat_32RGBA:
+                    [self updateDataWith32BGRAImageBuffer:imageBuffer timestamp:time];
+                    break;
+                default:
+                    NSLog(@"格式不支持");
+                    break;
+            }
+        };
     });
 }
 -(void)updateDataWith32BGRAImageBuffer:(CVImageBufferRef)imageBuffer timestamp:(CMTime)frameTime{
@@ -504,9 +509,9 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     chrominanceTexture = CVOpenGLESTextureGetName(chrominanceTextureRef);
 
     [GPUImageContext setActiveShaderProgram:filterProgram];
-    outputFramebuffer =  [[GPUImageFramebuffer alloc] initWithSize:size  textureOptions:self.outputTextureOptions onlyTexture:NO];
-    [outputFramebuffer disableReferenceCounting];
-//    outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:YES];
+//    outputFramebuffer =  [[GPUImageFramebuffer alloc] initWithSize:size  textureOptions:self.outputTextureOptions onlyTexture:NO];
+//    [outputFramebuffer disableReferenceCounting];
+    outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:size textureOptions:self.outputTextureOptions onlyTexture:NO];
     
     [outputFramebuffer activateFramebuffer];
     
@@ -537,7 +542,6 @@ typedef void (^UpdateData)(CVImageBufferRef imageBuffer,CMTime frameTime);
     CHECK_GL(glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, 0, 0, [GPUImageFilter textureCoordinatesForRotation:inputRotation]));
 
     CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
-//    glFlush();
 
     for (id<GPUImageInput> currentTarget in targets)
     {
