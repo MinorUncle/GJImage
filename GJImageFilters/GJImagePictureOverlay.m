@@ -364,7 +364,7 @@
     
     [GPUImageContext useImageProcessingContext];
     
-    GPUImageFramebuffer* framebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:pixelSizeToUseForTexture onlyTexture:YES];
+    GPUImageFramebuffer* framebuffer = [[GPUImageFramebuffer alloc]initWithSize:pixelSizeToUseForTexture textureOptions:defalutTextureOption onlyTexture:YES];
     [framebuffer disableReferenceCounting];
     
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, [framebuffer texture]));

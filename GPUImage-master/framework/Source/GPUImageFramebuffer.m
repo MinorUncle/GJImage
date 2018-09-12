@@ -1,6 +1,21 @@
 #import "GPUImageFramebuffer.h"
 #import "GPUImageOutput.h"
 
+//defaultTextureOptions.minFilter = GL_LINEAR;
+//defaultTextureOptions.magFilter = GL_LINEAR;
+//defaultTextureOptions.wrapS = GL_CLAMP_TO_EDGE;
+//defaultTextureOptions.wrapT = GL_CLAMP_TO_EDGE;
+//defaultTextureOptions.internalFormat = GL_RGBA;
+//defaultTextureOptions.format = GL_BGRA;
+//defaultTextureOptions.type = GL_UNSIGNED_BYTE;
+GPUTextureOptions defalutTextureOption = {  .minFilter = GL_LINEAR,
+                                            .magFilter = GL_LINEAR,
+                                            .wrapS = GL_CLAMP_TO_EDGE,
+                                            .wrapT = GL_CLAMP_TO_EDGE,
+                                            .internalFormat = GL_RGBA,
+                                            .format = GL_BGRA,
+                                            .type = GL_UNSIGNED_BYTE,
+};
 @interface GPUImageFramebuffer()
 {
     GLuint framebuffer;

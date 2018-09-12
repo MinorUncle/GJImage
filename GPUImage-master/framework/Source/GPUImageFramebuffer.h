@@ -22,6 +22,8 @@ typedef struct GPUTextureOptions {
     GLenum type;
 } GPUTextureOptions;
 
+extern GPUTextureOptions defalutTextureOption;
+
 @interface GPUImageFramebuffer : NSObject
 
 @property(readonly) CGSize size;

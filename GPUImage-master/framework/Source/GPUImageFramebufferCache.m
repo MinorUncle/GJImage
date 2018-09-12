@@ -97,7 +97,7 @@
         {
             // Nothing in the cache, create a new framebuffer to use
             framebufferFromCache = [[GPUImageFramebuffer alloc] initWithSize:framebufferSize textureOptions:textureOptions onlyTexture:onlyTexture];
-            assert(![textureCache containsObject:@(framebufferFromCache.texture)]);
+            assert(![textureCache containsObject:@(framebufferFromCache.texture)]);//可能是disableReferenceCounting的framebuffer导致的
         }
         else
         {
