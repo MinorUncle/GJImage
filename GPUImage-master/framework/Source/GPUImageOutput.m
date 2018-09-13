@@ -37,6 +37,8 @@ dispatch_queue_attr_t GPUImageDefaultQueueAttribute(void)
 
 void runOnMainQueueWithoutDeadlocking(void (^block)(void))
 {
+    
+    
 	if ([NSThread isMainThread])
 	{
 		block();

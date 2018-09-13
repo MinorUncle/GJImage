@@ -69,6 +69,9 @@
     [GPUImageContext useImageProcessingContext];
 
     // TODO: This probably isn't right, and will need to be corrected
+    if (outputFramebuffer) {
+        [outputFramebuffer unlock];
+    }
     outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:uploadedImageSize textureOptions:self.outputTextureOptions onlyTexture:YES];
     
     CHECK_GL(glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]));
@@ -103,6 +106,8 @@
 			[currentTarget newFrameReadyAtTime:kCMTimeInvalid atIndex:textureIndexOfTarget];
 		}
 	
+        [outputFramebuffer unlock];
+        outputFramebuffer = nil;
 		dispatch_semaphore_signal(dataUpdateSemaphore);
 	});
 }
@@ -127,7 +132,8 @@
             [currentTarget setInputFramebuffer:outputFramebuffer atIndex:textureIndexOfTarget];
 			[currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndexOfTarget];
 		}
-        
+        [outputFramebuffer unlock];
+        outputFramebuffer = nil;
 		dispatch_semaphore_signal(dataUpdateSemaphore);
 	});
 }

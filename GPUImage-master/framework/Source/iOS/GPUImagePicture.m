@@ -249,7 +249,7 @@
     runSynchronouslyOnVideoProcessingQueue(^{
         [GPUImageContext useImageProcessingContext];
         
-        outputFramebuffer = [[GPUImageContext sharedFramebufferCache] fetchFramebufferForSize:pixelSizeToUseForTexture onlyTexture:YES];
+        outputFramebuffer = [[GPUImageFramebuffer alloc]initWithSize:pixelSizeToUseForTexture textureOptions:defalutTextureOption onlyTexture:YES];
         [outputFramebuffer disableReferenceCounting];
 
         CHECK_GL(glBindTexture(GL_TEXTURE_2D, [outputFramebuffer texture]));

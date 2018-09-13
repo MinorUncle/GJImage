@@ -424,6 +424,9 @@
 
 - (void)setInputFramebuffer:(GPUImageFramebuffer *)newInputFramebuffer atIndex:(NSInteger)textureIndex;
 {
+    if (inputFramebufferForDisplay) {
+        [inputFramebufferForDisplay unlock];
+    }
     inputFramebufferForDisplay = newInputFramebuffer;
     [inputFramebufferForDisplay lock];
 }

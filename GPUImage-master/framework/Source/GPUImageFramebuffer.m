@@ -123,6 +123,8 @@ void newPixelBufferReleaseBytesCallback( void * releaseRefCon, const void * base
 
 - (void)dealloc
 {
+    assert(!(!referenceCountingDisabled &&  framebufferReferenceCount > 0));
+
     [self destroyFramebuffer];
 }
 
