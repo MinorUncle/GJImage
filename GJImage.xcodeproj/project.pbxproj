@@ -633,6 +633,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 86ZQX2T4JN;
+				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -641,7 +642,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"/**";
 			};
 			name = Debug;
 		};
@@ -649,6 +650,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 86ZQX2T4JN;
+				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -657,7 +659,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/GPUImage-master/framework/Source\"/**";
 			};
 			name = Release;
 		};

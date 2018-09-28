@@ -703,6 +703,7 @@ GVertex perpendicular(GVertex p1,  GVertex p2){
 }
 -(void)dealloc{
     [_paintingView removeObserver:self forKeyPath:@"frame"];
+    [outputFramebuffer unlock];
     runSynchronouslyOnVideoProcessingQueue(^{
         groupClusterFree(lineCluster);
     });
