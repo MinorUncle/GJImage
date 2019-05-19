@@ -10,6 +10,7 @@
 #import <ARKit/ARKit.h>
 //#import "GJLog.h"
 #import <objc/runtime.h>
+#import <QuartzCore/CAMetalLayer.h>
 #import "GPUImageRawDataInput.h"
 static const void *kMetalLayerBufferKey = &kMetalLayerBufferKey;
 @interface CAMetalLayer(Swizzling)
